@@ -4,8 +4,13 @@
 namespace WhyooOs\Util;
 
 
+
 class Util
 {
+
+
+    static $timeProfilers = [];
+
     /**
      * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
      *
@@ -83,6 +88,7 @@ class Util
     }
 
 
+
     public static function waitKeypress()
     {
         echo "\npress enter\n";
@@ -126,6 +132,7 @@ class Util
     }
 
 
+
     /**
      * removes namespace from FQCN of obj
      * @param $obj
@@ -133,16 +140,25 @@ class Util
      */
     public static function getClassNameShort($obj, $numBack = 1)
     {
+        if( $obj == null) {
+            return null;
+        }
         return self::removeNamespace(get_class($obj), $numBack);
     }
 
 
-    public static function removeNamespace(string $class, $numBack = 1)
+    /**
+     * @param string $class
+     * @param int $numBack
+     * @return string
+     */
+    public static function removeNamespace(string $class, int $numBack = 1) : string
     {
         $tmp = explode('\\', $class);
 
         return implode(".", array_slice($tmp, count($tmp) - $numBack, $numBack));
     }
+
 
 
     /**
@@ -184,6 +200,152 @@ class Util
     {
         file_put_contents('/tmp/mcx-simple-log-error.txt', date('Y-m-d H:i') . "\t" . $string . "\n", FILE_APPEND);
     }
+
+    
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+
+
+
+
+
+
+    /**
+     * uses symfony's cache (see config.yml: framework.cache)
+     *
+     * @param string $key
+     * @param mixed $object
+     * @param $strExpire
+     */
+    public static function saveToCache($key, $object, $strExpire = '1 day')
+    {
+        $cache = UtilSymfony::getContainer()->get('cache.app'); // configures in config.yml
+        $cacheItem = $cache->getItem($key);
+        $cacheItem->expiresAfter(\DateInterval::createFromDateString($strExpire));
+        $cache->save($cacheItem->set($object));
+    }
+
+
+    /**
+     * uses symfony's cache (see config.yml: framework.cache)
+     *
+     * @param string $key
+     * @param mixed $object
+     * @return mixed|null
+     */
+    public static function fetchFromCache($key, $default = null)
+    {
+        $cache = UtilSymfony::getContainer()->get('cache.app'); // configures in config.yml
+        $cacheItem = $cache->getItem($key);
+        if (!$cacheItem->isHit()) {
+            return $default;
+        }
+
+        return $cacheItem->get();
+    }
+
+
+
+
+
+
+
+    /**
+     * jTraceEx() - provide a Java style exception trace
+     * @param $exception
+     * @param $seen      - array passed to recursive calls to accumulate trace lines already seen
+     *                     leave as NULL when calling this function
+     * @return string  nicely formatted exception
+     */
+    public static function jTraceEx(\Exception $e, $seen=null) {
+        $starter = $seen ? 'Caused by: ' : '';
+        $result = array();
+        if (!$seen) $seen = array();
+        $trace  = $e->getTrace();
+        $prev   = $e->getPrevious();
+        $result[] = sprintf('%s%s: %s', $starter, get_class($e), $e->getMessage());
+        $file = $e->getFile();
+        $line = $e->getLine();
+        while (true) {
+            $current = "$file:$line";
+            if (is_array($seen) && in_array($current, $seen)) {
+                $result[] = sprintf(' ... %d more', count($trace)+1);
+                break;
+            }
+            $result[] = sprintf(' at %s%s%s(%s%s%s)',
+                count($trace) && array_key_exists('class', $trace[0]) ? str_replace('\\', '.', $trace[0]['class']) : '',
+                count($trace) && array_key_exists('class', $trace[0]) && array_key_exists('function', $trace[0]) ? '.' : '',
+                count($trace) && array_key_exists('function', $trace[0]) ? str_replace('\\', '.', $trace[0]['function']) : '(main)',
+                $line === null ? $file : basename($file),
+                $line === null ? '' : ':',
+                $line === null ? '' : $line);
+            if (is_array($seen))
+                $seen[] = "$file:$line";
+            if (!count($trace))
+                break;
+            $file = array_key_exists('file', $trace[0]) ? $trace[0]['file'] : 'Unknown Source';
+            $line = array_key_exists('file', $trace[0]) && array_key_exists('line', $trace[0]) && $trace[0]['line'] ? $trace[0]['line'] : null;
+            array_shift($trace);
+        }
+
+        $result = join("\n", $result);
+        if ($prev) {
+            $result .= "\n" . self::jTraceEx($prev, $seen);
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * used by FixturesUtil
+     *
+     * @param $pathCsv
+     * @return array
+     */
+    public static function parseCsvFileToObjects($pathCsv)
+    {
+        $fileHandle = fopen($pathCsv, 'r');
+        $arr = [];
+        while (($row = fgetcsv($fileHandle)) !== FALSE) {
+            $arr[] = $row;
+        }
+        fclose($fileHandle);
+
+        $headers = array_shift($arr); // remove header row
+        $aObjects = [];
+        foreach ($arr as $row) {
+            if (count($row) == count($headers)) { // valid row
+                $aObjects[] = (object)array_combine($headers, $row);
+            }
+        }
+
+        return $aObjects;
+    }
+
+
+
+    public static function startTimeProfiling($id='default')
+    {
+        self::$timeProfilers[$id] = microtime(true);
+    }
+
+    /**
+     * @param string $id
+     * @return float seconds
+     */
+    public static function stopTimeProfiling($id='default')
+    {
+        $length = microtime(true) - self::$timeProfilers[$id];
+        self::$timeProfilers[$id] = null;
+
+        return $length;
+    }
+
 
 
 

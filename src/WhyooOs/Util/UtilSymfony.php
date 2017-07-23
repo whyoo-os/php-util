@@ -55,5 +55,46 @@ class UtilSymfony
     }
 
 
+    /**
+     * using JMS serializer
+     *
+     * @param mixed $data
+     * @param null|array|string $groups
+     * @return array
+     */
+    public static function toArray($data, $groups=null)
+    {
+        $serializationContext = Util::getSerializationContext($groups);
+        $serializer = UtilSymfony::getContainer()->get('jms_serializer');
+
+        return $serializer->toArray($data, $serializationContext);
+    }
+
+
+
+    /**
+     * @param null|array|string $groups Serialization Group Names
+     * @return SerializationContext
+     */
+    public static function getSerializationContext($groups = null)
+    {
+        $context = SerializationContext::create();
+        $context->enableMaxDepthChecks();
+
+        if (!is_null($groups)) {
+            if (is_string($groups)) {
+                $groups = [$groups];
+            }
+            $groups[] = "formatters"; // HACK
+            $groups[] = "ALWAYS"; // HACK
+            $context->setGroups($groups);
+        }
+
+        return $context;
+    }
+
+
+
+
 
 }
