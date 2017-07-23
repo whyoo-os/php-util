@@ -7,7 +7,7 @@ namespace WhyooOs\Util;
 class Util
 {
     /**
-     * can also handle fieldnames like inventoryItem.currentStockLevel for embedded stuff
+     * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
      *
      * @param $document
      * @param $arr
@@ -147,7 +147,6 @@ class Util
 
     /**
      * dump + die
-     * @param $searchTerm
      */
     public static function dd()
     {
@@ -185,5 +184,9 @@ class Util
     {
         file_put_contents('/tmp/mcx-simple-log-error.txt', date('Y-m-d H:i') . "\t" . $string . "\n", FILE_APPEND);
     }
+
+
+
+
 
 }

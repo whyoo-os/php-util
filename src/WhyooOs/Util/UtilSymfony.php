@@ -4,6 +4,7 @@ namespace WhyooOs\Util;
 
 use Symfony\Component\HttpFoundation\Response;
 
+
 class UtilSymfony
 {
 
@@ -28,8 +29,7 @@ class UtilSymfony
 
 
     /**
-     * TODO: use
-     *       BinaryFileResponse::trustXSendfileTypeHeader(); // "the X-Sendfile-Type header should be trusted" (?)
+     * TODO: use BinaryFileResponse::trustXSendfileTypeHeader(); // "the X-Sendfile-Type header should be trusted" (?)
      *      return new BinaryFileResponse($pathImageFiltered);
      */
     public static function createImageResponse($filename)
