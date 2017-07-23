@@ -2,6 +2,7 @@
 
 namespace WhyooOs\Util;
 
+use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -64,7 +65,7 @@ class UtilSymfony
      */
     public static function toArray($data, $groups=null)
     {
-        $serializationContext = Util::getSerializationContext($groups);
+        $serializationContext = UtilSymfony::getSerializationContext($groups);
         $serializer = UtilSymfony::getContainer()->get('jms_serializer');
 
         return $serializer->toArray($data, $serializationContext);

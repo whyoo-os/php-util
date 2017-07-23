@@ -45,8 +45,10 @@ class UtilFilesystem
 
 
     /**
+     * returns LOWERCASE extension
+     *
      * @param $filePath
-     * @return string extension eg "png"
+     * @return string eg "png"
      */
     public static function getExtension($filePath)
     {
@@ -292,6 +294,45 @@ class UtilFilesystem
 //        return $ret;
 //    }
 
+
+
+
+    /**
+     * not recursive .. returns directories (alphabetically sorted)
+     */
+    public static function getDirs($path)
+    {
+        $dirs = [];
+        if ($handle = opendir($path)) {
+            while (false !== ($entry = readdir($handle))) {
+                if ($entry != "." && $entry != ".." && is_dir( self::joinPaths($path, $entry))) {
+                    $dirs[] = realpath(self::joinPaths($path, $entry));
+                }
+            }
+            closedir($handle);
+        }
+        sort($dirs);
+
+        return $dirs;
+    }
+
+
+    /**
+     * returns full pathes to all files (no directories, recursive)
+     */
+    public static function getFiles($path)
+    {
+        $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        $files = [];
+        foreach ($rii as $file) {
+            if ($file->isDir()){
+                continue;
+            }
+            $files[] = $file->getPathname();
+        }
+
+        return $files;
+    }
 
 
 
