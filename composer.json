@@ -1,8 +1,8 @@
 {
   "name": "whyoo-os/php-util",
   "autoload": {
-    "psr-0" : {
-      "\\WhyooOs\\Util" : "src"
+    "psr-4" : {
+      "\\WhyooOs\\Util\\" : "src/WhyooOs/Util/"
     }
   }
 }
