@@ -2,7 +2,7 @@
   "name": "whyoo-os/php-util",
   "autoload": {
     "psr-4" : {
-      "\\WhyooOs\\Util\\" : "src/WhyooOs/Util/"
+      "WhyooOs\\Util\\" : "src/WhyooOs/Util/"
     }
   }
 }
