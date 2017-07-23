@@ -8,7 +8,7 @@ class UtilSymfony
 {
 
     /**
-     * hack to get container whereever needed
+     * hack to get container where ever needed
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface|null
      */
