@@ -1,8 +1,19 @@
 {
   "name": "whyoo-os/php-util",
+  "type": "library",
+  "description": "Utility classes for php",
+  "keywords": ["util", "utlity"],
+  "homepage": "https://github.com/whyoo-os/php-util",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.0"
+  },
   "autoload": {
     "psr-4" : {
       "WhyooOs\\Util\\" : "src/WhyooOs/Util/"
     }
   }
 }
+
+
+

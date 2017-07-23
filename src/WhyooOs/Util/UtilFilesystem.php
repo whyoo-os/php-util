@@ -44,25 +44,31 @@ class UtilFilesystem
     }
 
 
-
-
-    public static function getExtension($filename)
+    /**
+     * @param $filePath
+     * @return string extension eg "png"
+     */
+    public static function getExtension($filePath)
     {
-        $pos = strrpos($filename, '.');
+        $pos = strrpos($filePath, '.');
         if ($pos !== false) {
-            return strtolower(substr($filename, $pos + 1));
+            return strtolower(substr($filePath, $pos + 1));
         } else { // no extension
             return '';
         }
     }
 
-    public static function getWithoutExtension($filename)
+    /**
+     * @param $filePath
+     * @return string file path without extension eg "/tmp/somefile"
+     */
+    public static function getWithoutExtension($filePath)
     {
-        $pos = strrpos($filename, '.');
+        $pos = strrpos($filePath, '.');
         if ($pos !== false) {
-            return strtolower(substr($filename, 0, $pos));
+            return strtolower(substr($filePath, 0, $pos));
         } else { // no extension
-            return '';
+            return $filePath;
         }
     }
 
@@ -256,5 +262,38 @@ class UtilFilesystem
             }
         }
     }
+
+
+
+
+//    # similar to python's os.walk
+//    // IS BUGGY/NOT WORKING CORRECTLY
+//    public function findFilesRecursive($dir = '.', $pattern = '~.*~')
+//    {
+//        $ret = array();
+//        $prefix = $dir . '/';
+//        $dir = @dir($dir);
+//        if (!is_object($dir)) {
+//            return [];
+//        }
+//        while (false !== ($file = $dir->read())) {
+//            if ($file === '.' || $file === '..') {
+//                continue;
+//            }
+//            $file = $prefix . $file;
+//            if (is_dir($file)) {
+//                $ret = array_merge($ret, self::findFilesRecursive($file, $pattern));
+//            }
+//            if (preg_match($pattern, $file)) {
+//                #echo $file . "\n";
+//                $ret[] = $file;
+//            }
+//        }
+//        return $ret;
+//    }
+
+
+
+
 
 }
