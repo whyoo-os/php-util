@@ -161,18 +161,29 @@ class Util
 
 
 
+
     /**
      * dump + die
      */
     public static function dd()
+    {
+        self::d(func_get_args());
+        die();
+    }
+
+    /**
+     * dump
+     */
+    public static function d()
     {
         $ddSource = debug_backtrace()[0];
         echo("{$ddSource['file']}:{$ddSource['line']}<br>\n");
         foreach (func_get_args() as $arg) {
             dump($arg);
         }
-        die();
     }
+
+
 
 
     /**
