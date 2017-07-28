@@ -3,14 +3,9 @@
 namespace WhyooOs\Util;
 
 
-
-
-
 # see http://docs.python.org/2/library/os.path.html for inspiration
 class UtilFilesystem
 {
-
-
 
 
     public static function getNextFreeFilename($pathFile, $idxStart = 1)
@@ -27,19 +22,6 @@ class UtilFilesystem
             if (!file_exists($newFilePath)) {
                 return $newFilePath;
             }
-        }
-    }
-
-
-
-
-    public static function stripExtension($filename)
-    {
-        $pos = strrpos($filename, '.');
-        if ($pos !== false) {
-            return substr($filename, 0, $pos);
-        } else { // no extension
-            return $filename;
         }
     }
 
@@ -61,6 +43,18 @@ class UtilFilesystem
     }
 
     /**
+     * alias
+     *
+     * @param $filename
+     * @return bool|string
+     */
+    public static function stripExtension($filename)
+    {
+        return self::getWithoutExtension($filename);
+    }
+
+
+    /**
      * @param $filePath
      * @return string file path without extension eg "/tmp/somefile"
      */
@@ -68,13 +62,11 @@ class UtilFilesystem
     {
         $pos = strrpos($filePath, '.');
         if ($pos !== false) {
-            return strtolower(substr($filePath, 0, $pos));
+            return substr($filePath, 0, $pos);
         } else { // no extension
             return $filePath;
         }
     }
-
-
 
 
     /**
@@ -151,8 +143,6 @@ class UtilFilesystem
 //    }
 
 
-
-
     public static function deleteDirectoryRecursive($path)
     {
         try {
@@ -174,8 +164,6 @@ class UtilFilesystem
         }
         @rmdir($path);
     }
-
-
 
 
     /**
@@ -203,8 +191,6 @@ class UtilFilesystem
 
         return $ret;
     }
-
-
 
 
     public static function joinPaths()
@@ -239,16 +225,45 @@ class UtilFilesystem
     }
 
 
-
     /**
      * @param $path
      */
     public static function mkdirIfNotExists($path)
     {
-        if (!file_exists($path) && !is_dir($path)) {
-            mkdir($path);
+        if (!is_dir($path)) {
+            self::mkdir($path);
         }
     }
+
+    /**
+     * creates directory recursively with the right permissions
+     * @param string $path
+     * @param string $perm
+     * @throws \Exception
+     */
+    public static function mkdir($path, $perm = 0777 /*, $maxLevelsDown=3*/)
+    {
+        $parts = explode('/', $path);
+//		$offset = count($parts) - $maxLevelsDown;
+//		$parts = array_slice( $parts, $offset, $maxLevelsDown);
+
+        $p = '';
+        foreach ($parts as $part) {
+            $p = $p . '/' . $part;
+            if (!is_dir($p)) {
+                if (!@mkdir($p, $perm)) {
+//					return false;
+                    throw new \Exception("could not create directory $p");
+                }
+                @chmod($p, $perm);
+            }
+            if (!@chdir($p)) {
+//				return false
+                throw new \Exception("could not enter $p");
+            }
+        }
+    }
+
 
     /**
      * move content of one directory to another
@@ -295,8 +310,6 @@ class UtilFilesystem
 //    }
 
 
-
-
     /**
      * not recursive .. returns directories (alphabetically sorted)
      */
@@ -305,7 +318,7 @@ class UtilFilesystem
         $dirs = [];
         if ($handle = opendir($path)) {
             while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != ".." && is_dir( self::joinPaths($path, $entry))) {
+                if ($entry != "." && $entry != ".." && is_dir(self::joinPaths($path, $entry))) {
                     $dirs[] = realpath(self::joinPaths($path, $entry));
                 }
             }
@@ -325,7 +338,7 @@ class UtilFilesystem
         $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
         $files = [];
         foreach ($rii as $file) {
-            if ($file->isDir()){
+            if ($file->isDir()) {
                 continue;
             }
             $files[] = $file->getPathname();
@@ -333,8 +346,6 @@ class UtilFilesystem
 
         return $files;
     }
-
-
 
 
 }
