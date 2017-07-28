@@ -5,7 +5,15 @@ namespace WhyooOs\Util;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Response;
 
-
+/**
+ *       paper sizes
+ *       -----------
+ *       A3    297 x 420 mm
+ *       A4    210 x 297 mm
+ *       A5    148 x 210 mm
+ *       A6    105 x 148 mm
+ *
+ */
 class UtilUnit
 {
 

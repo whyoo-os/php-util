@@ -22,6 +22,7 @@ class UtilImage
 /// MARKETER VERSION
 /// MARKETER VERSION
 /// MARKETER VERSION
+    private static $defaultJpegQuality = 95;
 
 
     /**
@@ -51,14 +52,18 @@ class UtilImage
      *
      * @param $image
      * @param $pathDest
+     * @param null $jpegQuality default is self::$defaultJpegQuality
      * @return bool
      * @throws \Exception
      */
-    public static function saveImage($image, $pathDest)
+    public static function saveImage($image, $pathDest, $jpegQuality=null)
     {
         $extension = UtilFilesystem::getExtension($pathDest);
         if ($extension == 'jpg' || $extension == 'jpeg') {
-            return imagejpeg($image, $pathDest);
+            if( empty($jpegQuality)) {
+                $jpegQuality = self::$defaultJpegQuality;
+            }
+            return imagejpeg($image, $pathDest, $jpegQuality);
         } else if ($extension == 'png') {
             return imagepng($image, $pathDest);
         } elseif ($extension == "gif") {
@@ -459,9 +464,11 @@ class UtilImage
      */
     public static function resizeImage($pathSrc, $pathDest, array $dimensions)
     {
+        $backgroundColor = 'ffffff';
         $layer = ImageWorkshop::initFromPath($pathSrc);
         $layer->resizeInPixel($dimensions[0], $dimensions[1]);
-        $layer->save(dirname($pathDest), basename($pathDest));
+        $image = $layer->getResult($backgroundColor);
+        self::saveImage($image, $pathDest);
     }
 
 
