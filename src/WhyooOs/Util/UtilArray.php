@@ -340,5 +340,35 @@ class UtilArray
 
 
 
+//
+//    /**
+//     * @param $array
+//     * @param $keyName
+////     */
+//    public static function arrayOfArraysToAssoc( $array, $keyName)
+//    {
+//        $values = array_values($array);
+//        $keys = array_column($values, $keyName);
+//
+//        return array_combine($keys, $values);
+//    }
+//
+//    /**
+//     * @param $array
+//     * @param $keyName
+////     */
+//    public static function arrayOfDocumentsToAssoc( $array, $keyName)
+//    {
+//        $values = array_values($array);
+//        $keys = [];
+//        foreach($values as $doc) {
+//            $getter = "get".ucfirst($keyName);
+//            $keys[] = $doc->$getter();
+//        }
+//
+//        return array_combine($keys, $values);
+//    }
+
+
 
 }
