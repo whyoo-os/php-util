@@ -53,6 +53,7 @@ class UtilCurl
             return file_get_contents($pathCache);
         }
         $content = self::curlGet($url);
+        UtilFilesystem::mkdirIfNotExists(self::$pathCacheDir);
         file_put_contents($pathCache, $content);
         self::$lastWasCached = false;
         self::$lastCacheFile = $pathCache;
@@ -119,12 +120,14 @@ class UtilCurl
             self::$info = "from cache $pathCache";
             self::$lastWasCached = true;
             self::$lastCacheFile = $pathCache;
+            UtilFilesystem::mkdirIfNotExists(self::$pathCacheDir);
             return file_get_contents($pathCache);
         }
         self::$lastCacheFile = $pathCache;
         self::$lastWasCached = false;
         $content = self::curlPost($url, $fields);
         file_put_contents($pathCache, $content);
+
         return $content;
     }
 
