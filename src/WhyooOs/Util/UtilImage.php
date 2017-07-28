@@ -1,16 +1,12 @@
 <?php
 
 
-
-
 namespace WhyooOs\Util;
 
+use PHPImageWorkshop\ImageWorkshop;
 use WhyooOs\Util\UtilAssert;
 use WhyooOs\Util\UtilFilesystem;
 use WhyooOs\Util\UtilSymfony;
-
-
-
 
 
 /**
@@ -20,16 +16,12 @@ class UtilImage
 {
 
 
-
 /// MARKETER VERSION
 /// MARKETER VERSION
 /// MARKETER VERSION
 /// MARKETER VERSION
 /// MARKETER VERSION
 /// MARKETER VERSION
-
-
-
 
 
     /**
@@ -93,7 +85,7 @@ class UtilImage
         $cacheId = sha1(serialize(func_get_args()));
         $pathDest = '/tmp/' . $cacheId . '.' . UtilFilesystem::getExtension($pathSrc);
 
-        if( file_exists($pathDest)) {
+        if (file_exists($pathDest)) {
             return $pathDest;
         }
 
@@ -198,7 +190,6 @@ class UtilImage
 /// EB 5 VERSION
 
 
-
     // ----------------------------------------------------------------------------------------
 
     public static function getAspectRatio($pathImage)
@@ -212,7 +203,6 @@ class UtilImage
         }
         return sprintf("%d:%d", $w, $h);
     }
-
 
 
     public static function calculateTextBox($text, $fontFile, $fontSize, $fontAngle = 0)
@@ -257,7 +247,7 @@ class UtilImage
         $colorInt = UtilColor::cssHexToInt($textColor);
 
         // ---- crop image
-        $pathTmpCropped = '/tmp/' . uniqid('cropped-'). '.' . UtilFilesystem::getExtension($pathSrc);
+        $pathTmpCropped = '/tmp/' . uniqid('cropped-') . '.' . UtilFilesystem::getExtension($pathSrc);
         $pathSrc = self::cropImageByMetadata($pathSrc, $pathTmpCropped);
 
         // ---- load image
@@ -350,7 +340,7 @@ class UtilImage
      * saves caption in xmp-metadata of an image
      * @param $pathImage
      * @param $watermarkPosition
-    */
+     */
     public static function setWatermarkPosition($pathImage, $watermarkPosition)
     {
         $image = \Mcx\Image\Image::fromFile($pathImage);
@@ -407,7 +397,7 @@ class UtilImage
     {
         $crop = self::getImageCrop($pathImage);
 
-        if( !empty($crop)) {
+        if (!empty($crop)) {
             UtilImage::cropImage($pathImage, $pathCropped, $crop['x1'], $crop['y1'], $crop['x2'], $crop['y2']);
             return $pathCropped;
         }
@@ -442,6 +432,37 @@ class UtilImage
         $imageTagger = new ImageTagger();
         $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size
     }
+
+
+    /**
+     * for embedding image in html
+     *
+     * 07/2017
+     *
+     * @param $pathImage
+     * @return string
+     */
+    public static function base64EncodePhysicalImage($pathImage)
+    {
+        return 'data:' . mime_content_type($pathImage) . ';base64,' . base64_encode(file_get_contents($pathImage));
+    }
+
+
+    /**
+     * uses ImageWorkshop
+     * 07/2017
+     *
+     * @param $pathSrc
+     * @param $pathDest
+     * @param array $dimensions
+     */
+    public static function resizeImage($pathSrc, $pathDest, array $dimensions)
+    {
+        $layer = ImageWorkshop::initFromPath($pathSrc);
+        $layer->resizeInPixel($dimensions[0], $dimensions[1]);
+        $layer->save(dirname($pathDest), basename($pathDest));
+    }
+
 
 }
 
