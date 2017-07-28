@@ -434,8 +434,8 @@ class UtilImage
      */
     public static function watermarkImage($pathSrc, $pathDest, $pathTag, $position)
     {
-        $imageTagger = new ImageTagger();
-        $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size
+        $imageTagger = new \Mcx\ArticleBundle\Service\ImageTagger();
+        $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size=70%
     }
 
 
