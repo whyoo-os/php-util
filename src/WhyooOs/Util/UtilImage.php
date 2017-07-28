@@ -4,6 +4,7 @@
 namespace WhyooOs\Util;
 
 use PHPImageWorkshop\ImageWorkshop;
+use WhyooOs\HelperClasses\ImageTagger;
 use WhyooOs\Util\UtilAssert;
 use WhyooOs\Util\UtilFilesystem;
 use WhyooOs\Util\UtilSymfony;
@@ -434,13 +435,13 @@ class UtilImage
      */
     public static function watermarkImage($pathSrc, $pathDest, $pathTag, $position)
     {
-        $imageTagger = new \Mcx\ArticleBundle\Service\ImageTagger();
+        $imageTagger = new ImageTagger();
         $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size=70%
     }
 
 
     /**
-     * for embedding image in html
+     * for embedding image in html .. useful when using dompdf
      *
      * 07/2017
      *
@@ -461,6 +462,7 @@ class UtilImage
      * @param $pathSrc
      * @param $pathDest
      * @param array $dimensions [newWidth, newHeight]
+     * @return bool
      */
     public static function resizeImage($pathSrc, $pathDest, array $dimensions)
     {
@@ -468,7 +470,7 @@ class UtilImage
         $layer = ImageWorkshop::initFromPath($pathSrc);
         $layer->resizeInPixel($dimensions[0], $dimensions[1]);
         $image = $layer->getResult($backgroundColor);
-        self::saveImage($image, $pathDest);
+        return self::saveImage($image, $pathDest);
     }
 
 
