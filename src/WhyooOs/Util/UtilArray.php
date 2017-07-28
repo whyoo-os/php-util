@@ -140,6 +140,8 @@ class UtilArray
     public static function isAssoc($arr)
     {
         return array_keys($arr) !== range(0, count($arr) - 1);
+        // alternative method:
+        // return (bool)count(array_filter(array_keys($array), 'is_string'));
     }
 
     public static function isNumeric($arr)
@@ -165,12 +167,12 @@ class UtilArray
      */
     public static function getRandomElements($array, $count)
     {
-        if( $count > count($array)) {
+        if ($count > count($array)) {
             $count = count($array);
         }
         $indexes = array_rand($array, $count);
 
-        if( $count == 1) { // force array
+        if ($count == 1) { // force array
             $indexes = [$indexes];
         }
         $randomArray = [];
@@ -198,7 +200,7 @@ class UtilArray
      * @param $keyName
      * @return array
      */
-    public static function arrayOfArraysToAssoc( $array, $keyName)
+    public static function arrayOfArraysToAssoc($array, $keyName)
     {
         $values = array_values($array);
         $keys = array_column($values, $keyName);
@@ -211,12 +213,12 @@ class UtilArray
      * @param $keyName
      * @return array
      */
-    public static function arrayOfDocumentsToAssoc( $array, $keyName)
+    public static function arrayOfDocumentsToAssoc($array, $keyName)
     {
         $values = array_values($array);
         $keys = [];
-        foreach($values as $doc) {
-            $getter = "get".ucfirst($keyName);
+        foreach ($values as $doc) {
+            $getter = "get" . ucfirst($keyName);
             $keys[] = $doc->$getter();
         }
 
@@ -265,20 +267,16 @@ class UtilArray
     }
 
 
-
-
     /**
      * Filter array by its keys using a callback.
      * @return array numeric(!) array
      */
     public static function filterByKey(array $arr, $keys)
     {
-        return array_map(function($key) use ($arr) {
+        return array_map(function ($key) use ($arr) {
             return $arr[$key];
         }, $keys);
     }
-
-
 
 
     /**
@@ -317,7 +315,7 @@ class UtilArray
     public static function removeEmptyElements(array $arr)
     {
         foreach ($arr as $idx => &$a) {
-            if( empty($a)) {
+            if (empty($a)) {
                 unset($arr[$idx]);
             }
         }
@@ -332,7 +330,7 @@ class UtilArray
      */
     public static function pregQuoteArray(array $values, string $delimiter = '/')
     {
-        return array_map(function($val) use($delimiter) {
+        return array_map(function ($val) use ($delimiter) {
             return preg_quote($val, $delimiter);
         }, $values);
     }
@@ -369,6 +367,41 @@ class UtilArray
 //        return array_combine($keys, $values);
 //    }
 
+
+    /**
+     * filters assoc array
+     *
+     * @param array $arr
+     * @param array $allowedKeys
+     * @return array
+     */
+    public static function filterArrayByKeys(array $arr, array $allowedKeys)
+    {
+        $new = [];
+        foreach ($arr as $key => &$val) {
+            if (in_array($key, $allowedKeys)) {
+                $new[$key] = $val;
+            }
+        }
+        return $new;
+    }
+
+
+    // from marketer v1
+    static function arrayToObject(array $arr)
+    {
+        return array_map(function ($x) {
+            return (object)$x;
+        }, $arr);
+    }
+
+    // from marketer v1
+    static function objectToArray(array $arr)
+    {
+        return array_map(function ($x) {
+            return (array)$x;
+        }, $arr);
+    }
 
 
 }
