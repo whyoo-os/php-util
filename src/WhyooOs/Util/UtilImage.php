@@ -449,12 +449,13 @@ class UtilImage
 
 
     /**
-     * uses ImageWorkshop
+     * resizes image to $dimension .. doesn't take of aspect ration - image is "stretched"
+     * uses ImageWorkshop (composer require sybio/image-workshop)
      * 07/2017
      *
      * @param $pathSrc
      * @param $pathDest
-     * @param array $dimensions
+     * @param array $dimensions [newWidth, newHeight]
      */
     public static function resizeImage($pathSrc, $pathDest, array $dimensions)
     {
