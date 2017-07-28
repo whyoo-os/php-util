@@ -4,7 +4,6 @@
 namespace WhyooOs\Util;
 
 use PHPImageWorkshop\ImageWorkshop;
-use WhyooOs\HelperClasses\ImageTagger;
 use WhyooOs\Util\UtilAssert;
 use WhyooOs\Util\UtilFilesystem;
 use WhyooOs\Util\UtilSymfony;
@@ -435,7 +434,7 @@ class UtilImage
      */
     public static function watermarkImage($pathSrc, $pathDest, $pathTag, $position)
     {
-        $imageTagger = new ImageTagger();
+        $imageTagger = new \WhyooOs\HelperClasses\ImageTagger();
         $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size=70%
     }
 
