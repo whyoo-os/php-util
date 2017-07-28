@@ -121,40 +121,6 @@ class UtilImage
     }
 
 
-    /**
-     * Todo: rename to base64ToPhysicalFile
-     *
-     * decode image and save to temporary file
-     *
-     * @param $rawData
-     * @param $pathDestDir
-     * @return string
-     * @throws \Exception
-     */
-    public static function rawDataToPhysicalFile($rawData, $pathDestDir)
-    {
-        $binData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $rawData));
-
-        // check mime type .. must be an image
-        $finfo = new \finfo(FILEINFO_MIME);
-        $mime = $finfo->buffer($binData);
-        if (!preg_match('#image/(\w+)#', $mime, $gr)) {
-            // not an image
-            throw new \Exception("not an image: $mime");
-        }
-
-        $imageType = $gr[1];
-
-        UtilAssert::assertInArray($imageType, ['png', 'jpeg', 'gif'], "unsupported image type: $imageType");
-
-        // how image will be named
-        $destFilename = sprintf('%s-%s.%s', md5(microtime()), md5(rand() . 'xxx' . rand()), $imageType);
-        $pathDest = UtilFilesystem::joinPaths($pathDestDir, $destFilename);
-        file_put_contents($pathDest, $binData);
-
-        return $pathDest;
-    }
-
 
     /**
      * returns web path of icon for a give mime type

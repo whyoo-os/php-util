@@ -115,32 +115,29 @@ class UtilFilesystem
 
 
 
-
-//    # similar to python's os.walk
-//    // IS BUGGY/NOT WORKING CORRECTLY
-//    public function findFilesRecursive($dir = '.', $pattern = '~.*~')
-//    {
-//        $ret = array();
-//        $prefix = $dir . '/';
-//        $dir = @dir($dir);
-//        if (!is_object($dir)) {
-//            return [];
-//        }
-//        while (false !== ($file = $dir->read())) {
-//            if ($file === '.' || $file === '..') {
-//                continue;
-//            }
-//            $file = $prefix . $file;
-//            if (is_dir($file)) {
-//                $ret = array_merge($ret, self::findFilesRecursive($file, $pattern));
-//            }
-//            if (preg_match($pattern, $file)) {
-//                #echo $file . "\n";
-//                $ret[] = $file;
-//            }
-//        }
-//        return $ret;
-//    }
+    // from smartdonation
+    // buggy? not working correctly?
+    # similar to python's os.walk
+    function findFilesRecursive($dir = '.', $pattern = '~.*~')
+    {
+        $ret = [];
+        $prefix = $dir . '/';
+        $dir = dir($dir);
+        while (false !== ($file = $dir->read())) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+            $file = $prefix . $file;
+            if (is_dir($file)) {
+                $ret = array_merge($ret, self::findFilesRecursive($file, $pattern));
+            }
+            if (preg_match($pattern, $file)) {
+                #echo $file . "\n";
+                $ret[] = $file;
+            }
+        }
+        return $ret;
+    }
 
 
     public static function deleteDirectoryRecursive($path)
@@ -346,6 +343,64 @@ class UtilFilesystem
 
         return $files;
     }
+
+
+
+    /**
+     * Todo: rename to base64ToPhysicalFile, image filter optional
+     *
+     * moved from UtilImage to here
+     * decode image and save to temporary file
+     *
+     * @param $rawData
+     * @param $pathDestDir
+     * @return string
+     * @throws \Exception
+     */
+    public static function rawDataToPhysicalFile($rawData, string $pathDestDir)
+    {
+        $binData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $rawData));
+
+        // check mime type .. must be an image
+        $finfo = new \finfo(FILEINFO_MIME);
+        $mime = $finfo->buffer($binData);
+        if (!preg_match('#image/(\w+)#', $mime, $gr)) {
+            // not an image
+            throw new \Exception("not an image: $mime");
+        }
+
+        $imageType = $gr[1];
+
+        UtilAssert::assertInArray($imageType, ['png', 'jpeg', 'gif'], "unsupported image type: $imageType");
+
+        // how image will be named
+        $destFilename = sprintf('%s-%s.%s', md5(microtime()), md5(rand() . 'xxx' . rand()), $imageType);
+        $pathDest = UtilFilesystem::joinPaths($pathDestDir, $destFilename);
+        file_put_contents($pathDest, $binData);
+
+        return $pathDest;
+    }
+
+
+    /**
+     * @param string $pathDirectory
+     * @param string $filename
+     * @return string $newFilename the new filename test.jpg, test-1.jpg, test-2.jpg etc
+     */
+    public static function getUniqueFilename(string $pathDirectory, string $filename)
+    {
+        $newFilename = $filename;
+
+        $path_parts = pathinfo($filename);
+
+        $counter = 1;
+        while (file_exists("$pathDirectory/$newFilename")) {
+            $newFilename = $path_parts['filename'] . "-$counter." . $path_parts['extension'];
+            $counter++;
+        }
+        return $newFilename;
+    }
+
 
 
 }
