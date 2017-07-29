@@ -41,7 +41,11 @@ class UtilDebug
      */
     public static function dd()
     {
-        self::d(func_get_args());
+        $ddSource = debug_backtrace()[0];
+        echo("{$ddSource['file']}:{$ddSource['line']}<br>\n");
+        foreach (func_get_args() as $arg) {
+            dump($arg);
+        }
         die();
     }
 

@@ -420,7 +420,9 @@ class UtilImage
 
 
     /**
-     * resizes image to $dimension .. doesn't take of aspect ration - image is "stretched"
+     * used by schlegel for stretching pdf-background to cover whole page
+     *
+     * resizes image to $dimension .. doesn't take care of aspect ratio - image is "stretched"
      * uses ImageWorkshop (composer require sybio/image-workshop)
      * 07/2017
      *
