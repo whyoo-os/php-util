@@ -13,6 +13,7 @@ class Util
 
     /**
      * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
+     * TODO: belongs to UtilDocument
      *
      * @param $document
      * @param $arr
@@ -160,32 +161,6 @@ class Util
     }
 
 
-
-
-    /**
-     * dump + die
-     */
-    public static function dd()
-    {
-        self::d(func_get_args());
-        die();
-    }
-
-    /**
-     * dump
-     */
-    public static function d()
-    {
-        $ddSource = debug_backtrace()[0];
-        echo("{$ddSource['file']}:{$ddSource['line']}<br>\n");
-        foreach (func_get_args() as $arg) {
-            dump($arg);
-        }
-    }
-
-
-
-
     /**
      * used for calculation of PricePerPiece
      *
@@ -261,57 +236,6 @@ class Util
 
 
 
-
-
-
-
-    /**
-     * jTraceEx() - provide a Java style exception trace
-     * @param $exception
-     * @param $seen      - array passed to recursive calls to accumulate trace lines already seen
-     *                     leave as NULL when calling this function
-     * @return string  nicely formatted exception
-     */
-    public static function jTraceEx(\Exception $e, $seen=null) {
-        $starter = $seen ? 'Caused by: ' : '';
-        $result = array();
-        if (!$seen) $seen = array();
-        $trace  = $e->getTrace();
-        $prev   = $e->getPrevious();
-        $result[] = sprintf('%s%s: %s', $starter, get_class($e), $e->getMessage());
-        $file = $e->getFile();
-        $line = $e->getLine();
-        while (true) {
-            $current = "$file:$line";
-            if (is_array($seen) && in_array($current, $seen)) {
-                $result[] = sprintf(' ... %d more', count($trace)+1);
-                break;
-            }
-            $result[] = sprintf(' at %s%s%s(%s%s%s)',
-                count($trace) && array_key_exists('class', $trace[0]) ? str_replace('\\', '.', $trace[0]['class']) : '',
-                count($trace) && array_key_exists('class', $trace[0]) && array_key_exists('function', $trace[0]) ? '.' : '',
-                count($trace) && array_key_exists('function', $trace[0]) ? str_replace('\\', '.', $trace[0]['function']) : '(main)',
-                $line === null ? $file : basename($file),
-                $line === null ? '' : ':',
-                $line === null ? '' : $line);
-            if (is_array($seen))
-                $seen[] = "$file:$line";
-            if (!count($trace))
-                break;
-            $file = array_key_exists('file', $trace[0]) ? $trace[0]['file'] : 'Unknown Source';
-            $line = array_key_exists('file', $trace[0]) && array_key_exists('line', $trace[0]) && $trace[0]['line'] ? $trace[0]['line'] : null;
-            array_shift($trace);
-        }
-
-        $result = join("\n", $result);
-        if ($prev) {
-            $result .= "\n" . self::jTraceEx($prev, $seen);
-        }
-
-        return $result;
-    }
-
-
     /**
      * used by FixturesUtil
      *
@@ -358,7 +282,33 @@ class Util
     }
 
 
-
+    /**
+     * from old legacy code
+     *
+     * @param $errorCode
+     * @return mixed
+     */
+    static function	uploadErrorCodeToText( $errorCode)
+    {
+        define("UPLOAD_ERR_EMPTY",5);
+        #   if($file['size'] == 0 && $file['error'] == 0)
+        #   {
+        #     $file['error'] = 5;
+        #   }
+        $upload_errors = array(
+            UPLOAD_ERR_OK        => "No errors.",
+            UPLOAD_ERR_INI_SIZE    => "Larger than upload_max_filesize.",
+            UPLOAD_ERR_FORM_SIZE    => "Larger than form MAX_FILE_SIZE.",
+            UPLOAD_ERR_PARTIAL    => "Partial upload.",
+            UPLOAD_ERR_NO_FILE        => "No file.",
+            UPLOAD_ERR_NO_TMP_DIR    => "No temporary directory.",
+            UPLOAD_ERR_CANT_WRITE    => "Can't write to disk.",
+            UPLOAD_ERR_EXTENSION     => "File upload stopped by extension.",
+            UPLOAD_ERR_EMPTY        => "File is empty." // add this to avoid an offset
+        );
+        // error: report what PHP says went wrong
+        return $upload_errors[$errorCode];
+    }
 
 
 

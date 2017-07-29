@@ -3,14 +3,9 @@
 namespace WhyooOs\Util;
 
 
-
-
-
 # see http://docs.python.org/2/library/os.path.html for inspiration
 class UtilFilesystem
 {
-
-
 
 
     public static function getNextFreeFilename($pathFile, $idxStart = 1)
@@ -27,19 +22,6 @@ class UtilFilesystem
             if (!file_exists($newFilePath)) {
                 return $newFilePath;
             }
-        }
-    }
-
-
-
-
-    public static function stripExtension($filename)
-    {
-        $pos = strrpos($filename, '.');
-        if ($pos !== false) {
-            return substr($filename, 0, $pos);
-        } else { // no extension
-            return $filename;
         }
     }
 
@@ -61,6 +43,18 @@ class UtilFilesystem
     }
 
     /**
+     * alias
+     *
+     * @param $filename
+     * @return bool|string
+     */
+    public static function stripExtension($filename)
+    {
+        return self::getWithoutExtension($filename);
+    }
+
+
+    /**
      * @param $filePath
      * @return string file path without extension eg "/tmp/somefile"
      */
@@ -68,13 +62,11 @@ class UtilFilesystem
     {
         $pos = strrpos($filePath, '.');
         if ($pos !== false) {
-            return strtolower(substr($filePath, 0, $pos));
+            return substr($filePath, 0, $pos);
         } else { // no extension
             return $filePath;
         }
     }
-
-
 
 
     /**
@@ -123,34 +115,29 @@ class UtilFilesystem
 
 
 
-
-//    # similar to python's os.walk
-//    // IS BUGGY/NOT WORKING CORRECTLY
-//    public function findFilesRecursive($dir = '.', $pattern = '~.*~')
-//    {
-//        $ret = array();
-//        $prefix = $dir . '/';
-//        $dir = @dir($dir);
-//        if (!is_object($dir)) {
-//            return [];
-//        }
-//        while (false !== ($file = $dir->read())) {
-//            if ($file === '.' || $file === '..') {
-//                continue;
-//            }
-//            $file = $prefix . $file;
-//            if (is_dir($file)) {
-//                $ret = array_merge($ret, self::findFilesRecursive($file, $pattern));
-//            }
-//            if (preg_match($pattern, $file)) {
-//                #echo $file . "\n";
-//                $ret[] = $file;
-//            }
-//        }
-//        return $ret;
-//    }
-
-
+    // from smartdonation
+    // buggy? not working correctly?
+    # similar to python's os.walk
+    function findFilesRecursive($dir = '.', $pattern = '~.*~')
+    {
+        $ret = [];
+        $prefix = $dir . '/';
+        $dir = dir($dir);
+        while (false !== ($file = $dir->read())) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+            $file = $prefix . $file;
+            if (is_dir($file)) {
+                $ret = array_merge($ret, self::findFilesRecursive($file, $pattern));
+            }
+            if (preg_match($pattern, $file)) {
+                #echo $file . "\n";
+                $ret[] = $file;
+            }
+        }
+        return $ret;
+    }
 
 
     public static function deleteDirectoryRecursive($path)
@@ -174,8 +161,6 @@ class UtilFilesystem
         }
         @rmdir($path);
     }
-
-
 
 
     /**
@@ -203,8 +188,6 @@ class UtilFilesystem
 
         return $ret;
     }
-
-
 
 
     public static function joinPaths()
@@ -239,16 +222,45 @@ class UtilFilesystem
     }
 
 
-
     /**
      * @param $path
      */
     public static function mkdirIfNotExists($path)
     {
-        if (!file_exists($path) && !is_dir($path)) {
-            mkdir($path);
+        if (!is_dir($path)) {
+            self::mkdir($path);
         }
     }
+
+    /**
+     * creates directory recursively with the right permissions
+     * @param string $path
+     * @param string $perm
+     * @throws \Exception
+     */
+    public static function mkdir($path, $perm = 0777 /*, $maxLevelsDown=3*/)
+    {
+        $parts = explode('/', $path);
+//		$offset = count($parts) - $maxLevelsDown;
+//		$parts = array_slice( $parts, $offset, $maxLevelsDown);
+
+        $p = '';
+        foreach ($parts as $part) {
+            $p = $p . '/' . $part;
+            if (!is_dir($p)) {
+                if (!@mkdir($p, $perm)) {
+//					return false;
+                    throw new \Exception("could not create directory $p");
+                }
+                @chmod($p, $perm);
+            }
+            if (!@chdir($p)) {
+//				return false
+                throw new \Exception("could not enter $p");
+            }
+        }
+    }
+
 
     /**
      * move content of one directory to another
@@ -295,8 +307,6 @@ class UtilFilesystem
 //    }
 
 
-
-
     /**
      * not recursive .. returns directories (alphabetically sorted)
      */
@@ -305,7 +315,7 @@ class UtilFilesystem
         $dirs = [];
         if ($handle = opendir($path)) {
             while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != ".." && is_dir( self::joinPaths($path, $entry))) {
+                if ($entry != "." && $entry != ".." && is_dir(self::joinPaths($path, $entry))) {
                     $dirs[] = realpath(self::joinPaths($path, $entry));
                 }
             }
@@ -325,7 +335,7 @@ class UtilFilesystem
         $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
         $files = [];
         foreach ($rii as $file) {
-            if ($file->isDir()){
+            if ($file->isDir()) {
                 continue;
             }
             $files[] = $file->getPathname();
@@ -334,6 +344,62 @@ class UtilFilesystem
         return $files;
     }
 
+
+
+    /**
+     * Todo: rename to base64ToPhysicalFile, image filter optional
+     *
+     * moved from UtilImage to here
+     * decode image and save to temporary file
+     *
+     * @param $rawData
+     * @param $pathDestDir
+     * @return string
+     * @throws \Exception
+     */
+    public static function rawDataToPhysicalFile($rawData, string $pathDestDir)
+    {
+        $binData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $rawData));
+
+        // check mime type .. must be an image
+        $finfo = new \finfo(FILEINFO_MIME);
+        $mime = $finfo->buffer($binData);
+        if (!preg_match('#image/(\w+)#', $mime, $gr)) {
+            // not an image
+            throw new \Exception("not an image: $mime");
+        }
+
+        $imageType = $gr[1];
+
+        UtilAssert::assertInArray($imageType, ['png', 'jpeg', 'gif'], "unsupported image type: $imageType");
+
+        // how image will be named
+        $destFilename = sprintf('%s-%s.%s', md5(microtime()), md5(rand() . 'xxx' . rand()), $imageType);
+        $pathDest = UtilFilesystem::joinPaths($pathDestDir, $destFilename);
+        file_put_contents($pathDest, $binData);
+
+        return $pathDest;
+    }
+
+
+    /**
+     * @param string $pathDirectory
+     * @param string $filename
+     * @return string $newFilename the new filename test.jpg, test-1.jpg, test-2.jpg etc
+     */
+    public static function getUniqueFilename(string $pathDirectory, string $filename)
+    {
+        $newFilename = $filename;
+
+        $path_parts = pathinfo($filename);
+
+        $counter = 1;
+        while (file_exists("$pathDirectory/$newFilename")) {
+            $newFilename = $path_parts['filename'] . "-$counter." . $path_parts['extension'];
+            $counter++;
+        }
+        return $newFilename;
+    }
 
 
 

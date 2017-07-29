@@ -5,3 +5,4 @@ some functions use external libraries
 
         sybio/image-workshop
         symfony/var-dumper
+        jdorn/sql-formatter

@@ -10,7 +10,8 @@
   },
   "autoload": {
     "psr-4" : {
-      "WhyooOs\\Util\\" : "src/WhyooOs/Util/"
+      "WhyooOs\\Util\\" : "src/WhyooOs/Util/",
+      "WhyooOs\\HelperClasses\\" : "src/WhyooOs/HelperClasses/"
     }
   }
 }

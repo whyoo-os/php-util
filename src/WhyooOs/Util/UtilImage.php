@@ -121,40 +121,6 @@ class UtilImage
     }
 
 
-    /**
-     * Todo: rename to base64ToPhysicalFile
-     *
-     * decode image and save to temporary file
-     *
-     * @param $rawData
-     * @param $pathDestDir
-     * @return string
-     * @throws \Exception
-     */
-    public static function rawDataToPhysicalFile($rawData, $pathDestDir)
-    {
-        $binData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $rawData));
-
-        // check mime type .. must be an image
-        $finfo = new \finfo(FILEINFO_MIME);
-        $mime = $finfo->buffer($binData);
-        if (!preg_match('#image/(\w+)#', $mime, $gr)) {
-            // not an image
-            throw new \Exception("not an image: $mime");
-        }
-
-        $imageType = $gr[1];
-
-        UtilAssert::assertInArray($imageType, ['png', 'jpeg', 'gif'], "unsupported image type: $imageType");
-
-        // how image will be named
-        $destFilename = sprintf('%s-%s.%s', md5(microtime()), md5(rand() . 'xxx' . rand()), $imageType);
-        $pathDest = UtilFilesystem::joinPaths($pathDestDir, $destFilename);
-        file_put_contents($pathDest, $binData);
-
-        return $pathDest;
-    }
-
 
     /**
      * returns web path of icon for a give mime type
@@ -434,13 +400,13 @@ class UtilImage
      */
     public static function watermarkImage($pathSrc, $pathDest, $pathTag, $position)
     {
-        $imageTagger = new ImageTagger();
-        $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size
+        $imageTagger = new \WhyooOs\HelperClasses\ImageTagger();
+        $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size=70%
     }
 
 
     /**
-     * for embedding image in html
+     * for embedding image in html .. useful when using dompdf
      *
      * 07/2017
      *
@@ -461,6 +427,7 @@ class UtilImage
      * @param $pathSrc
      * @param $pathDest
      * @param array $dimensions [newWidth, newHeight]
+     * @return bool
      */
     public static function resizeImage($pathSrc, $pathDest, array $dimensions)
     {
@@ -468,7 +435,7 @@ class UtilImage
         $layer = ImageWorkshop::initFromPath($pathSrc);
         $layer->resizeInPixel($dimensions[0], $dimensions[1]);
         $image = $layer->getResult($backgroundColor);
-        self::saveImage($image, $pathDest);
+        return self::saveImage($image, $pathDest);
     }
 
 
