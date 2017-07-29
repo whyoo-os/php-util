@@ -388,7 +388,7 @@ class UtilArray
 
 
     // from marketer v1
-    static function arrayToObject(array $arr)
+    public static function arrayToObject(array $arr)
     {
         return array_map(function ($x) {
             return (object)$x;
@@ -396,11 +396,26 @@ class UtilArray
     }
 
     // from marketer v1
-    static function objectToArray(array $arr)
+    public static function objectToArray(array $arr)
     {
         return array_map(function ($x) {
             return (array)$x;
         }, $arr);
+    }
+
+    /**
+     * 07/2017 schlegel
+     *
+     * @param $arr
+     * @param $needle
+     */
+    public static function removeElement(&$arr, $needle)
+    {
+        $key = array_search($needle, $arr);
+
+        if ($key !== false) {
+            unset($arr[$key]);
+        }
     }
 
 
