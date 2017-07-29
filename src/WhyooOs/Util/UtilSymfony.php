@@ -4,6 +4,7 @@ namespace WhyooOs\Util;
 
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\User\User;
 
 
 class UtilSymfony
@@ -95,7 +96,18 @@ class UtilSymfony
     }
 
 
-
+    /**
+     * returns currently logged in user (if any) or null (if no user logged in)
+     * @return User|null
+     */
+    public static function getUser()
+    {
+        if( $token = self::getContainer()->get('security.token_storage')->getToken()) {
+            return $token->getUser();
+        } else {
+            return null;
+        }
+    }
 
 
 }
