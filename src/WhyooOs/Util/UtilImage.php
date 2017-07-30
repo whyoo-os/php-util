@@ -1,16 +1,12 @@
 <?php
 
 
-
-
 namespace WhyooOs\Util;
 
+use PHPImageWorkshop\ImageWorkshop;
 use WhyooOs\Util\UtilAssert;
 use WhyooOs\Util\UtilFilesystem;
 use WhyooOs\Util\UtilSymfony;
-
-
-
 
 
 /**
@@ -20,16 +16,13 @@ class UtilImage
 {
 
 
-
 /// MARKETER VERSION
 /// MARKETER VERSION
 /// MARKETER VERSION
 /// MARKETER VERSION
 /// MARKETER VERSION
 /// MARKETER VERSION
-
-
-
+    private static $defaultJpegQuality = 95;
 
 
     /**
@@ -59,14 +52,18 @@ class UtilImage
      *
      * @param $image
      * @param $pathDest
+     * @param null $jpegQuality default is self::$defaultJpegQuality
      * @return bool
      * @throws \Exception
      */
-    public static function saveImage($image, $pathDest)
+    public static function saveImage($image, $pathDest, $jpegQuality=null)
     {
         $extension = UtilFilesystem::getExtension($pathDest);
         if ($extension == 'jpg' || $extension == 'jpeg') {
-            return imagejpeg($image, $pathDest);
+            if( empty($jpegQuality)) {
+                $jpegQuality = self::$defaultJpegQuality;
+            }
+            return imagejpeg($image, $pathDest, $jpegQuality);
         } else if ($extension == 'png') {
             return imagepng($image, $pathDest);
         } elseif ($extension == "gif") {
@@ -93,7 +90,7 @@ class UtilImage
         $cacheId = sha1(serialize(func_get_args()));
         $pathDest = '/tmp/' . $cacheId . '.' . UtilFilesystem::getExtension($pathSrc);
 
-        if( file_exists($pathDest)) {
+        if (file_exists($pathDest)) {
             return $pathDest;
         }
 
@@ -123,40 +120,6 @@ class UtilImage
         return $pathDest;
     }
 
-
-    /**
-     * Todo: rename to base64ToPhysicalFile
-     *
-     * decode image and save to temporary file
-     *
-     * @param $rawData
-     * @param $pathDestDir
-     * @return string
-     * @throws \Exception
-     */
-    public static function rawDataToPhysicalFile($rawData, $pathDestDir)
-    {
-        $binData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $rawData));
-
-        // check mime type .. must be an image
-        $finfo = new \finfo(FILEINFO_MIME);
-        $mime = $finfo->buffer($binData);
-        if (!preg_match('#image/(\w+)#', $mime, $gr)) {
-            // not an image
-            throw new \Exception("not an image: $mime");
-        }
-
-        $imageType = $gr[1];
-
-        UtilAssert::assertInArray($imageType, ['png', 'jpeg', 'gif'], "unsupported image type: $imageType");
-
-        // how image will be named
-        $destFilename = sprintf('%s-%s.%s', md5(microtime()), md5(rand() . 'xxx' . rand()), $imageType);
-        $pathDest = UtilFilesystem::joinPaths($pathDestDir, $destFilename);
-        file_put_contents($pathDest, $binData);
-
-        return $pathDest;
-    }
 
 
     /**
@@ -198,7 +161,6 @@ class UtilImage
 /// EB 5 VERSION
 
 
-
     // ----------------------------------------------------------------------------------------
 
     public static function getAspectRatio($pathImage)
@@ -212,7 +174,6 @@ class UtilImage
         }
         return sprintf("%d:%d", $w, $h);
     }
-
 
 
     public static function calculateTextBox($text, $fontFile, $fontSize, $fontAngle = 0)
@@ -257,7 +218,7 @@ class UtilImage
         $colorInt = UtilColor::cssHexToInt($textColor);
 
         // ---- crop image
-        $pathTmpCropped = '/tmp/' . uniqid('cropped-'). '.' . UtilFilesystem::getExtension($pathSrc);
+        $pathTmpCropped = '/tmp/' . uniqid('cropped-') . '.' . UtilFilesystem::getExtension($pathSrc);
         $pathSrc = self::cropImageByMetadata($pathSrc, $pathTmpCropped);
 
         // ---- load image
@@ -350,7 +311,7 @@ class UtilImage
      * saves caption in xmp-metadata of an image
      * @param $pathImage
      * @param $watermarkPosition
-    */
+     */
     public static function setWatermarkPosition($pathImage, $watermarkPosition)
     {
         $image = \Mcx\Image\Image::fromFile($pathImage);
@@ -407,7 +368,7 @@ class UtilImage
     {
         $crop = self::getImageCrop($pathImage);
 
-        if( !empty($crop)) {
+        if (!empty($crop)) {
             UtilImage::cropImage($pathImage, $pathCropped, $crop['x1'], $crop['y1'], $crop['x2'], $crop['y2']);
             return $pathCropped;
         }
@@ -439,9 +400,46 @@ class UtilImage
      */
     public static function watermarkImage($pathSrc, $pathDest, $pathTag, $position)
     {
-        $imageTagger = new ImageTagger();
-        $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size
+        $imageTagger = new \WhyooOs\HelperClasses\ImageTagger();
+        $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size=70%
     }
+
+
+    /**
+     * for embedding image in html .. useful when using dompdf
+     *
+     * 07/2017
+     *
+     * @param $pathImage
+     * @return string
+     */
+    public static function base64EncodePhysicalImage($pathImage)
+    {
+        return 'data:' . mime_content_type($pathImage) . ';base64,' . base64_encode(file_get_contents($pathImage));
+    }
+
+
+    /**
+     * used by schlegel for stretching pdf-background to cover whole page
+     *
+     * resizes image to $dimension .. doesn't take care of aspect ratio - image is "stretched"
+     * uses ImageWorkshop (composer require sybio/image-workshop)
+     * 07/2017
+     *
+     * @param $pathSrc
+     * @param $pathDest
+     * @param array $dimensions [newWidth, newHeight]
+     * @return bool
+     */
+    public static function resizeImage($pathSrc, $pathDest, array $dimensions)
+    {
+        $backgroundColor = 'ffffff';
+        $layer = ImageWorkshop::initFromPath($pathSrc);
+        $layer->resizeInPixel($dimensions[0], $dimensions[1]);
+        $image = $layer->getResult($backgroundColor);
+        return self::saveImage($image, $pathDest);
+    }
+
 
 }
 

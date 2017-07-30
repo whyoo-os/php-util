@@ -34,9 +34,9 @@ class UtilColor
     public static function hex2rgb($col)
     {
         if (preg_match('~^#([0-f]{1})([0-f]{1})([0-f]{1})$~i', trim($col), $gr)) {
-            return array(hexdec($gr[1] . $gr[1]), hexdec($gr[2] . $gr[2]), hexdec($gr[3] . $gr[3]));
+            return [hexdec($gr[1] . $gr[1]), hexdec($gr[2] . $gr[2]), hexdec($gr[3] . $gr[3])];
         } elseif (preg_match('~^#([0-f]{2})([0-f]{2})([0-f]{2})$~i', trim($col), $gr)) {
-            return array(hexdec($gr[1]), hexdec($gr[2]), hexdec($gr[3]));
+            return [hexdec($gr[1]), hexdec($gr[2]), hexdec($gr[3])];
         } else {
             throw new \Exception('invalid color ' . $col);
         }
@@ -56,6 +56,49 @@ class UtilColor
 
         return $r * 0x10000 + $g * 0x100 + $b;
     }
+
+
+
+    /**
+     * from marketer v1
+     *
+     * @param $idx
+     * @return mixed|string
+     */
+    static function getLegendColor( $idx)
+    {
+        $grundfarben = [
+            '#fc0',
+            '#F88C1F',
+            '#83AEE3',
+            '#FE2A29',
+            '#8DCC35',
+            '#CC2DD2',
+        ];
+
+        $variations = [
+            ['#fff', 0.5],
+            ['#000', 0.5],
+            ['#fff', 0.25],
+            ['#000', 0.25],
+            ['#fff', 0.75],
+            ['#000', 0.75],
+            // noch mehr variationen
+            ['#f0f', 0.5],
+            ['#0f0', 0.5],
+            ['#f0f', 0.25],
+            ['#0f0', 0.25],
+            ['#f0f', 0.75],
+            ['#0f0', 0.75],
+        ];
+        $grundfarbe = $grundfarben[ $idx % count( $grundfarben)];
+        $variation_idx = $idx / count( $grundfarben) - 1;
+        $variation_idx = $variation_idx % count( $variations); # so it never gets out of range
+        $color = ($variation_idx >= 0) ? self::mix( $grundfarbe, $variations[$variation_idx][0], $variations[$variation_idx][1]) : $grundfarbe;
+
+        return $color;
+    }
+
 
 
 }
