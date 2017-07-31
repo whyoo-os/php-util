@@ -11,35 +11,6 @@ class Util
 
     static $timeProfilers = [];
 
-    /**
-     * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
-     * TODO: belongs to UtilDocument
-     *
-     * @param $document
-     * @param $arr
-     * @param $fieldNames
-     */
-    public static function copyDataFromArrayToDocument($document, array $arr, array $fieldNames)
-    {
-        foreach ($fieldNames as $attributeName) {
-            $myDoc = $document;
-            $myArr = $arr;
-
-            $subfields = explode('.', $attributeName);
-            $lastSubfield = array_pop($subfields);
-            $setterName = 'set' . ucfirst($lastSubfield);
-
-            foreach ($subfields as $subfield) {
-                $getterName = 'get' . ucfirst($subfield);
-                $myDoc = $myDoc->$getterName();
-
-                $myArr = @$myArr[$subfield];
-            }
-            $myDoc->$setterName(@$myArr[$lastSubfield]);
-        }
-
-    }
-
 
     /**
      * @return bool
