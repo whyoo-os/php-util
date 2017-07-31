@@ -12,7 +12,7 @@ class UtilString
      * @param string $input
      * @return string
      */
-    public static function to_snake_case($input, $glue='_')
+    public static function to_snake_case($input, $glue = '_')
     {
         preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
         $ret = $matches[0];
@@ -100,12 +100,14 @@ class UtilString
      *
      * @param $str
      * @param $maxLength
+     * @param string $suffix
      * @return string
      */
-    public static function maxLength($str, $maxLength)
+    public static function maxLength(string $str, int $maxLength, $suffix='...')
     {
-        if( strlen($str) > $maxLength - 3) {
-            return substr($str, 0, $maxLength-3) . '...';
+        $lenSuffix = strlen($suffix);
+        if (strlen($str) > $maxLength - $lenSuffix) {
+            return substr($str, 0, $maxLength - $lenSuffix) . $suffix;
         }
 
         return $str;

@@ -347,19 +347,19 @@ class UtilFilesystem
 
 
     /**
-     * Todo: rename to base64ToPhysicalFile, image filter optional
+     * former rawDataToPhysicalFile
      *
      * moved from UtilImage to here
      * decode image and save to temporary file
      *
-     * @param $rawData
+     * @param $base64EncodedString
      * @param $pathDestDir
      * @return string
      * @throws \Exception
      */
-    public static function rawDataToPhysicalFile($rawData, string $pathDestDir)
+    public static function base64ToPhysicalFile($base64EncodedString, string $pathDestDir)
     {
-        $binData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $rawData));
+        $binData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64EncodedString));
 
         // check mime type .. must be an image
         $finfo = new \finfo(FILEINFO_MIME);

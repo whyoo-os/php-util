@@ -46,6 +46,7 @@ class UtilArray
 
 
     /**
+     * TODO: belongs to UtilDocument
      * search for object by attribute
      *
      * @param $arr
@@ -53,8 +54,12 @@ class UtilArray
      * @param $attributeValue
      * @return object|null
      */
-    public static function searchObjectByAttribute($arr, $attributeName, $attributeValue)
+    public static function searchObjectByAttribute($arr, string $attributeName, $attributeValue)
     {
+        if( empty($arr)) {
+            return null;
+        }
+
         foreach ($arr as &$obj) {
             $getter = "get" . ucfirst($attributeName);
             if ($obj->$getter() == $attributeValue) {
@@ -213,11 +218,11 @@ class UtilArray
      * @param $keyName
      * @return array
      */
-    public static function arrayOfDocumentsToAssoc($array, $keyName)
+    public static function arrayOfDocumentsToAssoc($array, $keyName='id')
     {
         $values = array_values($array);
         $keys = [];
-        foreach ($values as $doc) {
+        foreach ($values as &$doc) {
             $getter = "get" . ucfirst($keyName);
             $keys[] = $doc->$getter();
         }
@@ -264,18 +269,6 @@ class UtilArray
         }
 
         return null;
-    }
-
-
-    /**
-     * Filter array by its keys using a callback.
-     * @return array numeric(!) array
-     */
-    public static function filterByKey(array $arr, $keys)
-    {
-        return array_map(function ($key) use ($arr) {
-            return $arr[$key];
-        }, $keys);
     }
 
 
@@ -369,6 +362,8 @@ class UtilArray
 
 
     /**
+     * todo: merge with filterByKey ?
+     *
      * filters assoc array
      *
      * @param array $arr
@@ -386,9 +381,24 @@ class UtilArray
         return $new;
     }
 
+    /**
+     * todo: merge with filterArrayByKeys ?
+     * Filter array by its keys using a callback.
+     * @return array numeric(!) array
+     */
+    public static function filterByKey(array $arr, $keys)
+    {
+        return array_map(function ($key) use ($arr) {
+            return $arr[$key];
+        }, $keys);
+    }
+
+
+
+
 
     // from marketer v1
-    static function arrayToObject(array $arr)
+    public static function arrayToObject(array $arr)
     {
         return array_map(function ($x) {
             return (object)$x;
@@ -396,11 +406,26 @@ class UtilArray
     }
 
     // from marketer v1
-    static function objectToArray(array $arr)
+    public static function objectToArray(array $arr)
     {
         return array_map(function ($x) {
             return (array)$x;
         }, $arr);
+    }
+
+    /**
+     * 07/2017 schlegel
+     *
+     * @param $arr
+     * @param $needle
+     */
+    public static function removeElement(&$arr, $needle)
+    {
+        $key = array_search($needle, $arr);
+
+        if ($key !== false) {
+            unset($arr[$key]);
+        }
     }
 
 
