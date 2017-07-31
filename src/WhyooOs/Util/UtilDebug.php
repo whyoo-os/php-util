@@ -12,6 +12,10 @@ class UtilDebug
 {
 
 
+    private static $timeProfilers = [];
+
+
+
     /**
      * uses jdorn/sql-formatter
      * @param string $sql
@@ -48,6 +52,30 @@ class UtilDebug
         }
         die();
     }
+
+
+    /**
+     * @param string $id
+     */
+    public static function startTimeProfiling($id='default')
+    {
+        self::$timeProfilers[$id] = microtime(true);
+    }
+
+    /**
+     * @param string $id
+     * @return float seconds
+     */
+    public static function stopTimeProfiling($id='default')
+    {
+        $length = microtime(true) - self::$timeProfilers[$id];
+        self::$timeProfilers[$id] = null;
+
+        return $length;
+    }
+
+
+
 
 
 }
