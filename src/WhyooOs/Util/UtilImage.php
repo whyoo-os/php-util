@@ -210,10 +210,8 @@ class UtilImage
     /**
      * renders text on an image file
      */
-    public static function renderTextOnFile($pathSrc, $centerX01, $centerY01, $text, $textColor, $fontName, $fontSizePercent, $pathDest)
+    public static function renderTextOnFile($pathSrc, $centerX01, $centerY01, $text, $textColor, $pathFont, $fontSizePercent, $pathDest)
     {
-        $pathFont = __DIR__ . "/../Resources/fonts/$fontName";
-
         // $colorInt = self::cssHexToInt($textColor);
         $colorInt = UtilColor::cssHexToInt($textColor);
 
