@@ -3,6 +3,8 @@
 
 namespace WhyooOs\Util;
 
+use Dompdf\Exception;
+use Eventviva\ImageResize;
 use PHPImageWorkshop\ImageWorkshop;
 use WhyooOs\Util\UtilAssert;
 use WhyooOs\Util\UtilFilesystem;
@@ -22,6 +24,10 @@ class UtilImage
 /// MARKETER VERSION
 /// MARKETER VERSION
 /// MARKETER VERSION
+    const RESIZE_MODE_STRETCH = 'S';
+    const RESIZE_MODE_INSET = 'I'; // not cropping .. Resize to fit a bounding box
+    const RESIZE_MODE_OUTBOUND = 'O'; // cropping
+
     private static $defaultJpegQuality = 95;
 
 
@@ -56,11 +62,11 @@ class UtilImage
      * @return bool
      * @throws \Exception
      */
-    public static function saveImage($image, $pathDest, $jpegQuality=null)
+    public static function saveImage($image, $pathDest, $jpegQuality = null)
     {
         $extension = UtilFilesystem::getExtension($pathDest);
         if ($extension == 'jpg' || $extension == 'jpeg') {
-            if( empty($jpegQuality)) {
+            if (empty($jpegQuality)) {
                 $jpegQuality = self::$defaultJpegQuality;
             }
             return imagejpeg($image, $pathDest, $jpegQuality);
@@ -119,7 +125,6 @@ class UtilImage
 
         return $pathDest;
     }
-
 
 
     /**
@@ -421,21 +426,34 @@ class UtilImage
      * used by schlegel for stretching pdf-background to cover whole page
      *
      * resizes image to $dimension .. doesn't take care of aspect ratio - image is "stretched"
-     * uses ImageWorkshop (composer require sybio/image-workshop)
+     * uses eventviva/php-image-resize (composer require eventviva/php-image-resize)
      * 07/2017
      *
      * @param $pathSrc
      * @param $pathDest
      * @param array $dimensions [newWidth, newHeight]
-     * @return bool
+     * @param string $resizeMode
+     * @throws \Exception
      */
-    public static function resizeImage($pathSrc, $pathDest, array $dimensions)
+    public static function resizeImage(string $pathSrc, string $pathDest, array $dimensions, string $resizeMode = self::RESIZE_MODE_STRETCH)
     {
-        $backgroundColor = 'ffffff';
-        $layer = ImageWorkshop::initFromPath($pathSrc);
-        $layer->resizeInPixel($dimensions[0], $dimensions[1]);
-        $image = $layer->getResult($backgroundColor);
-        return self::saveImage($image, $pathDest);
+//        try {
+            $image = @(new ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+
+            if ($resizeMode == self::RESIZE_MODE_STRETCH) {
+                $image->resize($dimensions[0], $dimensions[1]);
+            } elseif ($resizeMode == self::RESIZE_MODE_INSET) {
+                $image->resizeToBestFit($dimensions[0], $dimensions[1]);
+            } elseif ($resizeMode == self::RESIZE_MODE_OUTBOUND) {
+                $image->crop($dimensions[0], $dimensions[1]);
+            } else {
+                throw new \Exception('Unknown resizeMode: ' . $resizeMode);
+            }
+            $image->save($pathDest);
+
+//        } catch (\Exception $exception) {
+//            UtilDebug::dd($exception);
+//        }
     }
 
 
