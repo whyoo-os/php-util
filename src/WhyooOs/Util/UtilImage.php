@@ -77,25 +77,26 @@ class UtilImage
 
 
     /**
-     * adds (white) borders at LR or TB of image to make it square
+     * adds (white) stripes at L+R or T+B of image to make it square
      *
-     * used for fixtures
-     * uses some cheap caching using /tmp/
+     * used for marketer fixtures to have nice square white logos
      *
      * @param $pathSrc
      * @param $pathDest
      * @param $backgroundColor
      */
-    public static function extendImage($pathSrc, int $backgroundColor = 0xffffff)
+    public static function extendToSquare(string $pathSrc, string $pathDest, int $backgroundColor = 0xffffff)
     {
-        $cacheId = sha1(serialize(func_get_args()));
-        $pathDest = '/tmp/' . $cacheId . '.' . UtilFilesystem::getExtension($pathSrc);
+        list($x, $y) = getimagesize($pathSrc);
 
-        if (file_exists($pathDest)) {
-            return $pathDest;
+        // ---- if image is already square --> just copy (if pathSrc and pathDest are different)
+        if ($x == $y) {
+            if (realpath($pathSrc) != realpath($pathDest)) {
+                copy($pathSrc, $pathDest);
+            }
+            return;
         }
 
-        list($x, $y) = getimagesize($pathSrc);
         $endSize = max($x, $y);
 
         if ($x < $endSize) {
@@ -117,8 +118,6 @@ class UtilImage
         imagecopyresampled($imgDest, $imgSrc, $offsetX, $offsetY, 0, 0, $x, $y, $x, $y);
 
         self::saveImage($imgDest, $pathDest);
-
-        return $pathDest;
     }
 
 
@@ -163,6 +162,12 @@ class UtilImage
 
     // ----------------------------------------------------------------------------------------
 
+    /**
+     * unused
+     *
+     * @param $pathImage
+     * @return string
+     */
     public static function getAspectRatio($pathImage)
     {
         list($w, $h) = getimagesize($pathImage);
@@ -448,7 +453,7 @@ class UtilImage
     private static function _sizeStringToArray($size)
     {
         $arr = explode('x', $size);
-        if( count($arr) == 1) {
+        if (count($arr) == 1) {
             $arr[1] = $arr[0];
         }
         UtilAssert::assertArrayLength($arr, 2);
@@ -495,8 +500,6 @@ class UtilImage
         self::_resize($image, $size, $resizeMode);
         $image->save($pathDest);
     }
-
-
 
 
 }
