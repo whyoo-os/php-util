@@ -97,7 +97,22 @@ class UtilAssert
     public static function assertFileExists($pathFile, $errorMessage = '')
     {
         if (!file_exists($pathFile)) {
-            throw new \Exception("file exists assertion failed for file $pathFile." . $errorMessage);
+            throw new \Exception("file exists assertion failed for file $pathFile. " . $errorMessage);
+        }
+    }
+
+    /**
+     * asserts that array has specific length
+     * 08/2017
+     *
+     * @param $array
+     * @param $length
+     * @throws \Exception
+     */
+    public static function assertArrayLength(array $array, int $length, $errorMessage='')
+    {
+        if (count($array) != $length) {
+            throw new \Exception("Assertion failed: array length " . count($array) . " != $length. " . $errorMessage);
         }
     }
 

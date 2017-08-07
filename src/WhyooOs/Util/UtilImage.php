@@ -3,12 +3,7 @@
 
 namespace WhyooOs\Util;
 
-use Dompdf\Exception;
 use Eventviva\ImageResize;
-use PHPImageWorkshop\ImageWorkshop;
-use WhyooOs\Util\UtilAssert;
-use WhyooOs\Util\UtilFilesystem;
-use WhyooOs\Util\UtilSymfony;
 
 
 /**
@@ -18,18 +13,18 @@ class UtilImage
 {
 
 
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
     const RESIZE_MODE_STRETCH = 'S';
     const RESIZE_MODE_INSET = 'I'; // not cropping .. Resize to fit a bounding box
     const RESIZE_MODE_OUTBOUND = 'O'; // cropping
 
     private static $defaultJpegQuality = 95;
 
+/// MARKETER VERSION
+/// MARKETER VERSION
+/// MARKETER VERSION
+/// MARKETER VERSION
+/// MARKETER VERSION
+/// MARKETER VERSION
 
     /**
      * wrapper for php's imagecreatefrom***() functions
@@ -423,38 +418,85 @@ class UtilImage
 
 
     /**
-     * used by schlegel for stretching pdf-background to cover whole page
+     * private helper
      *
-     * resizes image to $dimension .. doesn't take care of aspect ratio - image is "stretched"
-     * uses eventviva/php-image-resize (composer require eventviva/php-image-resize)
-     * 07/2017
-     *
-     * @param $pathSrc
-     * @param $pathDest
-     * @param array $dimensions [newWidth, newHeight]
+     * @param ImageResize $image
+     * @param array $dimensions
      * @param string $resizeMode
      * @throws \Exception
      */
-    public static function resizeImage(string $pathSrc, string $pathDest, array $dimensions, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    private static function _resize(ImageResize $image, array $dimensions, string $resizeMode)
     {
-//        try {
-            $image = @(new ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
-
-            if ($resizeMode == self::RESIZE_MODE_STRETCH) {
-                $image->resize($dimensions[0], $dimensions[1]);
-            } elseif ($resizeMode == self::RESIZE_MODE_INSET) {
-                $image->resizeToBestFit($dimensions[0], $dimensions[1]);
-            } elseif ($resizeMode == self::RESIZE_MODE_OUTBOUND) {
-                $image->crop($dimensions[0], $dimensions[1]);
-            } else {
-                throw new \Exception('Unknown resizeMode: ' . $resizeMode);
-            }
-            $image->save($pathDest);
-
-//        } catch (\Exception $exception) {
-//            UtilDebug::dd($exception);
-//        }
+        if ($resizeMode == self::RESIZE_MODE_STRETCH) {
+            $image->resize($dimensions[0], $dimensions[1]);
+        } elseif ($resizeMode == self::RESIZE_MODE_INSET) {
+            $image->resizeToBestFit($dimensions[0], $dimensions[1]);
+        } elseif ($resizeMode == self::RESIZE_MODE_OUTBOUND) {
+            $image->crop($dimensions[0], $dimensions[1]);
+        } else {
+            throw new \Exception('Unknown resizeMode: ' . $resizeMode);
+        }
     }
+
+
+    /**
+     * private helper
+     *
+     * @param string $size eg "300x400" or "300"
+     * @return array with 2 elements: with and height
+     */
+    private static function _sizeStringToArray($size)
+    {
+        $arr = explode('x', $size);
+        if( count($arr) == 1) {
+            $arr[1] = $arr[0];
+        }
+        UtilAssert::assertArrayLength($arr, 2);
+
+        return $arr;
+    }
+
+
+    /**
+     * 07/2017 used by schlegel for stretching pdf-background to cover whole page
+     * 08/2017 used by ebaygen
+     *
+     * resizes image to $dimension .. doesn't take care of aspect ratio - image is "stretched"
+     * uses eventviva/php-image-resize (composer require eventviva/php-image-resize)
+     *
+     * @param $pathSrc
+     * @param $pathDest
+     * @param string $size eg "300x400" or "300"
+     * @param string $resizeMode
+     * @throws \Exception
+     */
+    public static function resizeImage(string $pathSrc, string $pathDest, string $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    {
+        $size = self::_sizeStringToArray($size);
+        $image = @(new ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+        self::_resize($image, $size, $resizeMode);
+        $image->save($pathDest);
+    }
+
+
+    /**
+     * 08/2017 used for gridfs files (marketer)
+     *
+     * @param $bytesSrc
+     * @param $pathDest
+     * @param string $size eg "300x400" or "300"
+     * @param string $resizeMode
+     * @throws \Exception
+     */
+    public static function resizeImageFromBytes($bytesSrc, string $pathDest, string $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    {
+        $size = self::_sizeStringToArray($size);
+        $image = ImageResize::createFromString($bytesSrc);
+        self::_resize($image, $size, $resizeMode);
+        $image->save($pathDest);
+    }
+
+
 
 
 }
