@@ -3,11 +3,18 @@
 namespace WhyooOs\Util;
 
 
+
 # see http://docs.python.org/2/library/os.path.html for inspiration
+# will not work under windows .. it assumes slash (/) as separator
 class UtilFilesystem
 {
 
 
+    /**
+     * @param $pathFile
+     * @param int $idxStart
+     * @return string
+     */
     public static function getNextFreeFilename($pathFile, $idxStart = 1)
     {
         if (!file_exists($pathFile)) {
@@ -18,7 +25,6 @@ class UtilFilesystem
         $base = self::getWithoutExtension($pathFile);
         for ($idx = $idxStart; $idx < 999999999; $idx++) {
             $newFilePath = $base . '-' . $idx . '.' . $ext;
-            ##Util::dd($newFilePath);
             if (!file_exists($newFilePath)) {
                 return $newFilePath;
             }
@@ -421,6 +427,22 @@ class UtilFilesystem
         }
         return $newFilename;
     }
+
+
+    /**
+     * eg: removeLeadingDirectories('/tmp/aaa/bbb/ccc/ddd/eee', 2) ==> 'ddd/eee'
+     *
+     * @param string $path
+     * @param int $numBack
+     * @return string
+     */
+    public static function removeLeadingDirectories(string $path, int $numBack = 1, string $directorySeparator='/') : string
+    {
+        $tmp = explode($directorySeparator, $path);
+
+        return implode($directorySeparator, array_slice($tmp, count($tmp) - $numBack, $numBack));
+    }
+
 
 
 }
