@@ -3,6 +3,7 @@
 namespace WhyooOs\Util;
 
 use JMS\Serializer\SerializationContext;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\User;
 
@@ -27,14 +28,14 @@ class UtilSymfony
     }
 
 
-
-
-
     /**
-     * TODO: use BinaryFileResponse::trustXSendfileTypeHeader(); // "the X-Sendfile-Type header should be trusted" (?)
-     *      return new BinaryFileResponse($pathImageFiltered);
+     * when using this be sure that there is no way to get some file like /etc/passwd ..
+     * @see UtilFilesystem::sanitizeFilename()
+     *
+     * @param string $pathFile
+     * @return Response
      */
-    public static function createImageResponse($filename)
+    public static function createImageResponse(string $pathFile)
     {
         // Generate response
         $response = new Response();
@@ -42,8 +43,8 @@ class UtilSymfony
         // headers .. cache for one day
         #$response->headers->set('Cache-Control', 'private');
         #$response->headers->set('Content-Disposition', 'attachment; filename="' . basename($filename) . '";');
-        $response->headers->set('Content-Type', mime_content_type($filename));
-        $response->headers->set('Content-Length', filesize($filename));
+        $response->headers->set('Content-Type', mime_content_type($pathFile));
+        $response->headers->set('Content-Length', filesize($pathFile));
         $response->headers->set('Pragma', 'public');
         $response->headers->set('Cache-Control', 'max-age=86400, public');
         $response->headers->set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + 86400));
@@ -51,9 +52,26 @@ class UtilSymfony
         // Send headers before outputting anything
         $response->sendHeaders();
 
-        $response->setContent(readfile($filename));
+        $response->setContent(readfile($pathFile));
 
         return $response;
+    }
+
+    /**
+     * alternative / faster version of UtilSymfony::createImageResponse ..
+     *
+     * when using this be sure that there is no way to get some file like /etc/passwd ..
+     * @see UtilFilesystem::sanitizeFilename()
+     *
+     *
+     * @param string $pathFile
+     * @return BinaryFileResponse
+     */
+    public static function createFileResponse(string $pathFile)
+    {
+        BinaryFileResponse::trustXSendfileTypeHeader(); // "the X-Sendfile-Type header should be trusted" (?)
+
+        return new BinaryFileResponse($pathFile);
     }
 
 
@@ -64,14 +82,13 @@ class UtilSymfony
      * @param null|array|string $groups
      * @return array
      */
-    public static function toArray($data, $groups=null)
+    public static function toArray($data, $groups = null)
     {
         $serializationContext = UtilSymfony::getSerializationContext($groups);
         $serializer = UtilSymfony::getContainer()->get('jms_serializer');
 
         return $serializer->toArray($data, $serializationContext);
     }
-
 
 
     /**
@@ -102,7 +119,7 @@ class UtilSymfony
      */
     public static function getUser()
     {
-        if( $token = self::getContainer()->get('security.token_storage')->getToken()) {
+        if ($token = self::getContainer()->get('security.token_storage')->getToken()) {
             return $token->getUser();
         } else {
             return null;
