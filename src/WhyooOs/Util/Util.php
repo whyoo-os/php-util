@@ -4,7 +4,6 @@
 namespace WhyooOs\Util;
 
 
-
 class Util
 {
 
@@ -56,7 +55,6 @@ class Util
     }
 
 
-
     public static function waitKeypress()
     {
         echo "\npress enter\n";
@@ -65,7 +63,6 @@ class Util
         fclose($handle);
         return trim($line);
     }
-
 
 
     public static function humanReadableSize($size)
@@ -100,7 +97,6 @@ class Util
     }
 
 
-
     /**
      * removes namespace from FQCN of obj
      * @param $obj
@@ -108,7 +104,7 @@ class Util
      */
     public static function getClassNameShort($obj, $numBack = 1)
     {
-        if( $obj == null) {
+        if ($obj == null) {
             return null;
         }
         return self::removeNamespace(get_class($obj), $numBack);
@@ -120,7 +116,7 @@ class Util
      * @param int $numBack
      * @return string
      */
-    public static function removeNamespace(string $class, int $numBack = 1) : string
+    public static function removeNamespace(string $class, int $numBack = 1): string
     {
         $tmp = explode('\\', $class);
 
@@ -154,17 +150,13 @@ class Util
         file_put_contents('/tmp/mcx-simple-log-error.txt', date('Y-m-d H:i') . "\t" . $string . "\n", FILE_APPEND);
     }
 
-    
-    // ------------------------------------------------------------------------
-    // ------------------------------------------------------------------------
-    // ------------------------------------------------------------------------
-    // ------------------------------------------------------------------------
-    // ------------------------------------------------------------------------
-    // ------------------------------------------------------------------------
 
-
-
-
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
 
     /**
@@ -202,7 +194,14 @@ class Util
     }
 
 
-
+    /**
+     * @param $number
+     * @return int -1, 0 or 1
+     */
+    public static function getSign($number)
+    {
+        return (int)(($number > 0) - ($number < 0));
+    }
 
 
 }

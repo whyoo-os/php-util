@@ -97,7 +97,21 @@ class UtilAssert
     public static function assertFileExists($pathFile, $errorMessage = '')
     {
         if (!file_exists($pathFile)) {
-            throw new \Exception("file exists assertion failed for file $pathFile. " . $errorMessage);
+            throw new \Exception("file-exists assertion failed for path $pathFile. " . $errorMessage);
+        }
+    }
+
+    public static function assertIsFile($pathFile, $errorMessage = '')
+    {
+        if (!is_file($pathFile)) {
+            throw new \Exception("is-file assertion failed for path $pathFile. " . $errorMessage);
+        }
+    }
+
+    public static function assertIsDir($pathDir, $errorMessage = '')
+    {
+        if (!is_dir($pathDir)) {
+            throw new \Exception("is-dir assertion failed for path $pathDir. " . $errorMessage);
         }
     }
 
