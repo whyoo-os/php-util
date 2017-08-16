@@ -496,7 +496,7 @@ class UtilImage
     public static function resizeImageFromBytes($bytesSrc, string $pathDest, string $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
     {
         $size = self::_sizeStringToArray($size);
-        $image = ImageResize::createFromString($bytesSrc);
+        $image = @(ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
         self::_resize($image, $size, $resizeMode);
         $image->save($pathDest);
     }
