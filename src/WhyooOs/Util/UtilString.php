@@ -151,5 +151,15 @@ class UtilString
     }
 
 
+    /**
+     * @param string $haystack
+     * @param string $needle
+     * @return bool
+     */
+    public static function startsWith(string $haystack, string $needle)
+    {
+        return strpos($haystack, $needle) === 0;
+    }
+
 }
 
