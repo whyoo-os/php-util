@@ -84,6 +84,9 @@ class UtilSymfony
      */
     public static function toArray($data, $groups = null)
     {
+        if( !is_array($data) && !is_object($data)) {
+            return $data;
+        }
         $serializationContext = UtilSymfony::getSerializationContext($groups);
         $serializer = UtilSymfony::getContainer()->get('jms_serializer');
 
