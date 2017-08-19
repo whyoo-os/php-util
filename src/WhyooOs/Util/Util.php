@@ -195,12 +195,16 @@ class Util
 
 
     /**
-     * @param $number
-     * @return int -1, 0 or 1
+     * @return string \n or <br>
      */
-    public static function getSign($number)
+    public static function getNewline() 
     {
-        return (int)(($number > 0) - ($number < 0));
+        if (php_sapi_name() == "cli") {
+            // In cli-mode
+            return "\n";
+        } else {
+            return '<br>';
+        }
     }
 
 

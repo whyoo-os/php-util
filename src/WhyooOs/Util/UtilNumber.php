@@ -31,5 +31,18 @@ class UtilNumber
     {
         return floatval(str_replace(',', '.', $string));
     }
+
+
+    /**
+     * @param $number
+     * @return int -1, 0 or 1
+     */
+    public static function getSign($number)
+    {
+        return (int)(($number > 0) - ($number < 0));
+    }
+
+
+
 }
 
