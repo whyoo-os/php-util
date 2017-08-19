@@ -90,7 +90,15 @@ class UtilAssert
     {
         $actualClass = get_class($object);
         if ($actualClass != $neededClass) {
-            throw new \Exception("is class assertion failed $actualClass != $neededClass " . $errorMessage);
+            throw new \Exception("is class assertion failed $actualClass != $neededClass. " . $errorMessage);
+        }
+    }
+
+    public static function assertNotInstanceOf($object, string $forbiddenClass, $errorMessage='')
+    {
+        if ($object instanceof $forbiddenClass) {
+            $actualClass = get_class($object);
+            throw new \Exception("NotInstanceOf assertion failed $actualClass is instance of $forbiddenClass. " . $errorMessage);
         }
     }
 
