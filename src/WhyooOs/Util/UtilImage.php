@@ -221,7 +221,8 @@ class UtilImage
         $colorInt = UtilColor::cssHexToInt($textColor);
 
         // ---- crop image
-        $pathTmpCropped = '/tmp/' . uniqid('cropped-') . '.' . UtilFilesystem::getExtension($pathSrc);
+        UtilFilesystem::mkdirIfNotExists('/tmp/renderTextOnFile');
+        $pathTmpCropped = '/tmp/renderTextOnFile/' . uniqid('cropped-') . '.' . UtilFilesystem::getExtension($pathSrc);
         $pathSrc = self::cropImageByMetadata($pathSrc, $pathTmpCropped);
 
         // ---- load image
@@ -234,7 +235,7 @@ class UtilImage
         $srcImageHeight = imagesy($im);
 
         $fontSizeInPx = min($srcImageWith, $srcImageHeight) / 100.0 * $fontSizePercent;
-        $fontSizeInPt = ($fontSizeInPx * 3) / 4;
+        $fontSizeInPt = UtilUnit::px2pt($fontSizeInPx);
 
 
         // ---- calculate size of textbox because we write text centered at (px/py)

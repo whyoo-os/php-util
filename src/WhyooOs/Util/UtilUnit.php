@@ -39,4 +39,20 @@ class UtilUnit
         return $mm / $onePxInMm;
     }
 
+
+    /**
+     * There are 72 points per inch; if it is sufficient to assume 96 pixels per inch, the formula is rather simple:
+     * points = pixels * 72 / 96
+     * The W3C has defined the pixel measurement px as exactly 1/96th of 1in regardless of the actual resolution of your display, so the above formula should be good for all web work.
+     *
+     * @param $px
+     * @param int $dpi
+     * @return float|int
+     */
+    public static function px2pt($px, $dpi = 96)
+    {
+        return $px * 72 / $dpi;
+    }
+
+
 }
