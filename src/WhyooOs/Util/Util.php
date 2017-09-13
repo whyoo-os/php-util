@@ -57,7 +57,7 @@ class Util
     /**
      * 09/2017 .. used by UtilCurl to put cookies.txt and curl_cache in directory of calling script
      *
-     * @return mixed
+     * @return string absolute path of calling script
      */
     public static function getCallingScript()
     {
