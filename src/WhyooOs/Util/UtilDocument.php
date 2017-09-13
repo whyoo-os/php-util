@@ -10,7 +10,7 @@ class UtilDocument
 
 
     /**
-     * used by ebaygen5
+     * used by ebaygen5, schlegel
      *
      * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
      * TODO: belongs to UtilWmDocument
