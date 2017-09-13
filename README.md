@@ -7,3 +7,4 @@ some functions use external libraries
         eventviva/php-image-resize
         symfony/var-dumper
         jdorn/sql-formatter
+        phpfastcache/phpfastcache
