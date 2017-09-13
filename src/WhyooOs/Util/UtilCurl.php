@@ -273,7 +273,7 @@ class UtilCurl
 
 }
 
-UtilCurl::setCachePath('/tmp/curl_cache');
+UtilCurl::setCachePath(dirname(Util::getCallingScript()) . '/curl_cache');
 UtilCurl::setCacheDefaultLifetime(3600 * 10); // 10h
 UtilCurl::$headers = [];
-UtilCurl::$pathCookiesTxt = "/tmp/cookies.txt";
+UtilCurl::$pathCookiesTxt = Util::getCallingScript() . '/cookies.txt';
