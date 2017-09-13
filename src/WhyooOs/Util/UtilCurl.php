@@ -50,7 +50,7 @@ class UtilCurl
         }
 
         $cacheManager = self::_getCacheManager();
-        $cachekey = "GET " . $url;
+        $cachekey = md5("GET " . $url);
         $cacheItem = $cacheManager->getItem($cachekey);
         if ($cacheItem->isHit()) {
             self::$info = "from cache_old";
@@ -79,11 +79,12 @@ class UtilCurl
         }
 
         $cacheManager = self::_getCacheManager();
-        $cachekey = "POST " . $url . " " . json_encode($fields);
+        $cachekey = md5("POST " . $url . " " . json_encode($fields));
         $cacheItem = $cacheManager->getItem($cachekey);
         if ($cacheItem->isHit()) {
             self::$info = "from cache_old";
             self::$fromCache = true;
+
             return $cacheItem->get();
         } else {
             self::$fromCache = false;
@@ -92,6 +93,7 @@ class UtilCurl
             $cacheItem->set($content);
             $cacheItem->expiresAfter($cacheTTL);
             $cacheManager->save($cacheItem);
+
             return $content;
         }
     }
@@ -112,13 +114,16 @@ class UtilCurl
             self::$info = "from cach $pathCache";
             self::$fromCache = true;
             self::$pathCache = $pathCache;
+
             return file_get_contents($pathCache);
+        } else {
+            self::$pathCache = null;
+            self::$fromCache = false;
+            $content = self::curlPost($url, $fields);
+            file_put_contents($pathCache, $content);
+
+            return $content;
         }
-        self::$pathCache = null;
-        self::$fromCache = false;
-        $content = self::curlPost($url, $fields);
-        file_put_contents($pathCache, $content);
-        return $content;
     }
 
 
@@ -144,17 +149,33 @@ class UtilCurl
 
     private static function _initCurl($ch)
     {
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1');
-        curl_setopt($ch, CURLOPT_COOKIEJAR, self::$pathCookiesTxt); // upon completing request, curl saves/updates any cookies in this file
-        curl_setopt($ch, CURLOPT_COOKIEFILE, self::$pathCookiesTxt); // cookies in this file are sent by curl with the request
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 90);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, self::$headers);
+        $options = [
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/59.0.3071.109 Chrome/59.0.3071.109 Safari/537.36',
+            CURLOPT_RETURNTRANSFER => true,     // return web page
+            CURLOPT_FOLLOWLOCATION => true,     // follow redirects
+            CURLOPT_ENCODING => "gzip, deflate",       // "" means "handle all encodings" ?
+            CURLOPT_AUTOREFERER => true,     // set referer on redirect
+            CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
+            CURLOPT_TIMEOUT => 120,      // timeout on response
+            CURLOPT_MAXREDIRS => 10,       // stop after 10 redirects
+            CURLINFO_HEADER_OUT => true,
+            CURLOPT_SSL_VERIFYPEER => false,     // Disabled SSL Cert checks
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_HTTPHEADER => self::$headers,
+
+
+            CURLOPT_VERBOSE => false,
+            CURLOPT_HEADER => false,     // return headers in addition to content
+
+
+            // cookie stuff
+            CURLOPT_COOKIESESSION => true,
+            CURLOPT_COOKIEFILE => self::$pathCookiesTxt, // cookies in this file are sent by curl with the request
+            CURLOPT_COOKIEJAR => self::$pathCookiesTxt,// upon completing request, curl saves/updates any cookies in this file
+            CURLOPT_COOKIE => self::$pathCookiesTxt, // ????
+        ];
+
+        curl_setopt_array($ch, $options);
     }
 
 
@@ -182,9 +203,10 @@ class UtilCurl
     public static function curlPost($url, array $fields = [])
     {
         $ch = curl_init();
+        self::_initCurl($ch);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
-        self::_initCurl($ch);
+        curl_setopt($ch, CURLOPT_STDERR, fopen('/tmp/request.txt', 'w'));
 
         $result = curl_exec($ch);
 
@@ -240,9 +262,18 @@ class UtilCurl
         @unlink(self::$pathCookiesTxt);
     }
 
+    /**
+     * we use this to decide if we need to sleep a while until we make next request
+     * @return mixed
+     */
+    public static function wasLastRequestCached()
+    {
+        return self::$fromCache;
+    }
+
 }
 
-UtilCurl::setCachePath(__DIR__ . '/curl_cache');
+UtilCurl::setCachePath('/tmp/curl_cache');
 UtilCurl::setCacheDefaultLifetime(3600 * 10); // 10h
 UtilCurl::$headers = [];
-UtilCurl::$pathCookiesTxt = __DIR__ . "/cookies.txt";
+UtilCurl::$pathCookiesTxt = "/tmp/cookies.txt";

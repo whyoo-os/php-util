@@ -33,6 +33,27 @@ class UtilArray
 
 
     /**
+     * 09/2017 for scrapers
+     *
+     * trims all entries of 1d array
+     *
+     * @param $arr
+     * @return mixed
+     */
+    public static function trimArray($arr, $bRemoveEmpty = false)
+    {
+        foreach ($arr as $key => &$v) {
+            $v = trim($v);
+            if ($bRemoveEmpty && empty($v)) {
+                unset($arr[$key]);
+            }
+        }
+        return $arr;
+    }
+
+
+
+    /**
      * removes all occurrences of $toRemove from $arr
      *
      * @param array $arr
@@ -142,14 +163,22 @@ class UtilArray
     }
 
 
-    public static function isAssoc($arr)
+    /**
+     * @param array $arr
+     * @return bool
+     */
+    public static function isAssoc(array $arr)
     {
         return array_keys($arr) !== range(0, count($arr) - 1);
         // alternative method:
         // return (bool)count(array_filter(array_keys($array), 'is_string'));
     }
 
-    public static function isNumeric($arr)
+    /**
+     * @param array $arr
+     * @return bool
+     */
+    public static function isNumeric(array $arr)
     {
         return array_keys($arr) === range(0, count($arr) - 1);
     }
@@ -201,6 +230,8 @@ class UtilArray
 
 
     /**
+     * aka numeric2assoc
+     *
      * @param $array
      * @param $keyName
      * @return array
@@ -212,6 +243,8 @@ class UtilArray
 
         return array_combine($keys, $values);
     }
+
+
 
     /**
      * @param $array
@@ -380,6 +413,28 @@ class UtilArray
         }
         return $new;
     }
+
+
+    /**
+     * 09/2017 from scrapers
+     *
+     * @param array $hash dict
+     * @param array $keys
+     * @return array (numeric array / list)
+     */
+    public static function extractByKeys(array $hash, array $keys)
+    {
+        $ret = [];
+        foreach ($keys as $key) {
+            $ret[] = $hash[$key];
+        }
+
+        return $ret;
+    }
+
+
+
+
 
     /**
      * todo: merge with filterArrayByKeys ?
