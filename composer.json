@@ -9,7 +9,7 @@
   "homepage": "https://github.com/whyoo-os/php-util",
   "license": "MIT",
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.0"
   },
   "suggest": {
     "symfony/var-dumper": "*",
