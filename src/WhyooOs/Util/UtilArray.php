@@ -426,7 +426,7 @@ class UtilArray
     {
         $ret = [];
         foreach ($keys as $key) {
-            $ret[] = $hash[$key];
+            $ret[] = @$hash[$key];
         }
 
         return $ret;
