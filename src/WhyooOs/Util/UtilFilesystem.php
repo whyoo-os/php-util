@@ -458,4 +458,28 @@ class UtilFilesystem
 
 
 
+    /**
+     * 09/2017
+     *
+     * for deleting older .csv files (scraper)
+     *
+     * @param $dirPath
+     * @param $numDays
+     */
+    public static function deleteOldFiles($dirPath, $numDays)
+    {
+        if (file_exists($dirPath)) {
+            foreach (new \DirectoryIterator($dirPath) as $fileInfo) {
+                if ($fileInfo->isDot()) {
+                    continue;
+                }
+                if (time() - $fileInfo->getCTime() >= 3600 * 24 * $numDays) {
+                    // dump("unlink: " . $fileInfo->getRealPath());
+                    unlink($fileInfo->getRealPath());
+                }
+            }
+        }
+    }
+
+
 }
