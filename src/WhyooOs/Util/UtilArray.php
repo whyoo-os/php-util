@@ -3,7 +3,7 @@
 namespace WhyooOs\Util;
 
 /**
- * Array Utility Class
+ *
  */
 class UtilArray
 {
@@ -33,6 +33,27 @@ class UtilArray
 
 
     /**
+     * 09/2017 for scrapers
+     *
+     * trims all entries of 1d array
+     *
+     * @param $arr
+     * @return mixed
+     */
+    public static function trimArray($arr, $bRemoveEmpty = false)
+    {
+        foreach ($arr as $key => &$v) {
+            $v = trim($v);
+            if ($bRemoveEmpty && empty($v)) {
+                unset($arr[$key]);
+            }
+        }
+        return $arr;
+    }
+
+
+
+    /**
      * removes all occurrences of $toRemove from $arr
      *
      * @param array $arr
@@ -56,7 +77,7 @@ class UtilArray
      */
     public static function searchObjectByAttribute($arr, string $attributeName, $attributeValue)
     {
-        if (empty($arr)) {
+        if( empty($arr)) {
             return null;
         }
 
@@ -128,7 +149,7 @@ class UtilArray
      *
      * @param $array
      * @param $keyName
-     * @return array
+     * @return mixed
      */
     public static function sortArrayOfArrays(&$array, $keyName, $sortOrder = SORT_ASC)
     {
@@ -143,33 +164,26 @@ class UtilArray
 
 
     /**
-     * @param $arr
+     * @param array $arr
      * @return bool
      */
-    public static function isAssoc($arr)
+    public static function isAssoc(array $arr)
     {
         return array_keys($arr) !== range(0, count($arr) - 1);
         // alternative method:
         // return (bool)count(array_filter(array_keys($array), 'is_string'));
     }
 
-
     /**
-     * @param $arr
+     * @param array $arr
      * @return bool
      */
-    public static function isNumeric($arr)
+    public static function isNumeric(array $arr)
     {
         return array_keys($arr) === range(0, count($arr) - 1);
     }
 
 
-    /**
-     * used by marketer
-     *
-     * @param array $array
-     * @return array
-     */
     public static function toOneDimensionalArray(array $array)
     {
         $it = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($array));
@@ -216,11 +230,13 @@ class UtilArray
 
 
     /**
+     * aka numeric2assoc
+     *
      * @param $array
      * @param $keyName
      * @return array
      */
-    public static function arrayOfArraysToAssoc($array, $keyName = 'id')
+    public static function arrayOfArraysToAssoc($array, $keyName)
     {
         $values = array_values($array);
         $keys = array_column($values, $keyName);
@@ -228,12 +244,14 @@ class UtilArray
         return array_combine($keys, $values);
     }
 
+
+
     /**
      * @param $array
      * @param $keyName
      * @return array
      */
-    public static function arrayOfDocumentsToAssoc($array, $keyName = 'id')
+    public static function arrayOfDocumentsToAssoc($array, $keyName='id')
     {
         $values = array_values($array);
         $keys = [];
@@ -265,7 +283,6 @@ class UtilArray
 
         return null;
     }
-
 
     /**
      * @param array $arr
@@ -399,6 +416,27 @@ class UtilArray
 
 
     /**
+     * 09/2017 from scrapers
+     *
+     * @param array $hash dict
+     * @param array $keys
+     * @return array (numeric array / list)
+     */
+    public static function extractByKeys(array $hash, array $keys)
+    {
+        $ret = [];
+        foreach ($keys as $key) {
+            $ret[] = @$hash[$key];
+        }
+
+        return $ret;
+    }
+
+
+
+
+
+    /**
      * todo: merge with filterArrayByKeys ?
      * Filter array by its keys using a callback.
      * @return array numeric(!) array
@@ -409,6 +447,9 @@ class UtilArray
             return $arr[$key];
         }, $keys);
     }
+
+
+
 
 
     // from marketer v1

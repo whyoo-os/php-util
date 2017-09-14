@@ -141,6 +141,19 @@ class UtilFilesystem
         return $filename;
     }
 
+    /**
+     * eg: "example.csv" --> "example.xls"
+     * 09/2017
+     *
+     * @param string $pathCsv
+     * @param string $newExtension
+     * @return string
+     */
+    public static function replaceExtension(string $pathCsv, string $newExtension)
+    {
+        return self::getWithoutExtension($pathCsv) . ".$newExtension";
+    }
+
 
 
     // from smartdonation
@@ -443,6 +456,30 @@ class UtilFilesystem
         return implode($directorySeparator, array_slice($tmp, count($tmp) - $numBack, $numBack));
     }
 
+
+
+    /**
+     * 09/2017
+     *
+     * for deleting older .csv files (scraper)
+     *
+     * @param $dirPath
+     * @param $numDays
+     */
+    public static function deleteOldFiles($dirPath, $numDays)
+    {
+        if (file_exists($dirPath)) {
+            foreach (new \DirectoryIterator($dirPath) as $fileInfo) {
+                if ($fileInfo->isDot()) {
+                    continue;
+                }
+                if (time() - $fileInfo->getCTime() >= 3600 * 24 * $numDays) {
+                    // dump("unlink: " . $fileInfo->getRealPath());
+                    unlink($fileInfo->getRealPath());
+                }
+            }
+        }
+    }
 
 
 }
