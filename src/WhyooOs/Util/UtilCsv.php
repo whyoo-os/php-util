@@ -120,5 +120,25 @@ class UtilCsv
     }
 
 
+    /**
+     * ssconvert --list-exporters
+     * @param $pathCsv
+     */
+    public static function csvToXls($pathCsv)
+    {
+        $pathXls = UtilFilesystem::replaceExtension($pathCsv, 'xls');
+        exec("ssconvert  $pathCsv $pathXls");
+    }
+
+    /**
+     * ssconvert --list-exporters
+     * @param $pathCsv
+     */
+    public static function csvToXlsx($pathCsv)
+    {
+        $pathXlsx = UtilFilesystem::replaceExtension($pathCsv, 'xlsx');
+        exec("ssconvert  $pathCsv $pathXlsx");
+    }
+
 
 }

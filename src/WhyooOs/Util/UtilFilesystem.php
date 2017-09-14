@@ -141,6 +141,19 @@ class UtilFilesystem
         return $filename;
     }
 
+    /**
+     * eg: "example.csv" --> "example.xls"
+     * 09/2017
+     *
+     * @param string $pathCsv
+     * @param string $newExtension
+     * @return string
+     */
+    public static function replaceExtension(string $pathCsv, string $newExtension)
+    {
+        return self::getWithoutExtension($pathCsv) . ".$newExtension";
+    }
+
 
 
     // from smartdonation
