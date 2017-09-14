@@ -27,7 +27,7 @@ class UtilCsv
         $aObjects = [];
         foreach ($arr as $row) {
             if (count($row) == count($headers)) { // valid row
-                if( $bAssoc) {
+                if ($bAssoc) {
                     // assoc array
                     $aObjects[] = array_combine($headers, $row);
                 } else {
@@ -73,8 +73,6 @@ class UtilCsv
     }
 
 
-
-
     /**
      * flattens array of rows and exports to .csv
      * 09/2017 for scrapers
@@ -83,7 +81,7 @@ class UtilCsv
      * @param array|null $columns
      * @return string csv
      */
-    public static function arrayToCsv(array $rows, array $columns = null )
+    public static function arrayToCsv(array $rows, array $columns = null)
     {
         if (count($rows) == 0) {
             return null;
@@ -101,7 +99,7 @@ class UtilCsv
         }
 
         // 3) sort keys alphabetically OR filter array keys
-        if( is_null($columns)) {
+        if (is_null($columns)) {
             asort($keys);
         } else {
             $keys = array_intersect($keys, $columns);
@@ -121,23 +119,26 @@ class UtilCsv
 
 
     /**
-     * ssconvert --list-exporters
-     * @param $pathCsv
+     * see https://github.com/dagwieers/unoconv/blob/master/doc/unoconv.1.adoc
+     *
+     * @param string $pathCsv
+     * @param string $format xls, xlsx or other format
+     * @return bool true on success false otherwise
+     * @internal param string $format
      */
-    public static function csvToXls($pathCsv)
+    public static function csvToXls(string $pathCsv, string $format = 'xls')
     {
-        $pathXls = UtilFilesystem::replaceExtension($pathCsv, 'xls');
-        exec("ssconvert  $pathCsv $pathXls");
-    }
+        // 1st try with libreoffice's unoconv
+        exec("unoconv -i FilterOptions=44,34,76 -f $format $pathCsv", $output, $return);
+        if ($return == 0) {
+            return true;
+        }
 
-    /**
-     * ssconvert --list-exporters
-     * @param $pathCsv
-     */
-    public static function csvToXlsx($pathCsv)
-    {
-        $pathXlsx = UtilFilesystem::replaceExtension($pathCsv, 'xlsx');
-        exec("ssconvert  $pathCsv $pathXlsx");
+        // 2nd try: use gnumeric's ssconvert
+        $pathXls = UtilFilesystem::replaceExtension($pathCsv, $format);
+        exec("ssconvert  $pathCsv $pathXls", $output, $return);
+
+        return $return == 0;
     }
 
 
