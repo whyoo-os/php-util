@@ -3,7 +3,7 @@
 namespace WhyooOs\Util;
 
 /**
- *
+ * Array Utility Class
  */
 class UtilArray
 {
@@ -56,7 +56,7 @@ class UtilArray
      */
     public static function searchObjectByAttribute($arr, string $attributeName, $attributeValue)
     {
-        if( empty($arr)) {
+        if (empty($arr)) {
             return null;
         }
 
@@ -128,7 +128,7 @@ class UtilArray
      *
      * @param $array
      * @param $keyName
-     * @return mixed
+     * @return array
      */
     public static function sortArrayOfArrays(&$array, $keyName, $sortOrder = SORT_ASC)
     {
@@ -142,6 +142,10 @@ class UtilArray
     }
 
 
+    /**
+     * @param $arr
+     * @return bool
+     */
     public static function isAssoc($arr)
     {
         return array_keys($arr) !== range(0, count($arr) - 1);
@@ -149,12 +153,23 @@ class UtilArray
         // return (bool)count(array_filter(array_keys($array), 'is_string'));
     }
 
+
+    /**
+     * @param $arr
+     * @return bool
+     */
     public static function isNumeric($arr)
     {
         return array_keys($arr) === range(0, count($arr) - 1);
     }
 
 
+    /**
+     * used by marketer
+     *
+     * @param array $array
+     * @return array
+     */
     public static function toOneDimensionalArray(array $array)
     {
         $it = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($array));
@@ -205,7 +220,7 @@ class UtilArray
      * @param $keyName
      * @return array
      */
-    public static function arrayOfArraysToAssoc($array, $keyName)
+    public static function arrayOfArraysToAssoc($array, $keyName = 'id')
     {
         $values = array_values($array);
         $keys = array_column($values, $keyName);
@@ -218,7 +233,7 @@ class UtilArray
      * @param $keyName
      * @return array
      */
-    public static function arrayOfDocumentsToAssoc($array, $keyName='id')
+    public static function arrayOfDocumentsToAssoc($array, $keyName = 'id')
     {
         $values = array_values($array);
         $keys = [];
@@ -250,6 +265,7 @@ class UtilArray
 
         return null;
     }
+
 
     /**
      * @param array $arr
@@ -381,6 +397,7 @@ class UtilArray
         return $new;
     }
 
+
     /**
      * todo: merge with filterArrayByKeys ?
      * Filter array by its keys using a callback.
@@ -392,9 +409,6 @@ class UtilArray
             return $arr[$key];
         }, $keys);
     }
-
-
-
 
 
     // from marketer v1
