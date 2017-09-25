@@ -402,7 +402,7 @@ class UtilImage
      * @param $pathDest
      * @param $pathTag
      * @param $position
-     * @param $scalePercent
+     * @param float $scalePercent size of the watermark
      */
     public static function watermarkImage($pathSrc, $pathDest, $pathTag, $position, $scalePercent)
     {
