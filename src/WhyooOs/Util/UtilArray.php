@@ -398,6 +398,7 @@ class UtilArray
      * todo: merge with filterByKey ?
      *
      * filters assoc array
+     * used by ebayGen
      *
      * @param array $arr
      * @param array $allowedKeys
