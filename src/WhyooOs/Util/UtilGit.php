@@ -27,11 +27,11 @@ class UtilGit
     }
 
     /**
-     * legacy .. used in shipping for "version number"
+     * used in shipping for "version number"
      */
     public static function getDate()
     {
-        return exec('git log -1 --format=%cd');
+        return exec('git log -1 --format=%cd --date=short');
     }
 }
 
