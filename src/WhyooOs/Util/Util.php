@@ -110,6 +110,8 @@ class Util
 
 
     /**
+     * TODO: belongs to UtilDocument
+     *
      * @param $row
      * @param string $propertyName eg 'calculation.revenueGross'
      * @return mixed
