@@ -3,7 +3,6 @@
 namespace WhyooOs\Util;
 
 
-
 # see http://docs.python.org/2/library/os.path.html for inspiration
 # will not work under windows .. it assumes slash (/) as separator
 class UtilFilesystem
@@ -421,6 +420,22 @@ class UtilFilesystem
         return $pathDest;
     }
 
+    /**
+     * FIXME: currently it onlt works for images
+     * used by ebay-gen
+     *
+     * @param $fullPathFile
+     * @return string
+     */
+    public static function physicalFileToBase64($fullPathFile)
+    {
+        $type = pathinfo($fullPathFile, PATHINFO_EXTENSION);
+        $data = file_get_contents($fullPathFile);
+        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        return $base64;
+    }
+
 
     /**
      * @param string $pathDirectory
@@ -449,13 +464,12 @@ class UtilFilesystem
      * @param int $numBack
      * @return string
      */
-    public static function removeLeadingDirectories(string $path, int $numBack = 1, string $directorySeparator='/') : string
+    public static function removeLeadingDirectories(string $path, int $numBack = 1, string $directorySeparator = '/'): string
     {
         $tmp = explode($directorySeparator, $path);
 
         return implode($directorySeparator, array_slice($tmp, count($tmp) - $numBack, $numBack));
     }
-
 
 
     /**
