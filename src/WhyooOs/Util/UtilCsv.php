@@ -118,15 +118,16 @@ class UtilCsv
     }
 
 
+
     /**
      * see https://github.com/dagwieers/unoconv/blob/master/doc/unoconv.1.adoc
      *
      * @param string $pathCsv
-     * @param string $format xls, xlsx or other format
+     * @param string $format xls, xlsx, ods or other format
      * @return bool true on success false otherwise
      * @internal param string $format
      */
-    public static function csvToXls(string $pathCsv, string $format = 'xls')
+    public static function csvToExcel(string $pathCsv, string $format = 'xls')
     {
         // 1st try with libreoffice's unoconv
         exec("unoconv -i FilterOptions=44,34,76 -f $format $pathCsv", $output, $return);
