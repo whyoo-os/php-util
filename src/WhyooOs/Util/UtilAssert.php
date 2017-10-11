@@ -100,7 +100,7 @@ class UtilAssert
 
     public static function assertClass($object, string $neededClass, $errorMessage = 'class mismatch')
     {
-        $actualClass = is_object($object) ? get_class($object) : null;
+        $actualClass = is_object($object) ? get_class($object) : gettype($object);
         if ($actualClass != $neededClass) {
             throw new \Exception("is class assertion failed $actualClass != $neededClass. " . $errorMessage);
         }
