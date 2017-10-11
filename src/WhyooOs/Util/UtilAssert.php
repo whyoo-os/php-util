@@ -36,6 +36,18 @@ class UtilAssert
         }
     }
 
+    /**
+     * @param $subject
+     * @param string $errorMessage
+     * @throws \Exception
+     */
+    public static function assertGreaterZero($number, $errorMessage = "")
+    {
+        if (!($number > 0)) {
+            throw new \Exception("Assertion 'Greater Zero' failed ($number <= 0): " . $errorMessage);
+        }
+    }
+
 
     /**
      * @param $subject
@@ -88,7 +100,7 @@ class UtilAssert
 
     public static function assertClass($object, string $neededClass, $errorMessage = 'class mismatch')
     {
-        $actualClass = get_class($object);
+        $actualClass = is_object($object) ? get_class($object) : null;
         if ($actualClass != $neededClass) {
             throw new \Exception("is class assertion failed $actualClass != $neededClass. " . $errorMessage);
         }

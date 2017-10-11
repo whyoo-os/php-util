@@ -13,9 +13,8 @@ class UtilDocument
      * used by ebaygen5
      *
      * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
-     * TODO: belongs to UtilWmDocument
      *
-     * @param AbstractDocument $document the document with getters and setters     * @param $arr
+     * @param $document the document with getters and setters
      * @param $arr
      * @param $fieldNames
      */
