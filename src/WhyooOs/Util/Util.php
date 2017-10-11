@@ -16,6 +16,11 @@ class Util
     }
 
 
+    /**
+     * TODO: move to UtilMongo
+     *
+     * @return \MongoId
+     */
     public static function createMongoId()
     {
         return new \MongoId(); // deprecated
@@ -24,6 +29,8 @@ class Util
 
 
     /**
+     * TODO: move to UtilMongo
+     *
      * @param $str
      * @return int
      */
@@ -32,12 +39,32 @@ class Util
         return preg_match('/^[a-f\d]{24}$/i', $str);
     }
 
+
+    /**
+     * TODO: move to UtilMongo
+     *
+     * @param $str
+     * @return \MongoId
+     */
     public static function toMongoId($str)
     {
         if (self::isMongoId($str)) {
             return new \MongoId($str);
             // LATER: fix .. it is deprecated
         }
+    }
+
+    /**
+     * 09/2017 .. used by UtilCurl to put cookies.txt and curl_cache in directory of calling script
+     *
+     * @return string absolute path of calling script
+     */
+    public static function getCallingScript()
+    {
+        $stack = debug_backtrace();
+        $firstFrame = $stack[count($stack) - 1];
+
+        return $firstFrame['file'];
     }
 
 
@@ -55,6 +82,11 @@ class Util
     }
 
 
+    /**
+     * TODO: move to UtilCommandLine
+     *
+     * @return string
+     */
     public static function waitKeypress()
     {
         echo "\npress enter\n";
@@ -64,14 +96,22 @@ class Util
         return trim($line);
     }
 
-
+    /**
+     * TODO: move to UtilFormatter
+     *
+     * @param $size
+     * @return string
+     */
     public static function humanReadableSize($size)
     {
         $filesizename = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
         return $size ? round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . $filesizename[$i] : '0 Bytes';
     }
 
+
     /**
+     * TODO: belongs to UtilDocument
+     *
      * @param $row
      * @param string $propertyName eg 'calculation.revenueGross'
      * @return mixed
@@ -125,7 +165,7 @@ class Util
 
 
     /**
-     * used for calculation of PricePerPiece
+     * used for calculation of PricePerPiece (ebayGen)
      *
      * @param $number
      * @param int $precision
@@ -145,6 +185,11 @@ class Util
     }
 
 
+    /**
+     * TODO: move to UtilLog
+     *
+     * @param $string
+     */
     public static function simpleLogError($string)
     {
         file_put_contents('/tmp/mcx-simple-log-error.txt', date('Y-m-d H:i') . "\t" . $string . "\n", FILE_APPEND);
@@ -197,7 +242,7 @@ class Util
     /**
      * @return string \n or <br>
      */
-    public static function getNewline() 
+    public static function getNewline()
     {
         if (php_sapi_name() == "cli") {
             // In cli-mode

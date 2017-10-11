@@ -221,7 +221,8 @@ class UtilImage
         $colorInt = UtilColor::cssHexToInt($textColor);
 
         // ---- crop image
-        $pathTmpCropped = '/tmp/' . uniqid('cropped-') . '.' . UtilFilesystem::getExtension($pathSrc);
+        UtilFilesystem::mkdirIfNotExists('/tmp/renderTextOnFile');
+        $pathTmpCropped = '/tmp/renderTextOnFile/' . uniqid('cropped-') . '.' . UtilFilesystem::getExtension($pathSrc);
         $pathSrc = self::cropImageByMetadata($pathSrc, $pathTmpCropped);
 
         // ---- load image
@@ -234,7 +235,7 @@ class UtilImage
         $srcImageHeight = imagesy($im);
 
         $fontSizeInPx = min($srcImageWith, $srcImageHeight) / 100.0 * $fontSizePercent;
-        $fontSizeInPt = ($fontSizeInPx * 3) / 4;
+        $fontSizeInPt = UtilUnit::px2pt($fontSizeInPx);
 
 
         // ---- calculate size of textbox because we write text centered at (px/py)
@@ -395,16 +396,18 @@ class UtilImage
 
     /**
      * wrapper function around
+     * used by ebayGen
      *
      * @param $pathSrc
      * @param $pathDest
      * @param $pathTag
      * @param $position
+     * @param float $scalePercent size of the watermark
      */
-    public static function watermarkImage($pathSrc, $pathDest, $pathTag, $position)
+    public static function watermarkImage($pathSrc, $pathDest, $pathTag, $position, $scalePercent)
     {
         $imageTagger = new \WhyooOs\HelperClasses\ImageTagger();
-        $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size=70%
+        $imageTagger->tagImage($pathSrc, $pathTag, $position, $scalePercent, $pathDest); // TODO: fix the hardcoded size=60%
     }
 
 

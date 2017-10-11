@@ -3,7 +3,6 @@
 namespace WhyooOs\Util;
 
 
-
 # see http://docs.python.org/2/library/os.path.html for inspiration
 # will not work under windows .. it assumes slash (/) as separator
 class UtilFilesystem
@@ -139,6 +138,19 @@ class UtilFilesystem
         $filename = mb_ereg_replace("([\.]{2,})", '', $filename);
 
         return $filename;
+    }
+
+    /**
+     * eg: "example.csv" --> "example.xls"
+     * 09/2017
+     *
+     * @param string $pathCsv
+     * @param string $newExtension
+     * @return string
+     */
+    public static function replaceExtension(string $pathCsv, string $newExtension)
+    {
+        return self::getWithoutExtension($pathCsv) . ".$newExtension";
     }
 
 
@@ -408,6 +420,22 @@ class UtilFilesystem
         return $pathDest;
     }
 
+    /**
+     * FIXME: currently it onlt works for images
+     * used by ebay-gen
+     *
+     * @param $fullPathFile
+     * @return string
+     */
+    public static function physicalFileToBase64($fullPathFile)
+    {
+        $type = pathinfo($fullPathFile, PATHINFO_EXTENSION);
+        $data = file_get_contents($fullPathFile);
+        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        return $base64;
+    }
+
 
     /**
      * @param string $pathDirectory
@@ -436,13 +464,36 @@ class UtilFilesystem
      * @param int $numBack
      * @return string
      */
-    public static function removeLeadingDirectories(string $path, int $numBack = 1, string $directorySeparator='/') : string
+    public static function removeLeadingDirectories(string $path, int $numBack = 1, string $directorySeparator = '/'): string
     {
         $tmp = explode($directorySeparator, $path);
 
         return implode($directorySeparator, array_slice($tmp, count($tmp) - $numBack, $numBack));
     }
 
+
+    /**
+     * 09/2017
+     *
+     * for deleting older .csv files (scraper)
+     *
+     * @param $dirPath
+     * @param $numDays
+     */
+    public static function deleteOldFiles($dirPath, $numDays)
+    {
+        if (file_exists($dirPath)) {
+            foreach (new \DirectoryIterator($dirPath) as $fileInfo) {
+                if ($fileInfo->isDot()) {
+                    continue;
+                }
+                if (time() - $fileInfo->getCTime() >= 3600 * 24 * $numDays) {
+                    // dump("unlink: " . $fileInfo->getRealPath());
+                    unlink($fileInfo->getRealPath());
+                }
+            }
+        }
+    }
 
 
 }

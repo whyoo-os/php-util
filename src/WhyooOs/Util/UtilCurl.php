@@ -1,103 +1,212 @@
 <?php
+/**
+ * 09/2017 version from scrapers
+ *
+ * Utility class for quickly fetching urls ... uses phpfastcache[sqlite] for caching
+ */
 
 namespace WhyooOs\Util;
 
+use phpFastCache\CacheManager;
+
 class UtilCurl
 {
+    private static $cacheManager;
+    private static $cacheDefaultTTL;
+    private static $lastCacheKey; // for removing failed downloads from cache
+
     public static $info;
-    public static $lastWasCached;
-    public static $lastCacheFile;
-    public static $pathCacheDir = '/tmp/curl_cache';
+    public static $fromCache;
+    public static $pathCache;
+    public static $headers;
+    public static $pathCookiesTxt;
 
 
+    public static $cacheConfig = [
+        'ignoreSymfonyNotice' => true, // Ignore Symfony notices for Symfony projects that do not makes use of PhpFastCache's Symfony Bundle (?)
+        'path' => 'TODO_____XXXX',
+    ];
+
+
+    protected static function _getCacheManager()
+    {
+        if (is_null(self::$cacheManager)) {
+            CacheManager::setDefaultConfig(UtilCurl::$cacheConfig);
+            self::$cacheManager = CacheManager::getInstance('sqlite');
+        }
+        return self::$cacheManager;
+    }
 
 
     /**
      * @param $url
-     * @return mixed response body (eg html)
+     * @param null $cacheTTL
+     * @return mixed|string
+     */
+    public static function curlGetCached($url, $cacheTTL = null)
+    {
+        if (is_null($cacheTTL)) {
+            $cacheTTL = self::$cacheDefaultTTL;
+        }
+
+        $cacheManager = self::_getCacheManager();
+        $cachekey = md5("GET " . $url);
+        $cacheItem = $cacheManager->getItem($cachekey);
+        if ($cacheItem->isHit()) {
+            self::$info = "from cache_old";
+            self::$fromCache = true;
+            return $cacheItem->get();
+        } else {
+            self::$fromCache = false;
+            self::$lastCacheKey = $cachekey;
+            $content = self::curlGet($url);
+            $cacheItem->set($content);
+            $cacheItem->expiresAfter($cacheTTL);
+            $cacheManager->save($cacheItem);
+            return $content;
+        }
+    }
+
+    /**
+     * @param $url
+     * @param null $cacheTTL
+     * @return mixed|string
+     */
+    public static function curlPostCached($url, array $fields = [], $cacheTTL = null)
+    {
+        if (is_null($cacheTTL)) {
+            $cacheTTL = self::$cacheDefaultTTL;
+        }
+
+        $cacheManager = self::_getCacheManager();
+        $cachekey = md5("POST " . $url . " " . json_encode($fields));
+        $cacheItem = $cacheManager->getItem($cachekey);
+        if ($cacheItem->isHit()) {
+            self::$info = "from cache_old";
+            self::$fromCache = true;
+
+            return $cacheItem->get();
+        } else {
+            self::$fromCache = false;
+            self::$lastCacheKey = $cachekey;
+            $content = self::curlPost($url, $fields);
+            $cacheItem->set($content);
+            $cacheItem->expiresAfter($cacheTTL);
+            $cacheManager->save($cacheItem);
+
+            return $content;
+        }
+    }
+
+
+    /**
+     * legacy from scraper
+     *
+     * @param $url
+     * @param array $fields
+     * @param null $cacheTTL
+     * @return bool|mixed|string
+     */
+    public static function curlPostCachedOld($url, array $fields, $cacheTTL = null)
+    {
+        $pathCache = __DIR__ . '/curl_cache_old/' . md5($url . serialize($fields));
+        if (file_exists($pathCache) && ((time() - filemtime($pathCache) < $cacheTTL) || is_null($cacheTTL))) {
+            self::$info = "from cach $pathCache";
+            self::$fromCache = true;
+            self::$pathCache = $pathCache;
+
+            return file_get_contents($pathCache);
+        } else {
+            self::$pathCache = null;
+            self::$fromCache = false;
+            $content = self::curlPost($url, $fields);
+            file_put_contents($pathCache, $content);
+
+            return $content;
+        }
+    }
+
+
+    /*
+        public static function curlGetCachedOld($url, $cacheTTL = null)
+        {
+            $pathCache = __DIR__ . '/curl_cache_old/' . md5($url);
+            if (file_exists($pathCache) && ((time() - filemtime($pathCache) < $cacheTTL) || is_null($cacheTTL))) {
+                $cached = file_get_contents($pathCache);
+                self::$info = "from cache_old";
+                self::$fromCache = true;
+                self::$pathCache = $pathCache;
+                return $cached;
+            }
+            self::$pathCache = null;
+            self::$fromCache = false;
+            $content = self::curlGet($url);
+            file_put_contents($pathCache, $content);
+            return $content;
+        }
+    */
+
+
+    private static function _initCurl($ch)
+    {
+        $options = [
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/59.0.3071.109 Chrome/59.0.3071.109 Safari/537.36',
+            CURLOPT_RETURNTRANSFER => true,     // return web page
+            CURLOPT_FOLLOWLOCATION => true,     // follow redirects
+            CURLOPT_ENCODING => "gzip, deflate",       // "" means "handle all encodings" ?
+            CURLOPT_AUTOREFERER => true,     // set referer on redirect
+            CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
+            CURLOPT_TIMEOUT => 120,      // timeout on response
+            CURLOPT_MAXREDIRS => 10,       // stop after 10 redirects
+            CURLINFO_HEADER_OUT => true,
+            CURLOPT_SSL_VERIFYPEER => false,     // Disabled SSL Cert checks
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_HTTPHEADER => self::$headers,
+
+
+            CURLOPT_VERBOSE => false,
+            CURLOPT_HEADER => false,     // return headers in addition to content
+
+
+            // cookie stuff
+            CURLOPT_COOKIESESSION => true,
+            CURLOPT_COOKIEFILE => self::$pathCookiesTxt, // cookies in this file are sent by curl with the request
+            CURLOPT_COOKIEJAR => self::$pathCookiesTxt,// upon completing request, curl saves/updates any cookies in this file
+            CURLOPT_COOKIE => self::$pathCookiesTxt, // ????
+        ];
+
+        curl_setopt_array($ch, $options);
+    }
+
+
+    /**
+     * @param $url
+     * @return mixed
      */
     public static function curlGet($url)
     {
         $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1');
-//        curl_setopt($ch, CURLOPT_COOKIEJAR, "cookie_after.txt"); // upon completing request, curl saves/updates any cookies in this file
-//        curl_setopt($ch, CURLOPT_COOKIEFILE, "cookies.txt"); // cookies in this file are sent by curl with the request
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        self::_initCurl($ch);
+
 // 		curl_setopt ($ch, CURLOPT_VERBOSE, 0);
 // 		curl_setopt ($ch, CURLOPT_HEADER, 0);
 // 		curl_setopt ($ch, CURLINFO_HEADER_OUT,true);
 // 		curl_setopt ($ch, CURLOPT_USERAGENT, $uagentutilitzat);
-//      curl_setopt($ch, CURLOPT_COOKIESESSION, TRUE);
+// #		curl_setopt($ch, CURLOPT_COOKIESESSION, TRUE);
+
         $data = curl_exec($ch);
         self::$info = curl_getinfo($ch);
-
         return $data;
     }
 
 
-
-
-    /**
-     * @param $url
-     * @param int $cacheTTL TTL in seconds
-     * @return mixed
-     */
-    public static function curlGetCached($url, $cacheTTL = 3600)
-    {
-        $pathCache = self::$pathCacheDir . '/' . md5($url);
-        if (file_exists($pathCache) && time() - filemtime($pathCache) < $cacheTTL) {
-            self::$lastWasCached = true;
-            self::$lastCacheFile = $pathCache;
-            return file_get_contents($pathCache);
-        }
-        $content = self::curlGet($url);
-        UtilFilesystem::mkdirIfNotExists(self::$pathCacheDir);
-        file_put_contents($pathCache, $content);
-        self::$lastWasCached = false;
-        self::$lastCacheFile = $pathCache;
-
-
-        // dump(self::$info);
-        if( self::$info['http_code'] != 200) {
-            return false;
-        }
-
-        return $content;
-    }
-
-
-//
-//    function curlPost( $url, array $postData)
-//    {
-//        $ch = curl_init();
-//        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1');
-//        curl_setopt($ch, CURLOPT_URL, $url);
-//        curl_setopt($ch, CURLOPT_POST, 1);
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query( $postData));
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // receive server response ...
-//        $server_output = curl_exec ($ch);
-//        curl_close ($ch);
-//
-//        return  $server_output;
-//    }
-//
-
-    /**
-     * @param $url
-     * @param array $fields
-     * @return mixed
-     */
-    public static function curlPost($url, array $fields)
+    public static function curlPost($url, array $fields = [])
     {
         $ch = curl_init();
+        self::_initCurl($ch);
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 90);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_STDERR, fopen('/tmp/request.txt', 'w'));
 
         $result = curl_exec($ch);
 
@@ -110,93 +219,61 @@ class UtilCurl
     }
 
 
-
-
-// from marketer
-    public static function curlPostCached($url, array $fields, $cacheTTL=null)
+    public static function addHeader($header)
     {
-        $pathCache = self::$pathCacheDir . '/' . md5($url.serialize($fields));
-        if (file_exists($pathCache) && ((time() - filemtime($pathCache) < $cacheTTL) || is_null($cacheTTL))) {
-            self::$info = "from cache $pathCache";
-            self::$lastWasCached = true;
-            self::$lastCacheFile = $pathCache;
-            UtilFilesystem::mkdirIfNotExists(self::$pathCacheDir);
-            return file_get_contents($pathCache);
-        }
-        self::$lastCacheFile = $pathCache;
-        self::$lastWasCached = false;
-        $content = self::curlPost($url, $fields);
-        file_put_contents($pathCache, $content);
+        self::$headers[] = $header;
+    }
 
-        return $content;
+    public static function setCachePath($path)
+    {
+        self::$cacheConfig['path'] = $path;
+    }
+
+    public static function setCacheDefaultLifetime($ttl)
+    {
+        self::$cacheDefaultTTL = $ttl;
     }
 
 
-// from marketer
-    public static function isValidUrl($url)
+    public static function removeLastFromCache()
     {
-        // first do some quick sanity checks:
-        if (!$url || !is_string($url)) {
-            return false;
-        }
-        // quick check url is roughly a valid http request: ( http://blah/... )
-        if (!preg_match('/^http(s)?:\/\/[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i', $url)) {
-            return false;
-        }
-        // the next bit could be slow:
-        if (self::getHttpResponseCode($url) != 200) {
-            return false;
-        }
-        // all good!
-        return true;
+        self::_getCacheManager()->deleteItem(self::$lastCacheKey);
     }
 
 
-// from marketer
-    private static function getHttpResponseCode($url, $followredirects = true)
+    public static function setCookiesPath($path)
     {
-        // returns int responsecode, or false (if url does not exist or connection timeout occurs)
-        // NOTE: could potentially take up to 0-30 seconds , blocking further code execution (more or less depending on connection, target site, and local timeout settings))
-        // if $followredirects == false: return the FIRST known httpcode (ignore redirects)
-        // if $followredirects == true : return the LAST  known httpcode (when redirected)
-        if (!$url || !is_string($url)) {
-            return false;
-        }
-        $ch = @curl_init($url);
-        if ($ch === false) {
-            return false;
-        }
-        @curl_setopt($ch, CURLOPT_HEADER, true);    // we want headers
-        @curl_setopt($ch, CURLOPT_NOBODY, true);    // dont need body
-        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);    // catch output (do NOT print!)
-        if ($followredirects) {
-            @curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            @curl_setopt($ch, CURLOPT_MAXREDIRS, 10);  // fairly random number, but could prevent unwanted endless redirects with followlocation=true
-        } else {
-            @curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-        }
-//      @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);   // fairly random number (seconds)... but could prevent waiting forever to get a result
-//      @curl_setopt($ch, CURLOPT_TIMEOUT        ,6);   // fairly random number (seconds)... but could prevent waiting forever to get a result
-//      @curl_setopt($ch, CURLOPT_USERAGENT      ,"Mozilla/5.0 (Windows NT 6.0) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1");   // pretend we're a regular browser
-        @curl_exec($ch);
-        if (@curl_errno($ch)) {   // should be 0
-            @curl_close($ch);
-            return false;
-        }
-        $code = @curl_getinfo($ch, CURLINFO_HTTP_CODE); // note: php.net documentation shows this returns a string, but really it returns an int
-        @curl_close($ch);
-        return $code;
+        self::$pathCookiesTxt = $path;
     }
 
-
-
-
-
-    public static function removeLastCached()
+    public static function removePostFromCache($url, $fields)
     {
-        @unlink(self::$lastCacheFile);
+        $cachekey = "POST " . $url . " " . json_encode($fields);
+        self::_getCacheManager()->deleteItem($cachekey);
     }
 
+    public static function deleteCookies()
+    {
+        @unlink(self::$pathCookiesTxt);
+    }
 
+    public static function clearCookies()
+    {
+        @unlink(self::$pathCookiesTxt);
+    }
+
+    /**
+     * we use this to decide if we need to sleep a while until we make next request
+     * @return mixed
+     */
+    public static function wasLastRequestCached()
+    {
+        return self::$fromCache;
+    }
 
 }
+
+UtilCurl::setCachePath(dirname(Util::getCallingScript()) . '/curl_cache');
+UtilCurl::setCacheDefaultLifetime(3600 * 10); // 10h
+UtilCurl::$headers = [];
+UtilCurl::$pathCookiesTxt = dirname(Util::getCallingScript()) . '/cookies.txt';
