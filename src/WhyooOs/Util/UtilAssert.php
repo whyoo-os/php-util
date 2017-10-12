@@ -102,7 +102,14 @@ class UtilAssert
     {
         $actualClass = is_object($object) ? get_class($object) : gettype($object);
         if ($actualClass != $neededClass) {
-            throw new \Exception("is class assertion failed $actualClass != $neededClass. " . $errorMessage);
+            throw new \Exception("is class assertion failed: $actualClass != $neededClass. " . $errorMessage);
+        }
+    }
+
+    public static function assertIsObject($object, $errorMessage='')
+    {
+        if (!is_object($object)) {
+            throw new \Exception("IsObject assertion failed: " . gettype($object) . ". " . $errorMessage);
         }
     }
 
@@ -110,7 +117,7 @@ class UtilAssert
     {
         if ($object instanceof $forbiddenClass) {
             $actualClass = get_class($object);
-            throw new \Exception("NotInstanceOf assertion failed $actualClass is instance of $forbiddenClass. " . $errorMessage);
+            throw new \Exception("NotInstanceOf assertion failed: $actualClass is instance of $forbiddenClass. " . $errorMessage);
         }
     }
 
