@@ -57,4 +57,23 @@ class UtilFormatter
         return $out;
     }
 
+
+
+    /**
+     * 10/2017 from scrapers
+     *
+     * @param $size
+     * @param int $precision
+     * @return string
+     */
+    public static function formatBytes($size, $precision = 2)
+    {
+        $base = log($size, 1024);
+        $suffixes = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+        return round(pow(1024, $base - floor($base)), $precision) . ' ' . $suffixes[floor($base)];
+    }
+
+
+
 }
