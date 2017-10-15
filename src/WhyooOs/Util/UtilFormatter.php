@@ -4,7 +4,7 @@
 namespace WhyooOs\Util;
 
 
-class Utilformatter
+class UtilFormatter
 {
 
     /**
@@ -36,31 +36,19 @@ class Utilformatter
 
     /**
      * 10/2017
+     * used in shipping_platform
      *
      * @param $array
      * @param $keys
      * @return string
      */
-    public static function formatDictHtml($array, $keys)
+    public static function formatDictHtml($array, $keys, array $translations = [])
     {
-        $translations = [ // FIXME: should be parameter
-            'firstname' => "Vorname",
-            'lastname' => "Nachnahme",
-            'email' => 'Email-Adresse',
-            'is_subscribed' => "Newsletter",
-            'yourmsg' => "Nachricht",
-            'country_id' => "Land",
-            'company' => "Firma",
-        ];
-
-
         $out = "<table>\n";
         foreach ($keys as $key) {
             $val = htmlentities($array[$key]);
             if (array_key_exists($key, $translations)) {
                 $key = $translations[$key];
-            } else {
-                $key = ucfirst($key);
             }
             $out .= "<tr><td>$key&nbsp;&nbsp;&nbsp;&nbsp;</td><td>$val</td></tr>\n";
         }
