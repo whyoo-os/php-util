@@ -35,6 +35,7 @@ class UtilGit
     }
 
     /**
+     * used by marketer
      * ideal for cache-buster
      * @return string
      */
