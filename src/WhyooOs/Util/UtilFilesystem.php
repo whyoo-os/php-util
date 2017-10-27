@@ -496,4 +496,24 @@ class UtilFilesystem
     }
 
 
+    /**
+     * 10/2017 used by ebayGen
+     * source https://stackoverflow.com/a/21409562/2848530
+     *
+     * @param $pathDir
+     * @return int size in bytes
+     */
+    public static function getDirectorySize($pathDir)
+    {
+        $bytesTotal = 0;
+        $pathDir = realpath($pathDir);
+        if ($pathDir !== false && $pathDir != '' && file_exists($pathDir)) {
+            foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($pathDir, \FilesystemIterator::SKIP_DOTS)) as $object) {
+                $bytesTotal += $object->getSize();
+            }
+        }
+
+        return $bytesTotal;
+    }
+
 }
