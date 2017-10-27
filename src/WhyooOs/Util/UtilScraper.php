@@ -27,6 +27,8 @@ class UtilScraper
 
 
     /**
+     * extract single information from loaded dom
+     *
      * @param $expression
      * @return string
      */
@@ -34,13 +36,7 @@ class UtilScraper
     {
         $text = self::$dom->find($expression, 0)->innertext;
 
-        // rectify
-        $text = html_entity_decode($text, ENT_HTML5);
-        $text = preg_replace('#\s+#', ' ', $text);
-        $text = self::br2nl($text);
-        $text = strip_tags($text);
-
-        return trim($text);
+        return self::rectifyScrapedText($text);
     }
 
     /**
@@ -49,6 +45,20 @@ class UtilScraper
     public static function loadDom($html)
     {
         self::$dom = str_get_html($html);
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    public static function rectifyScrapedText(string $text)
+    {
+        $text = html_entity_decode($text, ENT_HTML5);
+        $text = preg_replace('#\s+#', ' ', $text);
+        $text = self::br2nl($text);
+        $text = strip_tags($text);
+
+        return trim($text);
     }
 
 
