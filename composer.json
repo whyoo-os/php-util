@@ -15,7 +15,9 @@
     "symfony/var-dumper": "*",
     "phpfastcache/phpfastcache": "^6.0",
     "eventviva/php-image-resize": "*",
-    "jdorn/sql-formatter": "*"
+    "jdorn/sql-formatter": "*",
+    "swiftmailer/swiftmailer": "*",
+    "tijsverkoyen/css-to-inline-styles": "*"
   },
   "autoload": {
     "psr-4": {

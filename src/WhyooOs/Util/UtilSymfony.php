@@ -6,7 +6,9 @@ use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\User;
-
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 class UtilSymfony
 {
@@ -58,7 +60,7 @@ class UtilSymfony
     }
 
     /**
-     * alternative / faster version of UtilSymfony::createImageResponse ..
+     * alternative / faster version of self::createImageResponse ..
      *
      * when using this be sure that there is no way to get some file like /etc/passwd ..
      * @see UtilFilesystem::sanitizeFilename()
@@ -87,8 +89,8 @@ class UtilSymfony
         if( !is_array($data) && !is_object($data)) {
             return $data;
         }
-        $serializationContext = UtilSymfony::getSerializationContext($groups);
-        $serializer = UtilSymfony::getContainer()->get('jms_serializer');
+        $serializationContext = self::getSerializationContext($groups);
+        $serializer = self::getContainer()->get('jms_serializer');
 
         return $serializer->toArray($data, $serializationContext);
     }
@@ -118,7 +120,7 @@ class UtilSymfony
 
     /**
      * returns currently logged in user (if any) or null (if no user logged in)
-     * @return User|null
+     * @return UserInterface
      */
     public static function getUser()
     {
@@ -129,5 +131,25 @@ class UtilSymfony
         }
     }
 
+    /**
+     * orig: https://ourcodeworld.com/articles/read/459/how-to-authenticate-login-manually-an-user-in-a-controller-with-or-without-fosuserbundle-on-symfony-3
+     * @param UserInterface $user
+     */
+    public static function loginUser(UserInterface $user, $firewallName = 'secured_area')
+    {
+        $token = new UsernamePasswordToken(
+            $user,
+            null,
+            $firewallName,
+            $user->getRoles());
+
+        self::getContainer()->get('security.token_storage')->setToken($token);
+
+        self::getContainer()->get('session')->set('_security_' . $firewallName, serialize($token));
+
+//        // Fire the login event manually
+//        $event = new InteractiveLoginEvent($request, $token);
+//        self::getContainer()->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+    }
 
 }
