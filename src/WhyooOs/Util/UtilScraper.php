@@ -51,9 +51,12 @@ class UtilScraper
      * @param string $text
      * @return string
      */
-    public static function rectifyScrapedText(string $text)
+    public static function rectifyScrapedText($text)
     {
-        $text = html_entity_decode($text, ENT_HTML5);
+        if( !is_string($text)) {
+            return $text;
+        }
+        $text = html_entity_decode($text, ENT_QUOTES);
         $text = preg_replace('#\s+#', ' ', $text);
         $text = self::br2nl($text);
         $text = strip_tags($text);
