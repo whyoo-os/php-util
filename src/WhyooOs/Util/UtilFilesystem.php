@@ -158,7 +158,7 @@ class UtilFilesystem
     // from smartdonation
     // buggy? not working correctly?
     # similar to python's os.walk
-    function findFilesRecursive($dir = '.', $pattern = '~.*~')
+    public static function findFilesRecursive( string $dir = '.', string $pattern = '~.*~')
     {
         $ret = [];
         $prefix = $dir . '/';
