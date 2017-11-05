@@ -135,6 +135,13 @@ class UtilAssert
         }
     }
 
+    public static function assertIsInt($x, $errorMessage = '')
+    {
+        if (!is_int($x)) {
+            throw new \Exception("is-int assertion failed for path $x. " . $errorMessage);
+        }
+    }
+
     public static function assertIsDir($pathDir, $errorMessage = '')
     {
         if (!is_dir($pathDir)) {
@@ -156,6 +163,7 @@ class UtilAssert
             throw new \Exception("Assertion failed: array length " . count($array) . " != $length. " . $errorMessage);
         }
     }
+
 
 }
 
