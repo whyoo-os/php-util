@@ -135,6 +135,13 @@ class UtilAssert
         }
     }
 
+    public static function assertIsInt($x, $errorMessage = '')
+    {
+        if (!is_int($x)) {
+            throw new \Exception("is-int assertion failed for path $x. " . $errorMessage);
+        }
+    }
+
     public static function assertIsDir($pathDir, $errorMessage = '')
     {
         if (!is_dir($pathDir)) {
@@ -165,7 +172,7 @@ class UtilAssert
      * @param string $haystack
      * @param string $needle
      * @param string $errorMessage
-     * @throws Exception
+     * @throws \Exception
      */
     public static function assertStringIncludes(string $haystack, string $needle, $errorMessage = '')
     {
