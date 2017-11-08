@@ -25,14 +25,14 @@ class UtilScraper
     }
 
 
-
     /**
-     * @param $expression
+     * @param string $expression
+     * @param string $attributeName
      * @return string
      */
-    public static function extractStringFromDom($expression)
+    public static function extractStringFromDom(string $expression, string $attributeName='innertext')
     {
-        $text = self::$dom->find($expression, 0)->innertext;
+        $text = self::$dom->find($expression, 0)->$attributeName;
 
         // rectify
         $text = html_entity_decode($text, ENT_HTML5);
