@@ -28,4 +28,15 @@ class UtilJson
     }
 
 
+    /**
+     * @param string $pathJsonFile
+     * @param bool $bAssoc
+     * @return mixed
+     */
+    public static function loadJsonFile(string $pathJsonFile, $bAssoc = false)
+    {
+        return self::jsonDecode(file_get_contents($pathJsonFile), $bAssoc);
+    }
+
+
 }

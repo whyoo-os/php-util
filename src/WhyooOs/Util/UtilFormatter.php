@@ -10,7 +10,7 @@ class UtilFormatter
     /**
      * 10/2017
      * TODO: https://github.com/danielstjules/Stringy
-     *
+     * TODO: belongs into UtilMail
      * @param $array
      * @return string
      */
@@ -37,6 +37,7 @@ class UtilFormatter
     /**
      * 10/2017
      * used in shipping_platform
+     * TODO: belongs into UtilMail
      *
      * @param $array
      * @param $keys
