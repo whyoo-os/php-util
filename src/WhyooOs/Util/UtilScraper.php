@@ -25,16 +25,16 @@ class UtilScraper
     }
 
 
-
     /**
      * extract single information from loaded dom
      *
-     * @param $expression
+     * @param string $expression
+     * @param string $attributeName
      * @return string
      */
-    public static function extractStringFromDom($expression)
+    public static function extractStringFromDom(string $expression, string $attributeName='innertext')
     {
-        $text = self::$dom->find($expression, 0)->innertext;
+        $text = self::$dom->find($expression, 0)->$attributeName;
 
         return self::rectifyScrapedText($text);
     }
@@ -63,6 +63,7 @@ class UtilScraper
 
         return trim($text);
     }
+
 
 
 }
