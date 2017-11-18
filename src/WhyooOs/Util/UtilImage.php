@@ -122,6 +122,7 @@ class UtilImage
 
 
     /**
+     * todo: move back to marketer
      * returns web path of icon for a give mime type
      * @param $mimeType
      * @return string
@@ -131,7 +132,7 @@ class UtilImage
         $pathIconsWeb = "/assets/images/mimetypes/96";
         $fileNameSvg = str_replace('/', '-', $mimeType) . '.svg';
 
-        $pathIconsFull = UtilSymfony::getContainer()->getParameter('kernel.root_dir') . "/../web" . $pathIconsWeb;
+        $pathIconsFull = UtilSymfony::getContainer()->getParameter('kernel.root_dir') . "/web" . $pathIconsWeb;
 
         if (file_exists($pathIconsFull . '/' . $fileNameSvg)) {
             return $pathIconsWeb . '/' . $fileNameSvg;

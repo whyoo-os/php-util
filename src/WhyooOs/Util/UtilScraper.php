@@ -64,6 +64,23 @@ class UtilScraper
         return trim($text);
     }
 
+    /**
+     * 11/2017 ebay
+     * rectifies links like '//somedomain.com/abc.html'
+     *
+     * @param $link
+     * @param string $protocol
+     * @return string
+     */
+    public static function rectifyLink(string $link, string $protocol='https')
+    {
+        if( strpos($link, '//') === 0) {
+            return $protocol . ':' . $link;
+        }
+
+        return $link;
+    }
+
 
 
 }

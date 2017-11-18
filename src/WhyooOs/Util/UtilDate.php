@@ -170,6 +170,8 @@ class UtilDate
 
 
     /**
+     * used by marketer
+     *
      * @param $isoString
      * @return \DateTime
      */
