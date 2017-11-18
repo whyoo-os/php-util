@@ -75,7 +75,7 @@ class UtilFilesystem
 
 
     /**
-     * not recursive .. returns files and directories
+     * not recursive .. returns files and directories ... relative to $path
      */
     public static function scanDir($path)
     {

@@ -45,7 +45,7 @@ class UtilArray
         foreach ($arr as $key => &$v) {
             $v = trim($v);
             if ($bRemoveEmpty && empty($v)) {
-                unset($arr[$key]);
+                unset($arr[$key]); // todo? use splice here?
             }
         }
         return $arr;
@@ -469,6 +469,7 @@ class UtilArray
         }, $arr);
     }
 
+
     /**
      * 07/2017 schlegel
      *
@@ -481,6 +482,24 @@ class UtilArray
 
         if ($key !== false) {
             unset($arr[$key]);
+        }
+    }
+
+
+    /**
+     * 11/2017 push4
+     * uses array_splice instead of unset .. thus the array must be numeric assay
+     *
+     * @param $arr
+     * @param $needle
+     */
+    public static function removeElementFromNumericArray(&$arr, $needle)
+    {
+        $idx = array_search($needle, $arr);
+
+        if ($idx !== false) {
+            UtilAssert::assertIsInt($idx);
+            array_splice($arr, $idx, 1);
         }
     }
 

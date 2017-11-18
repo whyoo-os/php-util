@@ -6,6 +6,8 @@
 namespace WhyooOs\Util;
 
 
+use Pygmentize\Pygmentize;
+
 class UtilJson
 {
 
@@ -37,6 +39,19 @@ class UtilJson
     {
         return self::jsonDecode(file_get_contents($pathJsonFile), $bAssoc);
     }
+
+
+    /**
+     * 11/2017 push4
+     *
+     * @param $code
+     * @return string
+     */
+    public static function highlightJsonForTerminal($code)
+    {
+        return Pygmentize::highlight($code, 'json', 'utf-8', 'terminal');
+    }
+
 
 
 }

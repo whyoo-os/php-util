@@ -2,7 +2,7 @@
 
 namespace WhyooOs\Util;
 
-use Dompdf\Exception;
+
 
 
 /**
@@ -91,7 +91,7 @@ class UtilAssert
      * @param string $errorMessage
      * @throws \Exception
      */
-    public static function assertInArray($needle, array $haystack, $errorMessage = '')
+    public static function assertInArray($needle, array $haystack, $errorMessage='')
     {
         if (!in_array($needle, $haystack)) {
             throw new \Exception("InArray Assertion failed - '$needle' not in array'" . $errorMessage);
@@ -106,14 +106,14 @@ class UtilAssert
         }
     }
 
-    public static function assertIsObject($object, $errorMessage = '')
+    public static function assertIsObject($object, $errorMessage='')
     {
         if (!is_object($object)) {
             throw new \Exception("IsObject assertion failed: " . gettype($object) . ". " . $errorMessage);
         }
     }
 
-    public static function assertNotInstanceOf($object, string $forbiddenClass, $errorMessage = '')
+    public static function assertNotInstanceOf($object, string $forbiddenClass, $errorMessage='')
     {
         if ($object instanceof $forbiddenClass) {
             $actualClass = get_class($object);
@@ -132,6 +132,13 @@ class UtilAssert
     {
         if (!is_file($pathFile)) {
             throw new \Exception("is-file assertion failed for path $pathFile. " . $errorMessage);
+        }
+    }
+
+    public static function assertIsInt($x, $errorMessage = '')
+    {
+        if (!is_int($x)) {
+            throw new \Exception("is-int assertion failed for path $x. " . $errorMessage);
         }
     }
 
@@ -165,12 +172,12 @@ class UtilAssert
      * @param string $haystack
      * @param string $needle
      * @param string $errorMessage
-     * @throws Exception
+     * @throws \Exception
      */
     public static function assertStringIncludes(string $haystack, string $needle, $errorMessage = '')
     {
         if (strpos($haystack, $needle) === false) {
-            throw new Exception("Assertion failed: string `$needle` not included in string `$haystack`. " . $errorMessage);
+            throw new \Exception("Assertion failed: string `$needle` not included in string `$haystack`. " . $errorMessage);
         }
     }
 
