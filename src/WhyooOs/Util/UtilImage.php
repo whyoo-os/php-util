@@ -181,24 +181,6 @@ class UtilImage
     }
 
 
-    public static function calculateTextBox($text, $fontFile, $fontSize, $fontAngle = 0)
-    {
-        $rect = imagettfbbox($fontSize, $fontAngle, $fontFile, $text);
-        $minX = min(array($rect[0], $rect[2], $rect[4], $rect[6]));
-        $maxX = max(array($rect[0], $rect[2], $rect[4], $rect[6]));
-        $minY = min(array($rect[1], $rect[3], $rect[5], $rect[7]));
-        $maxY = max(array($rect[1], $rect[3], $rect[5], $rect[7]));
-
-        return [
-            "left" => abs($minX) - 1,
-            "top" => abs($minY) - 1,
-            "width" => $maxX - $minX,
-            "height" => $maxY - $minY,
-            "box" => $rect
-        ];
-    }
-
-
     public static function rotateImage($pathSrc, $pathDest, $degrees)
     {
         // Image 2 .... is Image 90 degrees rotated
@@ -209,134 +191,6 @@ class UtilImage
         $imgTmp->destroy();
 
         return $pathDest;
-    }
-
-
-    /**
-     * renders text on an image file
-     */
-    public static function renderTextOnFile($pathSrc, $centerX01, $centerY01, $text, $textColor, $pathFont, $fontSizePercent, $pathDest)
-    {
-        // $colorInt = self::cssHexToInt($textColor);
-        $colorInt = UtilColor::cssHexToInt($textColor);
-
-        // ---- crop image
-        UtilFilesystem::mkdirIfNotExists('/tmp/renderTextOnFile');
-        $pathTmpCropped = '/tmp/renderTextOnFile/' . uniqid('cropped-') . '.' . UtilFilesystem::getExtension($pathSrc);
-        $pathSrc = self::cropImageByMetadata($pathSrc, $pathTmpCropped);
-
-        // ---- load image
-        $im = self::loadImage($pathSrc);
-
-
-        // ---- calculate fontsize relative to image size...
-
-        $srcImageWith = imagesx($im);
-        $srcImageHeight = imagesy($im);
-
-        $fontSizeInPx = min($srcImageWith, $srcImageHeight) / 100.0 * $fontSizePercent;
-        $fontSizeInPt = UtilUnit::px2pt($fontSizeInPx);
-
-
-        // ---- calculate size of textbox because we write text centered at (px/py)
-
-        $box = self::calculateTextBox($text, $pathFont, $fontSizeInPt);
-
-
-        // ---- calc position
-
-        $centerPosX = $centerX01 * $srcImageWith;
-        $centerPosY = $centerY01 * $srcImageHeight;
-
-
-        // ---- write text on image
-
-        imagettftext($im, $fontSizeInPt, 0, $centerPosX - $box['width'] / 2, $centerPosY + +$box['height'] / 2, $colorInt, $pathFont, $text);
-
-        self::saveImage($im, $pathDest);
-    }
-
-
-    /**
-     * saves caption in xmp-metadata of an image
-     * @param $pathImage
-     * @param $captionText
-     */
-    public static function setImageCaption($pathImage, $captionText)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-        $xmp = $image->getXmp();
-        $xmp->setCaption($captionText);
-        //$xmp->setHeadline('A test headline');
-        //$xmp->setCopyright('Marc Christenfeldt');
-        //$image->getIptc()->setCategory('Category');
-        $image->save();
-    }
-
-
-    /**
-     * get caption from xmp-metadata of image
-     */
-    public static function getImageCaption($pathImage)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-
-        return $image->getXmp()->getCaption();
-    }
-
-    /**
-     * saves crop in xmp-metadata of an image
-     * @param $pathImage
-     */
-    public static function setImageCrop($pathImage, $x1, $y1, $x2, $y2)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-        /** @var \Mcx\Image\Metadata\Xmp $xmp */
-        $xmp = $image->getXmp();
-        $xmp->setMcxCrop($x1, $y1, $x2, $y2);
-        $image->save();
-    }
-
-
-    /**
-     * get crop coordinates from xmp-metadata of image
-     */
-    public static function getImageCrop($pathImage)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-        $xmp = $image->getXmp();
-
-        return $xmp->getMcxCrop();
-    }
-
-    /**
-     * TODO: more generic way to set ANY custom metadata
-     *
-     * saves caption in xmp-metadata of an image
-     * @param $pathImage
-     * @param $watermarkPosition
-     */
-    public static function setWatermarkPosition($pathImage, $watermarkPosition)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-        $xmp = $image->getXmp();
-        $xmp->setMcxWatermarkPosition($watermarkPosition);
-        //$xmp->setHeadline('A test headline');
-        //$xmp->setCopyright('Marc Christenfeldt');
-        //$image->getIptc()->setCategory('Category');
-        $image->save();
-    }
-
-
-    /**
-     * get crop coordinates from xmp-metadata of image
-     */
-    public static function getWatermarkPosition($pathImage)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-        $xmp = $image->getXmp();
-
-        return $xmp->getMcxWatermarkPosition();
     }
 
 
@@ -361,24 +215,6 @@ class UtilImage
         UtilImage::saveImage($im2, $pathCropped);
     }
 
-    /**
-     * crop by coordinates stored in xmp metadata (if any)
-     *
-     * @param $pathImage
-     * @param $pathCropped
-     * @return string path of cropped image or path of original image (if no cropping coordinates were found)
-     */
-    public static function cropImageByMetadata($pathImage, $pathCropped)
-    {
-        $crop = self::getImageCrop($pathImage);
-
-        if (!empty($crop)) {
-            UtilImage::cropImage($pathImage, $pathCropped, $crop['x1'], $crop['y1'], $crop['x2'], $crop['y2']);
-            return $pathCropped;
-        }
-
-        return $pathImage;
-    }
 
     /**
      * @param string $fullPathImage
