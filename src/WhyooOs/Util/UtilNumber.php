@@ -23,12 +23,14 @@ class UtilNumber
 
     /**
      * replaces komma (german notation) with dot (american notation)
+     * separators NOT allowed
      * eg "100,12" --> 100.12
      * @param $string
      * @return float
      */
     public static function stringToNumber($string)
     {
+        $string = preg_replace('/([^0-9\.,])/i', '', $string);
         return floatval(str_replace(',', '.', $string));
     }
 

@@ -25,22 +25,18 @@ class UtilScraper
     }
 
 
-
     /**
-     * @param $expression
+     * extract single information from loaded dom
+     *
+     * @param string $expression
+     * @param string $attributeName
      * @return string
      */
-    public static function extractStringFromDom($expression)
+    public static function extractStringFromDom(string $expression, string $attributeName='innertext')
     {
-        $text = self::$dom->find($expression, 0)->innertext;
+        $text = self::$dom->find($expression, 0)->$attributeName;
 
-        // rectify
-        $text = html_entity_decode($text, ENT_HTML5);
-        $text = preg_replace('#\s+#', ' ', $text);
-        $text = self::br2nl($text);
-        $text = strip_tags($text);
-
-        return trim($text);
+        return self::rectifyScrapedText($text);
     }
 
     /**
@@ -50,6 +46,41 @@ class UtilScraper
     {
         self::$dom = str_get_html($html);
     }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    public static function rectifyScrapedText($text)
+    {
+        if( !is_string($text)) {
+            return $text;
+        }
+        $text = html_entity_decode($text, ENT_QUOTES);
+        $text = preg_replace('#\s+#', ' ', $text);
+        $text = self::br2nl($text);
+        $text = strip_tags($text);
+
+        return trim($text);
+    }
+
+    /**
+     * 11/2017 ebay
+     * rectifies links like '//somedomain.com/abc.html'
+     *
+     * @param $link
+     * @param string $protocol
+     * @return string
+     */
+    public static function rectifyLink(string $link, string $protocol='https')
+    {
+        if( strpos($link, '//') === 0) {
+            return $protocol . ':' . $link;
+        }
+
+        return $link;
+    }
+
 
 
 }
