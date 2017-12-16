@@ -98,7 +98,7 @@ class UtilException
     /**
      * @return string
      */
-    public static function getDebugBacktraceAsText($skip=1)
+    public static function getDebugBacktraceAsText($skip=1, string $rootDirToRemove=null)
     {
         $stack = debug_backtrace();
         $output = '';
@@ -107,7 +107,8 @@ class UtilException
         for ($i = $skip; $i < $stackLen; $i++) {
             $entry = $stack[$i];
 
-            $func = $entry['function'] . '(';
+            $func = empty($entry['class']) ? $entry['function'] : Util::removeNamespace($entry['class']) . '::' . $entry['function'];
+            $func.= '(';
             $argsLen = count($entry['args']);
             for ($j = 0; $j < $argsLen; $j++) {
                 $func .= self::_argumentToString($entry['args'][$j]);
@@ -119,6 +120,9 @@ class UtilException
             $entry_file = 'NO_FILE';
             if (array_key_exists('file', $entry)) {
                 $entry_file = $entry['file'];
+                if( $rootDirToRemove && UtilString::startsWith($entry_file, $rootDirToRemove)) {
+                    $entry_file = substr($entry_file, strlen($rootDirToRemove));
+                }
             }
             $entry_line = 'NO_LINE';
             if (array_key_exists('line', $entry)) {
