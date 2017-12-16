@@ -159,5 +159,6 @@ class UtilString
         return strpos($haystack, $needle) === 0;
     }
 
+
 }
 
