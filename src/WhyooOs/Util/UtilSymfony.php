@@ -92,7 +92,14 @@ class UtilSymfony
         $serializationContext = self::getSerializationContext($groups);
         $serializer = self::getContainer()->get('jms_serializer');
 
-        return $serializer->toArray($data, $serializationContext);
+        $arr = $serializer->toArray($data, $serializationContext);
+
+        // ---- add serializion groups to array for debugging
+//        if( !is_null($groups)) {
+//            $arr['__groups'] =  $serializationContext->attributes->get('groups');
+//        }
+
+        return $arr;
     }
 
 
@@ -109,7 +116,7 @@ class UtilSymfony
             if (is_string($groups)) {
                 $groups = [$groups];
             }
-            $groups[] = "formatters"; // HACK
+            // $groups[] = "formatters"; // HACK
             $groups[] = "ALWAYS"; // HACK
             $context->setGroups($groups);
         }

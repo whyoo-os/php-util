@@ -120,25 +120,24 @@ class UtilArray
      *
      * @param array $arr
      * @param $propertyName
-     * @param bool $includeKeys the thing with $includeKeys` is if array is associative to keep the old keys not to cretae new numeric array
+     * @param bool $keepOriginalKeys the thing with $keepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
      * @return array
      */
-    public static function getObjectProperty(array $arr, $propertyName, $includeKeys = false)
+    public static function getObjectProperty(array $arr, $propertyName, $keepOriginalKeys = false)
     {
         $methodName = "get" . ucfirst($propertyName);
-        if (!$includeKeys) {
-            // new keys (create ordinary numeric array)
-            $newArray = array_map(function ($object) use ($methodName) {
-                return $object->$methodName();
-            }, $arr);
-        } else {
+        if ($keepOriginalKeys) {
             // keep original keys
             array_walk($arr, function (&$object, $key) use ($methodName) {
                 $object = $object->$methodName();
             });
             $newArray = $arr;
+        } else {
+            // new keys (create ordinary numeric array)
+            $newArray = array_map(function ($object) use ($methodName) {
+                return $object->$methodName();
+            }, $arr);
         }
-
 
         return $newArray;
     }
@@ -415,6 +414,19 @@ class UtilArray
         return $new;
     }
 
+    /**
+     * todo: merge with filterArrayByKeys ?
+     * Filter array by its keys using a callback.
+     * @return array numeric(!) array
+     */
+    public static function filterByKey(array $arr, $keys)
+    {
+        return array_map(function ($key) use ($arr) {
+            return $arr[$key];
+        }, $keys);
+    }
+
+
 
     /**
      * 09/2017 from scrapers
@@ -432,25 +444,6 @@ class UtilArray
 
         return $ret;
     }
-
-
-
-
-
-    /**
-     * todo: merge with filterArrayByKeys ?
-     * Filter array by its keys using a callback.
-     * @return array numeric(!) array
-     */
-    public static function filterByKey(array $arr, $keys)
-    {
-        return array_map(function ($key) use ($arr) {
-            return $arr[$key];
-        }, $keys);
-    }
-
-
-
 
 
     // from marketer v1
