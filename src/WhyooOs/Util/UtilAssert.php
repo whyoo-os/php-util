@@ -135,6 +135,13 @@ class UtilAssert
         }
     }
 
+    public static function assertIsInt($x, $errorMessage = '')
+    {
+        if (!is_int($x)) {
+            throw new \Exception("is-int assertion failed for path $x. " . $errorMessage);
+        }
+    }
+
     public static function assertIsDir($pathDir, $errorMessage = '')
     {
         if (!is_dir($pathDir)) {
@@ -146,14 +153,31 @@ class UtilAssert
      * asserts that array has specific length
      * 08/2017
      *
-     * @param $array
-     * @param $length
+     * @param array $array
+     * @param int $length
+     * @param string $errorMessage
      * @throws \Exception
      */
-    public static function assertArrayLength(array $array, int $length, $errorMessage='')
+    public static function assertArrayLength(array $array, int $length, $errorMessage = '')
     {
         if (count($array) != $length) {
             throw new \Exception("Assertion failed: array length " . count($array) . " != $length. " . $errorMessage);
+        }
+    }
+
+
+    /**
+     * 11/2017
+     *
+     * @param string $haystack
+     * @param string $needle
+     * @param string $errorMessage
+     * @throws \Exception
+     */
+    public static function assertStringIncludes(string $haystack, string $needle, $errorMessage = '')
+    {
+        if (strpos($haystack, $needle) === false) {
+            throw new \Exception("Assertion failed: string `$needle` not included in string `$haystack`. " . $errorMessage);
         }
     }
 

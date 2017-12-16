@@ -3,8 +3,6 @@
 
 namespace WhyooOs\Util;
 
-use SqlFormatter;
-
 /**
  * 07/2017
  */
@@ -23,7 +21,6 @@ class UtilLegacy
             echo "</div>";
         }
     }
-
 
 
 
