@@ -151,8 +151,11 @@ class UtilSymfony
             $user->getRoles());
 
         self::getContainer()->get('security.token_storage')->setToken($token);
-
-        self::getContainer()->get('session')->set('_security_' . $firewallName, serialize($token));
+try {
+    self::getContainer()->get('session')->set('_security_' . $firewallName, serialize($token));
+} catch (\Exception $e) {
+    // ignore RuntimeException: Failed to start the session because headers have already been sent
+}
 
 //        // Fire the login event manually
 //        $event = new InteractiveLoginEvent($request, $token);
