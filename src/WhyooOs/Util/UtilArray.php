@@ -117,7 +117,8 @@ class UtilArray
      * $posts = {'a' => post1, 'b' => post2, 'c' => post3]
      * getObjectProperty($posts, 'id', false) returns [1,2,3]
      * getObjectProperty($posts, 'id', true) returns { a:1, b:2, c:3 }
-     *
+     * TODO: rename getDocumentProperty
+     * used in marketer 
      * @param array $arr
      * @param $propertyName
      * @param bool $keepOriginalKeys the thing with $keepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
@@ -128,20 +129,47 @@ class UtilArray
         $methodName = "get" . ucfirst($propertyName);
         if ($keepOriginalKeys) {
             // keep original keys
-            array_walk($arr, function (&$object, $key) use ($methodName) {
-                $object = $object->$methodName();
+            array_walk($arr, function (&$item, $key) use ($methodName) {
+                $item = $item->$methodName();
             });
             $newArray = $arr;
         } else {
             // new keys (create ordinary numeric array)
-            $newArray = array_map(function ($object) use ($methodName) {
-                return $object->$methodName();
+            $newArray = array_map(function ($item) use ($methodName) {
+                return $item->$methodName();
             }, $arr);
         }
 
         return $newArray;
     }
 
+
+    /**
+     * 12/2017
+     * basically a convenience wrapper array array_map
+     *
+     * @param array $arr
+     * @param $keyName
+     * @param bool $keepOriginalKeys
+     * @return array
+     */
+    public static function getAssocProperty(array $arr, $keyName, $keepOriginalKeys = false)
+    {
+        if ($keepOriginalKeys) {
+            // keep original keys
+            array_walk($arr, function (&$item, $key) use ($methodName) {
+                $item = $item[$keyName];
+            });
+            $newArray = $arr;
+        } else {
+            // new keys (create ordinary numeric array)
+            $newArray = array_map(function ($item) use ($keyName) {
+                return $item[$keyName];
+            }, $arr);
+        }
+
+        return $newArray;
+    }
 
     /**
      * sorts an array of assoc arrays (= a table) by a column $keyName
