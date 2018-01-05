@@ -29,6 +29,31 @@ class UtilSymfony
         return $kernel->getContainer();
     }
 
+    /**
+     * convenience hack
+     * 01/2018
+     * ebayGen
+     *
+     * @return mixed the service from the container
+     */
+    public static function getService(string $serviceId)
+    {
+        return self::getContainer()->get($serviceId);
+    }
+
+
+    /**
+     * convenience hack
+     * 01/2018
+     * ebayGen
+     *
+     * @return mixed the requested parameter from the container
+     */
+    public static function getParameter(string $name)
+    {
+        return self::getContainer()->getParameter($name);
+    }
+
 
     /**
      * when using this be sure that there is no way to get some file like /etc/passwd ..
