@@ -254,7 +254,7 @@ class Util
      */
     public static function getNewline()
     {
-        if (self::isCli) {
+        if (self::isCli()) {
             // In cli-mode
             return "\n";
         } else {
