@@ -42,6 +42,11 @@ class UtilColor
         }
     }
 
+    public static function rgb2hex($r, $g, $b)
+    {
+        return sprintf('#%02x%02x%02x', intval($r), intval($g), intval($b));
+    }
+
 
     /**
      * 07/2017 moved from UtilImage to here
