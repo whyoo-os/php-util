@@ -117,32 +117,59 @@ class UtilArray
      * $posts = {'a' => post1, 'b' => post2, 'c' => post3]
      * getObjectProperty($posts, 'id', false) returns [1,2,3]
      * getObjectProperty($posts, 'id', true) returns { a:1, b:2, c:3 }
-     *
+     * TODO: rename getDocumentProperty
+     * used in marketer 
      * @param array $arr
      * @param $propertyName
-     * @param bool $includeKeys the thing with $includeKeys` is if array is associative to keep the old keys not to cretae new numeric array
+     * @param bool $keepOriginalKeys the thing with $keepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
      * @return array
      */
-    public static function getObjectProperty(array $arr, $propertyName, $includeKeys = false)
+    public static function getObjectProperty(array $arr, $propertyName, $keepOriginalKeys = false)
     {
         $methodName = "get" . ucfirst($propertyName);
-        if (!$includeKeys) {
-            // new keys (create ordinary numeric array)
-            $newArray = array_map(function ($object) use ($methodName) {
-                return $object->$methodName();
-            }, $arr);
-        } else {
+        if ($keepOriginalKeys) {
             // keep original keys
-            array_walk($arr, function (&$object, $key) use ($methodName) {
-                $object = $object->$methodName();
+            array_walk($arr, function (&$item, $key) use ($methodName) {
+                $item = $item->$methodName();
             });
             $newArray = $arr;
+        } else {
+            // new keys (create ordinary numeric array)
+            $newArray = array_map(function ($item) use ($methodName) {
+                return $item->$methodName();
+            }, $arr);
         }
-
 
         return $newArray;
     }
 
+
+    /**
+     * 12/2017
+     * basically a convenience wrapper array array_map
+     *
+     * @param array $arr
+     * @param $keyName
+     * @param bool $keepOriginalKeys
+     * @return array
+     */
+    public static function getAssocProperty(array $arr, $keyName, $keepOriginalKeys = false)
+    {
+        if ($keepOriginalKeys) {
+            // keep original keys
+            array_walk($arr, function (&$item, $key) use ($methodName) {
+                $item = $item[$keyName];
+            });
+            $newArray = $arr;
+        } else {
+            // new keys (create ordinary numeric array)
+            $newArray = array_map(function ($item) use ($keyName) {
+                return $item[$keyName];
+            }, $arr);
+        }
+
+        return $newArray;
+    }
 
     /**
      * sorts an array of assoc arrays (= a table) by a column $keyName
@@ -415,6 +442,19 @@ class UtilArray
         return $new;
     }
 
+    /**
+     * todo: merge with filterArrayByKeys ?
+     * Filter array by its keys using a callback.
+     * @return array numeric(!) array
+     */
+    public static function filterByKey(array $arr, $keys)
+    {
+        return array_map(function ($key) use ($arr) {
+            return $arr[$key];
+        }, $keys);
+    }
+
+
 
     /**
      * 09/2017 from scrapers
@@ -432,25 +472,6 @@ class UtilArray
 
         return $ret;
     }
-
-
-
-
-
-    /**
-     * todo: merge with filterArrayByKeys ?
-     * Filter array by its keys using a callback.
-     * @return array numeric(!) array
-     */
-    public static function filterByKey(array $arr, $keys)
-    {
-        return array_map(function ($key) use ($arr) {
-            return $arr[$key];
-        }, $keys);
-    }
-
-
-
 
 
     // from marketer v1

@@ -29,6 +29,31 @@ class UtilSymfony
         return $kernel->getContainer();
     }
 
+    /**
+     * convenience hack
+     * 01/2018
+     * ebayGen
+     *
+     * @return mixed the service from the container
+     */
+    public static function getService(string $serviceId)
+    {
+        return self::getContainer()->get($serviceId);
+    }
+
+
+    /**
+     * convenience hack
+     * 01/2018
+     * ebayGen
+     *
+     * @return mixed the requested parameter from the container
+     */
+    public static function getParameter(string $name)
+    {
+        return self::getContainer()->getParameter($name);
+    }
+
 
     /**
      * when using this be sure that there is no way to get some file like /etc/passwd ..
@@ -92,7 +117,14 @@ class UtilSymfony
         $serializationContext = self::getSerializationContext($groups);
         $serializer = self::getContainer()->get('jms_serializer');
 
-        return $serializer->toArray($data, $serializationContext);
+        $arr = $serializer->toArray($data, $serializationContext);
+
+        // ---- add serializion groups to array for debugging
+//        if( !is_null($groups)) {
+//            $arr['__groups'] =  $serializationContext->attributes->get('groups');
+//        }
+
+        return $arr;
     }
 
 
@@ -109,7 +141,7 @@ class UtilSymfony
             if (is_string($groups)) {
                 $groups = [$groups];
             }
-            $groups[] = "formatters"; // HACK
+            // $groups[] = "formatters"; // HACK
             $groups[] = "ALWAYS"; // HACK
             $context->setGroups($groups);
         }
@@ -144,8 +176,11 @@ class UtilSymfony
             $user->getRoles());
 
         self::getContainer()->get('security.token_storage')->setToken($token);
-
-        self::getContainer()->get('session')->set('_security_' . $firewallName, serialize($token));
+try {
+    self::getContainer()->get('session')->set('_security_' . $firewallName, serialize($token));
+} catch (\Exception $e) {
+    // ignore RuntimeException: Failed to start the session because headers have already been sent
+}
 
 //        // Fire the login event manually
 //        $event = new InteractiveLoginEvent($request, $token);
