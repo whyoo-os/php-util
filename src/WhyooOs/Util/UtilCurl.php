@@ -68,6 +68,20 @@ class UtilCurl
     }
 
     /**
+     * convenience function
+     * used by marketer
+     * 01/2018
+     *
+     * @param $url
+     * @param null $cacheTTL
+     */
+    public static function curlGetJsonCached($url, $cacheTTL = null)
+    {
+        return json_decode(self::curlGetCached($url, $cacheTTL), true);
+    }
+
+
+    /**
      * @param $url
      * @param null $cacheTTL
      * @return mixed|string
