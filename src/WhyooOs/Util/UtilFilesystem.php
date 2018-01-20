@@ -158,7 +158,7 @@ class UtilFilesystem
     // from smartdonation
     // buggy? not working correctly?
     # similar to python's os.walk
-    public static function findFilesRecursive( string $dir = '.', string $pattern = '~.*~')
+    public static function findFilesRecursive(string $dir = '.', string $pattern = '~.*~')
     {
         $ret = [];
         $prefix = $dir . '/';
@@ -213,15 +213,23 @@ class UtilFilesystem
     public static function findImages($dir, $bRecursive = true)
     {
         $extensionsLowerCase = ['jpg', 'jpeg', 'png', 'gif'];
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
         if ($bRecursive) {
             $files = self::scanDirForFilesRecursive($dir);
         } else {
             $files = self::scanDir($dir);
         }
-        $ret = array_filter($files, function ($filename) use ($extensionsLowerCase) {
+#UtilDebug::dd($files);
+        $ret = array_filter($files, function ($filename) use ($dir, $extensionsLowerCase, $allowedMimeTypes) {
             //echo "#".self::getExtension( $filename);
-            return in_array(self::getExtension($filename), $extensionsLowerCase);
+            $ext = self::getExtension($filename);
+            if (empty($ext)) {
+                // filename has no extension .. we use mimeType
+                $mime = mime_content_type($dir . '/' . $filename);
+                return in_array($mime, $allowedMimeTypes);
+            }
+            return in_array($ext, $extensionsLowerCase);
         });
 
         asort($ret);
