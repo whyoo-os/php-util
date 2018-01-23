@@ -37,6 +37,15 @@ class UtilGit
     }
 
     /**
+     * used in shipping for "version number"
+     */
+    public static function getDateRelative(string $path=null)
+    {
+        $paramPath = $path ? " -C $path " : '';
+        return exec("git $paramPath log -1 --format=%cd --date=relative");
+    }
+
+    /**
      * used by marketer
      * ideal for cache-buster
      * @return string
