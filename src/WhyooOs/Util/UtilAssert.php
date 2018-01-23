@@ -3,8 +3,6 @@
 namespace WhyooOs\Util;
 
 
-
-
 /**
  *
  */
@@ -91,10 +89,20 @@ class UtilAssert
      * @param string $errorMessage
      * @throws \Exception
      */
-    public static function assertInArray($needle, array $haystack, $errorMessage='')
+    public static function assertInArray($needle, array $haystack, $errorMessage = '')
     {
         if (!in_array($needle, $haystack)) {
-            throw new \Exception("InArray Assertion failed - '$needle' not in array'" . $errorMessage);
+            throw new \Exception("InArray Assertion failed - '$needle' not in array' " . $errorMessage);
+        }
+    }
+
+
+    // 01/2018
+    public static function assertArrayKeyExists($key, array $haystack, $errorMessage = '')
+    {
+        if (!array_key_exists($key, $haystack)) {
+            $strAvailable = implode(', ', array_keys($haystack));
+            throw new \Exception("arrayKeyExists Assertion failed - no '$key' in array. available keys: $strAvailable." . "\n" . $errorMessage);
         }
     }
 
@@ -106,14 +114,24 @@ class UtilAssert
         }
     }
 
-    public static function assertIsObject($object, $errorMessage='')
+    public static function assertIsObject($object, $errorMessage = '')
     {
         if (!is_object($object)) {
             throw new \Exception("IsObject assertion failed: " . gettype($object) . ". " . $errorMessage);
         }
     }
 
-    public static function assertNotInstanceOf($object, string $forbiddenClass, $errorMessage='')
+
+    // 01/2018
+    public static function assertIsArray($array, $errorMessage = '')
+    {
+        if (!is_array($array)) {
+            throw new \Exception("IsArray assertion failed: " . gettype($array) . ". " . $errorMessage);
+        }
+    }
+
+
+    public static function assertNotInstanceOf($object, string $forbiddenClass, $errorMessage = '')
     {
         if ($object instanceof $forbiddenClass) {
             $actualClass = get_class($object);
