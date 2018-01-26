@@ -525,4 +525,20 @@ class UtilArray
     }
 
 
+    /**
+     * 01/2018 moved from UtilMongo to here
+     *
+     * @param  \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|array $arr
+     * @return array
+     */
+    public static function iteratorToArray($arr, $useKeys = true)
+    {
+        if (is_array($arr)) {
+            return $arr;
+        }
+
+        return iterator_to_array($arr, $useKeys);
+    }
+
+
 }
