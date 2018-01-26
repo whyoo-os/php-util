@@ -85,6 +85,35 @@ class UtilSymfony
     }
 
     /**
+     * 01/2018
+     * could be optimized
+     *
+     * @param string $pathFile
+     * @return Response
+     */
+    public static function createPdfResponse(string $pathFile)
+    {
+        // Generate response
+        $response = new Response();
+
+        // headers .. do NOT cache
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . basename($pathFile) . '";');
+        $response->headers->set('Content-Type', mime_content_type($pathFile));
+        $response->headers->set('Content-Length', filesize($pathFile));
+        $response->headers->set('Pragma', 'public');
+        $response->headers->set('Cache-Control', 'private');
+        $response->headers->set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time()));
+
+        $response->sendHeaders();
+        $response->setContent(readfile($pathFile));
+
+        return $response;
+    }
+
+
+
+
+    /**
      * alternative / faster version of self::createImageResponse ..
      *
      * when using this be sure that there is no way to get some file like /etc/passwd ..
