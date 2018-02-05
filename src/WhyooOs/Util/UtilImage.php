@@ -13,9 +13,9 @@ class UtilImage
 {
 
 
-    const RESIZE_MODE_STRETCH = 'S';
-    const RESIZE_MODE_INSET = 'I'; // not cropping .. Resize to fit a bounding box
-    const RESIZE_MODE_OUTBOUND = 'O'; // cropping
+    const RESIZE_MODE_STRETCH = 'STRETCH';
+    const RESIZE_MODE_INSET = 'INSET'; // not cropping .. Resize to fit a bounding box
+    const RESIZE_MODE_OUTBOUND = 'OUTBOUND'; // cropping
 
     private static $defaultJpegQuality = 95;
 
