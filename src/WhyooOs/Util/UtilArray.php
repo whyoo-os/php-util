@@ -538,9 +538,10 @@ class UtilArray
     }
 
     /**
-     * 02/2018 [marketer]
-     * @param $getterName
-     * @param $items
+     * 02/2018 unused
+     *
+     * @param $getterName eg "getId"
+     * @param array $items
      * @return array
      */
     public static function arrayColumnByGetter($getterName, $items)
