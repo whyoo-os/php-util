@@ -6,7 +6,8 @@
 
 namespace WhyooOs\Util;
 
-include( __DIR__ . '/../HelperClasses/simple_html_dom.php');
+use Sunra\PhpSimple\HtmlDomParser;
+
 
 class UtilScraper
 {
@@ -44,7 +45,7 @@ class UtilScraper
      */
     public static function loadDom($html)
     {
-        self::$dom = str_get_html($html);
+        self::$dom = HtmlDomParser::str_get_html($html);
     }
 
     /**
