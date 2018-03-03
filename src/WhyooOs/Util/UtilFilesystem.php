@@ -206,11 +206,11 @@ class UtilFilesystem
     /**
      * returns alphabetically sorted filtered list of files
      *
-     * @param $dir
-     * @param $bRecursive
-     * @return array
+     * @param string $dir
+     * @param bool $bRecursive
+     * @return string[]
      */
-    public static function findImages($dir, $bRecursive = true)
+    public static function findImages(string $dir, $bRecursive = true)
     {
         $extensionsLowerCase = ['jpg', 'jpeg', 'png', 'gif'];
         $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
