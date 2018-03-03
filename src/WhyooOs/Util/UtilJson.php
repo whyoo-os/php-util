@@ -34,10 +34,23 @@ class UtilJson
      * @param string $pathJsonFile
      * @param bool $bAssoc
      * @return mixed
+     * @throws \Exception
      */
     public static function loadJsonFile(string $pathJsonFile, $bAssoc = false)
     {
         return self::jsonDecode(file_get_contents($pathJsonFile), $bAssoc);
+    }
+
+
+    /**
+     * @param string $pathJsonFile
+     * @param $data
+     * @param int $options
+     * @return bool|int
+     */
+    public static function saveJsonFile(string $pathJsonFile, $data, $options=JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)
+    {
+        return file_put_contents($pathJsonFile, json_encode($data, $options));
     }
 
 
