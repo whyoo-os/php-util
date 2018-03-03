@@ -6,7 +6,8 @@
 
 namespace WhyooOs\Util;
 
-include( __DIR__ . '/../HelperClasses/simple_html_dom.php');
+use Sunra\PhpSimple\HtmlDomParser;
+
 
 class UtilScraper
 {
@@ -32,7 +33,7 @@ class UtilScraper
      * @param string $attributeName
      * @return string
      */
-    public static function extractStringFromDom(string $expression, string $attributeName='innertext')
+    public static function extractStringFromDom(string $expression, string $attributeName = 'innertext')
     {
         $text = self::$dom->find($expression, 0)->$attributeName;
 
@@ -40,11 +41,29 @@ class UtilScraper
     }
 
     /**
+     * extract multiple information from loaded dom (a list)
+     *
+     * @param string $expression
+     * @param string $attributeName
+     * @return string[]
+     */
+    public static function extractManyStringsFromDom(string $expression, string $attributeName = 'innertext')
+    {
+        $list = [];
+        foreach (self::$dom->find($expression) as $el) {
+            $list[] = self::rectifyScrapedText($el->$attributeName);
+        }
+
+        return $list;
+    }
+
+
+    /**
      * @param $html
      */
     public static function loadDom($html)
     {
-        self::$dom = str_get_html($html);
+        self::$dom = HtmlDomParser::str_get_html($html);
     }
 
     /**
@@ -53,7 +72,7 @@ class UtilScraper
      */
     public static function rectifyScrapedText($text)
     {
-        if( !is_string($text)) {
+        if (!is_string($text)) {
             return $text;
         }
         $text = html_entity_decode($text, ENT_QUOTES);
@@ -72,15 +91,14 @@ class UtilScraper
      * @param string $protocol
      * @return string
      */
-    public static function rectifyLink(string $link, string $protocol='https')
+    public static function rectifyLink(string $link, string $protocol = 'https')
     {
-        if( strpos($link, '//') === 0) {
+        if (strpos($link, '//') === 0) {
             return $protocol . ':' . $link;
         }
 
         return $link;
     }
-
 
 
 }

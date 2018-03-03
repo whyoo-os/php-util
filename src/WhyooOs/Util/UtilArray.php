@@ -52,7 +52,6 @@ class UtilArray
     }
 
 
-
     /**
      * removes all occurrences of $toRemove from $arr
      *
@@ -77,7 +76,7 @@ class UtilArray
      */
     public static function searchObjectByAttribute($arr, string $attributeName, $attributeValue)
     {
-        if( empty($arr)) {
+        if (empty($arr)) {
             return null;
         }
 
@@ -118,7 +117,7 @@ class UtilArray
      * getObjectProperty($posts, 'id', false) returns [1,2,3]
      * getObjectProperty($posts, 'id', true) returns { a:1, b:2, c:3 }
      * TODO: rename getDocumentProperty
-     * used in marketer 
+     * used in marketer
      * @param array $arr
      * @param $propertyName
      * @param bool $keepOriginalKeys the thing with $keepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
@@ -272,13 +271,12 @@ class UtilArray
     }
 
 
-
     /**
      * @param $array
      * @param $keyName
      * @return array
      */
-    public static function arrayOfDocumentsToAssoc($array, $keyName='id')
+    public static function arrayOfDocumentsToAssoc($array, $keyName = 'id')
     {
         $values = array_values($array);
         $keys = [];
@@ -455,7 +453,6 @@ class UtilArray
     }
 
 
-
     /**
      * 09/2017 from scrapers
      *
@@ -522,6 +519,36 @@ class UtilArray
             UtilAssert::assertIsInt($idx);
             array_splice($arr, $idx, 1);
         }
+    }
+
+
+    /**
+     * 01/2018 moved from UtilMongo to here
+     *
+     * @param  \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|array $arr
+     * @return array
+     */
+    public static function iteratorToArray($arr, $useKeys = true)
+    {
+        if (is_array($arr)) {
+            return $arr;
+        }
+
+        return iterator_to_array($arr, $useKeys);
+    }
+
+    /**
+     * 02/2018 unused
+     *
+     * @param $getterName eg "getId"
+     * @param array $items
+     * @return array
+     */
+    public static function arrayColumnByGetter($getterName, $items)
+    {
+        return array_map(function ($f) use ($getterName) {
+            return $f->$getterName();
+        }, $items);
     }
 
 

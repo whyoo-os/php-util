@@ -1,30 +1,31 @@
 {
-  "name": "whyoo-os/php-util",
-  "type": "library",
-  "description": "Utility classes for php",
-  "keywords": [
-    "util",
-    "utility"
-  ],
-  "homepage": "https://github.com/whyoo-os/php-util",
-  "license": "MIT",
-  "require": {
-    "php": ">=7.0"
-  },
-  "suggest": {
-    "symfony/var-dumper": "*",
-    "phpfastcache/phpfastcache": "^6.0",
-    "eventviva/php-image-resize": "*",
-    "jdorn/sql-formatter": "*",
-    "swiftmailer/swiftmailer": "*",
-    "tijsverkoyen/css-to-inline-styles": "*"
-  },
-  "autoload": {
-    "psr-4": {
-      "WhyooOs\\Util\\": "src/WhyooOs/Util/",
-      "WhyooOs\\HelperClasses\\": "src/WhyooOs/HelperClasses/"
+    "name": "whyoo-os/php-util",
+    "type": "library",
+    "description": "Utility classes for php",
+    "keywords": [
+        "util",
+        "utility"
+    ],
+    "homepage": "https://github.com/whyoo-os/php-util",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.0"
+    },
+    "suggest": {
+        "symfony/var-dumper": "*",
+        "phpfastcache/phpfastcache": "^6.0",
+        "eventviva/php-image-resize": "*",
+        "jdorn/sql-formatter": "*",
+        "swiftmailer/swiftmailer": "*",
+        "tijsverkoyen/css-to-inline-styles": "*",
+        "sunra/php-simple-html-dom-parser": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "WhyooOs\\Util\\": "src/WhyooOs/Util/",
+            "WhyooOs\\HelperClasses\\": "src/WhyooOs/HelperClasses/"
+        }
     }
-  }
 }
 
 
