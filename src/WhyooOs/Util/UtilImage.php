@@ -224,12 +224,12 @@ class UtilImage
     /**
      * private helper
      *
-     * @param ImageResize $image
+     * @param \Eventviva\ImageResize $image
      * @param array $dimensions
      * @param string $resizeMode
      * @throws \Exception
      */
-    private static function _resize(ImageResize $image, int $width, int $height, string $resizeMode)
+    private static function _resize(\Eventviva\ImageResize $image, int $width, int $height, string $resizeMode)
     {
         if ($resizeMode == self::RESIZE_MODE_STRETCH) {
             $image->resize($width, $height);
