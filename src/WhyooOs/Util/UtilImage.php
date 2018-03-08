@@ -311,7 +311,7 @@ class UtilImage
      * @param string $resizeMode
      * @throws \Exception
      */
-    public static function resizeGifFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    public static function resizeGifFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
     {
         list($width, $height)  = self::_sizeStringToIntArray($size);
 
