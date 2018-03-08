@@ -3,8 +3,6 @@
 
 namespace WhyooOs\Util;
 
-use Eventviva\ImageResize;
-
 
 /**
  * image utility class
@@ -164,7 +162,7 @@ class UtilImage
      * @param int $x2
      * @param int $y2
      */
-    public static function cropImage(string $fullPathImage, string  $pathCropped, $x1, $y1, $x2, $y2)
+    public static function cropImage(string $fullPathImage, string $pathCropped, $x1, $y1, $x2, $y2)
     {
         $im = UtilImage::loadImage($fullPathImage);
         $im2 = imagecrop($im, [
@@ -231,14 +229,14 @@ class UtilImage
      * @param string $resizeMode
      * @throws \Exception
      */
-    private static function _resize(ImageResize $image, array $dimensions, string $resizeMode)
+    private static function _resize(ImageResize $image, int $width, int $height, string $resizeMode)
     {
         if ($resizeMode == self::RESIZE_MODE_STRETCH) {
-            $image->resize($dimensions[0], $dimensions[1]);
+            $image->resize($width, $height);
         } elseif ($resizeMode == self::RESIZE_MODE_INSET) {
-            $image->resizeToBestFit($dimensions[0], $dimensions[1]);
+            $image->resizeToBestFit($width, $height);
         } elseif ($resizeMode == self::RESIZE_MODE_CROP) {
-            $image->crop($dimensions[0], $dimensions[1]);
+            $image->crop($width, $height);
         } else {
             throw new \Exception('Unknown resizeMode: ' . $resizeMode);
         }
@@ -251,22 +249,23 @@ class UtilImage
      * @param string $size eg "300x400" or "300"
      * @return array with 2 elements: with and height
      */
-    private static function _sizeStringToArray($size)
+    private static function _sizeStringToIntArray($size)
     {
-        $arr = explode('x', $size);
-        if (count($arr) == 1) {
-            $arr[1] = $arr[0];
+        $ret = explode('x', $size);
+        if (count($ret) == 1) {
+            $ret[1] = $ret[0];
         }
-        UtilAssert::assertArrayLength($arr, 2);
+        UtilAssert::assertArrayLength($ret, 2);
 
-        return $arr;
+        return array_map('intval', $ret);
     }
 
 
     /**
      * 07/2017 used by schlegel for stretching pdf-background to cover whole page
      * 08/2017 used by ebaygen
-     *
+     * 03/2018 does NOT WORK for animated gifs
+     * 
      * resizes image to $dimension .. doesn't take care of aspect ratio - image is "stretched"
      * uses eventviva/php-image-resize (composer require eventviva/php-image-resize)
      *
@@ -276,11 +275,11 @@ class UtilImage
      * @param string $resizeMode
      * @throws \Exception
      */
-    public static function resizeImage(string $pathSrc, string $pathDest, string $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    public static function resizeImage(string $pathSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
     {
-        $size = self::_sizeStringToArray($size);
-        $image = @(new ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
-        self::_resize($image, $size, $resizeMode);
+        list($width, $height) = self::_sizeStringToIntArray($size);
+        $image = @(new \Eventviva\ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+        self::_resize($image, $width, $height, $resizeMode);
         $image->save($pathDest);
     }
 
@@ -294,12 +293,46 @@ class UtilImage
      * @param string $resizeMode
      * @throws \Exception
      */
-    public static function resizeImageFromBytes($bytesSrc, string $pathDest, string $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    public static function resizeImageFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
     {
-        $size = self::_sizeStringToArray($size);
-        $image = @(ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
-        self::_resize($image, $size, $resizeMode);
+        list($width, $height) = self::_sizeStringToIntArray($size);
+        $image = @(\Eventviva\ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+        self::_resize($image, $width, $height, $resizeMode);
         $image->save($pathDest);
+    }
+
+
+    /**
+     * 03/2018 used for gridfs files (marketer) ... for animated emojis / stickers
+     * uses coldume/imagecraft FIXME: it flickers .. need better solution https://stackoverflow.com/questions/718491/resize-animated-gif-file-without-destroying-animation
+     * @param $bytesSrc
+     * @param string $pathDest
+     * @param string $size eg "300x400" or "300"
+     * @param string $resizeMode
+     * @throws \Exception
+     */
+    public static function resizeGifFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    {
+        list($width, $height)  = self::_sizeStringToIntArray($size);
+
+        $options = [
+            'engine' => 'php_gd',
+            'gif_animation' => true,
+            'output_format' => 'gif',
+            'debug' => false,
+        ];
+        $builder = new \Imagecraft\ImageBuilder($options);
+        $image = $builder
+            ->addBackgroundLayer()
+            ->contents($bytesSrc)
+            ->resize($width, $height, 'shrink')
+            ->done()
+            ->save();
+        if ($image->isValid()) {
+            file_put_contents($pathDest, $image->getContents());
+        } else {
+            echo $image->getMessage() . PHP_EOL;
+        }
     }
 
 

@@ -12,13 +12,14 @@
         "php": ">=7.0"
     },
     "suggest": {
-        "symfony/var-dumper": "*",
-        "phpfastcache/phpfastcache": "^6.0",
-        "eventviva/php-image-resize": "*",
-        "jdorn/sql-formatter": "*",
-        "swiftmailer/swiftmailer": "*",
-        "tijsverkoyen/css-to-inline-styles": "*",
-        "sunra/php-simple-html-dom-parser": "*"
+        "symfony/var-dumper": "for UtilDebug",
+        "phpfastcache/phpfastcache": "for caching in UtilCurl",
+        "eventviva/php-image-resize": "for image resizing",
+        "jdorn/sql-formatter": "for UtilDebug::getSqlFormatted()",
+        "swiftmailer/swiftmailer": "for mails",
+        "tijsverkoyen/css-to-inline-styles": "for html mails with css",
+        "sunra/php-simple-html-dom-parser": "for scraping stuff",
+        "coldume/imagecraft": "for resizing animated gifs"
     },
     "autoload": {
         "psr-4": {
