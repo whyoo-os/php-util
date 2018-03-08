@@ -33,12 +33,30 @@ class UtilScraper
      * @param string $attributeName
      * @return string
      */
-    public static function extractStringFromDom(string $expression, string $attributeName='innertext')
+    public static function extractStringFromDom(string $expression, string $attributeName = 'innertext')
     {
         $text = self::$dom->find($expression, 0)->$attributeName;
 
         return self::rectifyScrapedText($text);
     }
+
+    /**
+     * extract multiple information from loaded dom (a list)
+     *
+     * @param string $expression
+     * @param string $attributeName
+     * @return string[]
+     */
+    public static function extractManyStringsFromDom(string $expression, string $attributeName = 'innertext')
+    {
+        $list = [];
+        foreach (self::$dom->find($expression) as $el) {
+            $list[] = self::rectifyScrapedText($el->$attributeName);
+        }
+
+        return $list;
+    }
+
 
     /**
      * @param $html
@@ -54,7 +72,7 @@ class UtilScraper
      */
     public static function rectifyScrapedText($text)
     {
-        if( !is_string($text)) {
+        if (!is_string($text)) {
             return $text;
         }
         $text = html_entity_decode($text, ENT_QUOTES);
@@ -73,15 +91,14 @@ class UtilScraper
      * @param string $protocol
      * @return string
      */
-    public static function rectifyLink(string $link, string $protocol='https')
+    public static function rectifyLink(string $link, string $protocol = 'https')
     {
-        if( strpos($link, '//') === 0) {
+        if (strpos($link, '//') === 0) {
             return $protocol . ':' . $link;
         }
 
         return $link;
     }
-
 
 
 }
