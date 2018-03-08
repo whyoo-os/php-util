@@ -14,17 +14,18 @@ class UtilImage
 
 
     const RESIZE_MODE_STRETCH = 'STRETCH';
-    const RESIZE_MODE_INSET = 'INSET'; // not cropping .. Resize to fit a bounding box
-    const RESIZE_MODE_OUTBOUND = 'OUTBOUND'; // cropping
+    const RESIZE_MODE_INSET = 'INSET'; // SHRINK  / NO_CROP / FIT / Resize to fit inside box
+    const RESIZE_MODE_CROP = 'CROP'; // FILL_CROP / OUTBOUND
 
     private static $defaultJpegQuality = 95;
 
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
+
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+
 
     /**
      * wrapper for php's imagecreatefrom***() functions
@@ -121,46 +122,6 @@ class UtilImage
     }
 
 
-    /**
-     * todo: move back to marketer
-     * returns web path of icon for a give mime type
-     * @param $mimeType
-     * @return string
-     */
-    public static function getMimeTypeIcon($mimeType)
-    {
-        $pathIconsWeb = "/assets/images/mimetypes/96";
-        $fileNameSvg = str_replace('/', '-', $mimeType) . '.svg';
-
-        $pathIconsFull = UtilSymfony::getContainer()->getParameter('kernel.root_dir') . "/web" . $pathIconsWeb;
-
-        if (file_exists($pathIconsFull . '/' . $fileNameSvg)) {
-            return $pathIconsWeb . '/' . $fileNameSvg;
-        }
-        // try with 'gnome-mime-' prefix
-        if (file_exists($pathIconsFull . '/' . 'gnome-mime-' . $fileNameSvg)) {
-            return $pathIconsWeb . '/' . 'gnome-mime-' . $fileNameSvg;
-        }
-        // try generic eg image.svg
-        $generic = explode('/', $mimeType)[0] . '.svg';
-        if (file_exists($pathIconsFull . '/' . $generic)) {
-            return $pathIconsWeb . '/' . $generic;
-        }
-
-        return $pathIconsWeb . '/' . 'unknown.svg';
-    }
-
-
-
-
-/// EB 5 VERSION
-/// EB 5 VERSION
-/// EB 5 VERSION
-/// EB 5 VERSION
-/// EB 5 VERSION
-/// EB 5 VERSION
-
-
     // ----------------------------------------------------------------------------------------
 
     /**
@@ -203,7 +164,7 @@ class UtilImage
      * @param int $x2
      * @param int $y2
      */
-    public static function cropImage($fullPathImage, $pathCropped, $x1, $y1, $x2, $y2)
+    public static function cropImage(string $fullPathImage, string  $pathCropped, $x1, $y1, $x2, $y2)
     {
         $im = UtilImage::loadImage($fullPathImage);
         $im2 = imagecrop($im, [
@@ -276,7 +237,7 @@ class UtilImage
             $image->resize($dimensions[0], $dimensions[1]);
         } elseif ($resizeMode == self::RESIZE_MODE_INSET) {
             $image->resizeToBestFit($dimensions[0], $dimensions[1]);
-        } elseif ($resizeMode == self::RESIZE_MODE_OUTBOUND) {
+        } elseif ($resizeMode == self::RESIZE_MODE_CROP) {
             $image->crop($dimensions[0], $dimensions[1]);
         } else {
             throw new \Exception('Unknown resizeMode: ' . $resizeMode);
