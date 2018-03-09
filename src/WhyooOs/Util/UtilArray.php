@@ -116,7 +116,7 @@ class UtilArray
      * $posts = {'a' => post1, 'b' => post2, 'c' => post3]
      * getObjectProperty($posts, 'id', false) returns [1,2,3]
      * getObjectProperty($posts, 'id', true) returns { a:1, b:2, c:3 }
-     * TODO: rename getDocumentProperty
+     * TODO: rename getDocumentProperty?
      * used in marketer
      * @param array $arr
      * @param $propertyName
@@ -138,6 +138,31 @@ class UtilArray
                 return $item->$methodName();
             }, $arr);
         }
+
+        return $newArray;
+    }
+
+    /**
+     * TODO: rename getDocumentProperties?
+     * used in eqipoo
+     * @param array $arr
+     * @param $propertyNames
+     * @return array
+     */
+    public static function getObjectProperties(array $arr, array $propertyNames)
+    {
+        $methodNames = [];
+        foreach($propertyNames as $propertyName) {
+            $methodNames[$propertyName] = "get" . ucfirst($propertyName);
+        }
+        // new keys (create ordinary numeric array)
+        $newArray = array_map(function ($item) use ($methodNames) {
+            $ret = [];
+            foreach($methodNames as $key => $getterName) {
+                $ret[$key] = $item->$getterName();
+            }
+            return $ret;
+        }, $arr);
 
         return $newArray;
     }
