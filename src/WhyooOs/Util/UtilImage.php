@@ -12,9 +12,11 @@ class UtilImage
 
 
     const RESIZE_MODE_STRETCH = 'STRETCH';
-    const RESIZE_MODE_INSET = 'INSET'; // SHRINK  / NO_CROP / FIT / Resize to fit inside box
-    const RESIZE_MODE_CROP = 'CROP'; // FILL_CROP / OUTBOUND
+//  const RESIZE_MODE_FILL = 'FILL'; // resize to fit inside box then add fill with space at TB or LR to fit size
+    const RESIZE_MODE_FIT = 'FIT'; // Resize to fit inside box
+    const RESIZE_MODE_CROP = 'CROP'; //
 
+    
     private static $defaultJpegQuality = 95;
 
 
@@ -227,21 +229,49 @@ class UtilImage
      * @param \Eventviva\ImageResize $image
      * @param array $dimensions
      * @param string $resizeMode
+     * @param bool $bAllowUpscale
      * @throws \Exception
      */
-    private static function _resize(\Eventviva\ImageResize $image, int $width, int $height, string $resizeMode)
+    private static function _resize(\Eventviva\ImageResize $image, int $width, int $height, string $resizeMode, bool $bAllowUpscale)
     {
         if ($resizeMode == self::RESIZE_MODE_STRETCH) {
-            $image->resize($width, $height);
-        } elseif ($resizeMode == self::RESIZE_MODE_INSET) {
-            $image->resizeToBestFit($width, $height);
+            $image->resize($width, $height, $bAllowUpscale);
+        } elseif ($resizeMode == self::RESIZE_MODE_FIT) {
+            $image->resizeToBestFit($width, $height, $bAllowUpscale);
         } elseif ($resizeMode == self::RESIZE_MODE_CROP) {
-            $image->crop($width, $height);
+            $image->crop($width, $height, $bAllowUpscale);
         } else {
             throw new \Exception('Unknown resizeMode: ' . $resizeMode);
         }
     }
 
+//    /**
+//     * 03/2018
+//     *
+//     * @param $file
+//     * @param $w
+//     * @param $h
+//     * @return resource
+//     */
+//    public static function resizeWithFilling($im, $destWidth, $destHeight)
+//    {
+//        $imWidth = imagesx($im);
+//        $imHeight= imagesy($im);
+//
+//        $r = $imWidth / $imHeight;
+//        if ($destWidth / $destHeight > $r) {
+//            $newwidth = $destHeight * $r;
+//            $newheight = $destHeight;
+//        } else {
+//            $newheight = $destWidth / $r;
+//            $newwidth = $destWidth;
+//        }
+//
+//        $dst = imagecreatetruecolor($destWidth, $destHeight);
+//        imagecopyresampled($dst, $im, 0, 0, 0, 0, $newwidth, $newheight, $imWidth, $imHeight);
+//
+//        return $dst;
+//    }
 
     /**
      * private helper
@@ -265,7 +295,7 @@ class UtilImage
      * 07/2017 used by schlegel for stretching pdf-background to cover whole page
      * 08/2017 used by ebaygen
      * 03/2018 does NOT WORK for animated gifs
-     * 
+     *
      * resizes image to $dimension .. doesn't take care of aspect ratio - image is "stretched"
      * uses eventviva/php-image-resize (composer require eventviva/php-image-resize)
      *
@@ -275,12 +305,17 @@ class UtilImage
      * @param string $resizeMode
      * @throws \Exception
      */
-    public static function resizeImage(string $pathSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    public static function resizeImage(string $pathSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH, bool $bAllowUpscale = true)
     {
         list($width, $height) = self::_sizeStringToIntArray($size);
-        $image = @(new \Eventviva\ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
-        self::_resize($image, $width, $height, $resizeMode);
-        $image->save($pathDest);
+//        if ($resizeMode === self::RESIZE_MODE_FILL) {
+//            $im = self::loadImage($pathSrc);
+//            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
+//        } else {
+            $image = @(new \Eventviva\ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+            self::_resize($image, $width, $height, $resizeMode, $bAllowUpscale);
+            $image->save($pathDest);
+//        }
     }
 
 
@@ -293,12 +328,17 @@ class UtilImage
      * @param string $resizeMode
      * @throws \Exception
      */
-    public static function resizeImageFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    public static function resizeImageFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH, bool $bAllowUpscale = true)
     {
         list($width, $height) = self::_sizeStringToIntArray($size);
-        $image = @(\Eventviva\ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
-        self::_resize($image, $width, $height, $resizeMode);
-        $image->save($pathDest);
+//        if ($resizeMode === self::RESIZE_MODE_FILL) {
+//            $im = imagecreatefromstring($bytesSrc);
+//            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
+//        } else {
+            $image = @(\Eventviva\ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+            self::_resize($image, $width, $height, $resizeMode, $bAllowUpscale);
+            $image->save($pathDest);
+//        }
     }
 
 
@@ -313,7 +353,7 @@ class UtilImage
      */
     public static function resizeGifFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
     {
-        list($width, $height)  = self::_sizeStringToIntArray($size);
+        list($width, $height) = self::_sizeStringToIntArray($size);
 
         $options = [
             'engine' => 'php_gd',
@@ -333,6 +373,38 @@ class UtilImage
         } else {
             echo $image->getMessage() . PHP_EOL;
         }
+    }
+
+
+    /**
+     * 03/2018 used for gridfs files (marketer) ... for animated emojis / stickers
+     * uses coldume/imagecraft FIXME: it flickers also .. need better solution https://stackoverflow.com/questions/718491/resize-animated-gif-file-without-destroying-animation
+     * @param $bytesSrc
+     * @param string $pathDest
+     * @param string $size eg "300x400" or "300"
+     * @param string $resizeMode
+     * @throws \Exception
+     */
+    public static function resizeGifFromBytesV2($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
+    {
+        list($width, $height) = self::_sizeStringToIntArray($size);
+        // ---- Read in the animated gif
+        $animation = new \Imagick();
+        $animation->setFormat('gif');
+        $animation->readImageBlob($bytesSrc);
+
+        // ---- Loop through the frames
+        foreach ($animation as $frame) {
+
+            // ---- Thumbnail each frame
+            $frame->thumbnailImage($width, $height);
+
+            // ---- Set virtual canvas size to 100x100
+            $frame->setImagePage($width, $height, 0, 0);
+        }
+
+        // ---- Write image to disk. Notice writeImages instead of writeImage
+        $animation->writeImages($pathDest, true);
     }
 
 
