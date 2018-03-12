@@ -15,6 +15,7 @@ class UtilImage
 //  const RESIZE_MODE_FILL = 'FILL'; // resize to fit inside box then add fill with space at TB or LR to fit size
     const RESIZE_MODE_FIT = 'FIT'; // Resize to fit inside box
     const RESIZE_MODE_CROP = 'CROP'; //
+    const RESIZE_MODE_ORIGINAL = 'ORIGINAL'; // NO RESIZING is done
 
     
     private static $defaultJpegQuality = 95;
@@ -307,6 +308,11 @@ class UtilImage
      */
     public static function resizeImage(string $pathSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH, bool $bAllowUpscale = true)
     {
+        if( $resizeMode == self::RESIZE_MODE_ORIGINAL) {
+            file_put_contents($pathDest, $bytesSrc);
+            return;
+        }
+
         list($width, $height) = self::_sizeStringToIntArray($size);
 //        if ($resizeMode === self::RESIZE_MODE_FILL) {
 //            $im = self::loadImage($pathSrc);
@@ -330,6 +336,11 @@ class UtilImage
      */
     public static function resizeImageFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH, bool $bAllowUpscale = true)
     {
+        if( $resizeMode == self::RESIZE_MODE_ORIGINAL) {
+            file_put_contents($pathDest, $bytesSrc);
+            return;
+        }
+
         list($width, $height) = self::_sizeStringToIntArray($size);
 //        if ($resizeMode === self::RESIZE_MODE_FILL) {
 //            $im = imagecreatefromstring($bytesSrc);
@@ -340,72 +351,72 @@ class UtilImage
             $image->save($pathDest);
 //        }
     }
-
-
-    /**
-     * 03/2018 used for gridfs files (marketer) ... for animated emojis / stickers
-     * uses coldume/imagecraft FIXME: it flickers .. need better solution https://stackoverflow.com/questions/718491/resize-animated-gif-file-without-destroying-animation
-     * @param $bytesSrc
-     * @param string $pathDest
-     * @param string $size eg "300x400" or "300"
-     * @param string $resizeMode
-     * @throws \Exception
-     */
-    public static function resizeGifFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
-    {
-        list($width, $height) = self::_sizeStringToIntArray($size);
-
-        $options = [
-            'engine' => 'php_gd',
-            'gif_animation' => true,
-            'output_format' => 'gif',
-            'debug' => false,
-        ];
-        $builder = new \Imagecraft\ImageBuilder($options);
-        $image = $builder
-            ->addBackgroundLayer()
-            ->contents($bytesSrc)
-            ->resize($width, $height, 'shrink')
-            ->done()
-            ->save();
-        if ($image->isValid()) {
-            file_put_contents($pathDest, $image->getContents());
-        } else {
-            echo $image->getMessage() . PHP_EOL;
-        }
-    }
-
-
-    /**
-     * 03/2018 used for gridfs files (marketer) ... for animated emojis / stickers
-     * uses coldume/imagecraft FIXME: it flickers also .. need better solution https://stackoverflow.com/questions/718491/resize-animated-gif-file-without-destroying-animation
-     * @param $bytesSrc
-     * @param string $pathDest
-     * @param string $size eg "300x400" or "300"
-     * @param string $resizeMode
-     * @throws \Exception
-     */
-    public static function resizeGifFromBytesV2($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
-    {
-        list($width, $height) = self::_sizeStringToIntArray($size);
-        // ---- Read in the animated gif
-        $animation = new \Imagick();
-        $animation->setFormat('gif');
-        $animation->readImageBlob($bytesSrc);
-
-        // ---- Loop through the frames
-        foreach ($animation as $frame) {
-
-            // ---- Thumbnail each frame
-            $frame->thumbnailImage($width, $height);
-
-            // ---- Set virtual canvas size to 100x100
-            $frame->setImagePage($width, $height, 0, 0);
-        }
-
-        // ---- Write image to disk. Notice writeImages instead of writeImage
-        $animation->writeImages($pathDest, true);
-    }
+//
+//
+//    /**
+//     * 03/2018 used for gridfs files (marketer) ... for animated emojis / stickers
+//     * uses coldume/imagecraft FIXME: it flickers .. need better solution https://stackoverflow.com/questions/718491/resize-animated-gif-file-without-destroying-animation
+//     * @param $bytesSrc
+//     * @param string $pathDest
+//     * @param string $size eg "300x400" or "300"
+//     * @param string $resizeMode
+//     * @throws \Exception
+//     */
+//    public static function resizeGifFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
+//    {
+//        list($width, $height) = self::_sizeStringToIntArray($size);
+//
+//        $options = [
+//            'engine' => 'php_gd',
+//            'gif_animation' => true,
+//            'output_format' => 'gif',
+//            'debug' => false,
+//        ];
+//        $builder = new \Imagecraft\ImageBuilder($options);
+//        $image = $builder
+//            ->addBackgroundLayer()
+//            ->contents($bytesSrc)
+//            ->resize($width, $height, 'shrink')
+//            ->done()
+//            ->save();
+//        if ($image->isValid()) {
+//            file_put_contents($pathDest, $image->getContents());
+//        } else {
+//            echo $image->getMessage() . PHP_EOL;
+//        }
+//    }
+//
+//
+//    /**
+//     * 03/2018 used for gridfs files (marketer) ... for animated emojis / stickers
+//     * uses coldume/imagecraft FIXME: it flickers also .. need better solution https://stackoverflow.com/questions/718491/resize-animated-gif-file-without-destroying-animation
+//     * @param $bytesSrc
+//     * @param string $pathDest
+//     * @param string $size eg "300x400" or "300"
+//     * @param string $resizeMode
+//     * @throws \Exception
+//     */
+//    public static function resizeGifFromBytesV2($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
+//    {
+//        list($width, $height) = self::_sizeStringToIntArray($size);
+//        // ---- Read in the animated gif
+//        $animation = new \Imagick();
+//        $animation->setFormat('gif');
+//        $animation->readImageBlob($bytesSrc);
+//
+//        // ---- Loop through the frames
+//        foreach ($animation as $frame) {
+//
+//            // ---- Thumbnail each frame
+//            $frame->thumbnailImage($width, $height);
+//
+//            // ---- Set virtual canvas size to 100x100
+//            $frame->setImagePage($width, $height, 0, 0);
+//        }
+//
+//        // ---- Write image to disk. Notice writeImages instead of writeImage
+//        $animation->writeImages($pathDest, true);
+//    }
 
 
 }
