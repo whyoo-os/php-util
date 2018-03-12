@@ -26,6 +26,7 @@ class UtilCurl
         'ignoreSymfonyNotice' => true, // Ignore Symfony notices for Symfony projects that do not makes use of PhpFastCache's Symfony Bundle (?)
         'path' => 'TODO_____XXXX',
     ];
+    private static $numRequests = 0;
 
 
     protected static function _getCacheManager()
@@ -50,15 +51,14 @@ class UtilCurl
         }
 
         $cacheManager = self::_getCacheManager();
-        $cachekey = md5("GET " . $url);
-        $cacheItem = $cacheManager->getItem($cachekey);
+        self::$lastCacheKey = self::_getCacheKeyGet($url);
+        $cacheItem = $cacheManager->getItem(self::$lastCacheKey);
         if ($cacheItem->isHit()) {
             self::$info = "from cache_old";
             self::$fromCache = true;
             return $cacheItem->get();
         } else {
             self::$fromCache = false;
-            self::$lastCacheKey = $cachekey;
             $content = self::curlGet($url);
             $cacheItem->set($content);
             $cacheItem->expiresAfter($cacheTTL);
@@ -66,6 +66,23 @@ class UtilCurl
             return $content;
         }
     }
+
+    /**
+     * convenience function
+     *
+     * @param $url
+     * @param null $cacheTTL
+     * @param int $sleep
+     * @return mixed|string
+     */
+    public static function curlGetCachedThrottled($url, $cacheTTL = null, $sleep = 10)
+    {
+        if (!self::wasLastRequestCached() && self::$numRequests > 0) {
+            sleep($sleep);
+        }
+        return self::curlGetCached($url, $cacheTTL);
+    }
+
 
     /**
      * convenience function
@@ -93,16 +110,14 @@ class UtilCurl
         }
 
         $cacheManager = self::_getCacheManager();
-        $cachekey = md5("POST " . $url . " " . json_encode($fields));
-        $cacheItem = $cacheManager->getItem($cachekey);
+        self::$lastCacheKey = self::_getCacheKeyPost($url, $fields);
+        $cacheItem = $cacheManager->getItem(self::$lastCacheKey);
         if ($cacheItem->isHit()) {
             self::$info = "from cache_old";
             self::$fromCache = true;
-
             return $cacheItem->get();
         } else {
             self::$fromCache = false;
-            self::$lastCacheKey = $cachekey;
             $content = self::curlPost($url, $fields);
             $cacheItem->set($content);
             $cacheItem->expiresAfter($cacheTTL);
@@ -209,6 +224,8 @@ class UtilCurl
 // #		curl_setopt($ch, CURLOPT_COOKIESESSION, TRUE);
 
         $data = curl_exec($ch);
+        self::$numRequests++;
+
         self::$info = curl_getinfo($ch);
         return $data;
     }
@@ -223,6 +240,7 @@ class UtilCurl
         curl_setopt($ch, CURLOPT_STDERR, fopen('/tmp/request.txt', 'w'));
 
         $result = curl_exec($ch);
+        self::$numRequests++;
 
         if (curl_errno($ch)) {
             print curl_error($ch);
@@ -260,10 +278,24 @@ class UtilCurl
         self::$pathCookiesTxt = $path;
     }
 
+    private static function _getCacheKeyPost($url, $fields)
+    {
+        return md5("POST " . $url . " " . json_encode($fields));
+    }
+
+    private static function _getCacheKeyGet($url)
+    {
+        return md5("GET " . $url);
+    }
+
     public static function removePostFromCache($url, $fields)
     {
-        $cachekey = "POST " . $url . " " . json_encode($fields);
-        self::_getCacheManager()->deleteItem($cachekey);
+        self::_getCacheManager()->deleteItem(self::_getCacheKeyPost($url, $fields));
+    }
+
+    public static function removeGetFromCache($url)
+    {
+        self::_getCacheManager()->deleteItem(self::_getCacheKeyGet($url));
     }
 
     public static function deleteCookies()
