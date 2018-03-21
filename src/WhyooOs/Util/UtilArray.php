@@ -195,12 +195,13 @@ class UtilArray
         return $newArray;
     }
 
+
     /**
      * sorts an array of assoc arrays (= a table) by a column $keyName
      *
-     * @param $array
+     * @param array &$array
      * @param $keyName
-     * @return mixed
+     * @return array
      */
     public static function sortArrayOfArrays(&$array, $keyName, $sortOrder = SORT_ASC)
     {
@@ -208,6 +209,25 @@ class UtilArray
         foreach ($array as $idx => $row) {
             $sortArray[$idx] = $row[$keyName];
         }
+        array_multisort($sortArray, $sortOrder, $array);
+
+        return $array;
+    }
+
+
+    /**
+     * 03/2018
+     * sorts an array of objects
+     * used by marketer (for sorting list of participants by conversationRole)
+     * TODO: maybe there is faster version with a callback
+     *
+     * @param array &$array
+     * @param $keyName
+     * @return array
+     */
+    public static function sortArrayOfObjects(&$array, $attributeName, $sortOrder = SORT_ASC)
+    {
+        $sortArray = self::getObjectProperty($array, $attributeName);
         array_multisort($sortArray, $sortOrder, $array);
 
         return $array;
