@@ -102,7 +102,7 @@ class UtilAssert
     {
         if (!array_key_exists($key, $haystack)) {
             $strAvailable = implode(', ', array_keys($haystack));
-            throw new \Exception("arrayKeyExists Assertion failed - no '$key' in array. available keys: $strAvailable." . "\n" . $errorMessage);
+            throw new \Exception("arrayKeyExists Assertion failed - no '$key' in array keys. available keys: $strAvailable." . "\n" . $errorMessage);
         }
     }
 

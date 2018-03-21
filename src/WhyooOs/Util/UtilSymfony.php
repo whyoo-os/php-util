@@ -14,19 +14,19 @@ class UtilSymfony
 {
 
     /**
-     * hack to get container where ever needed
+     * hack to get container where ever needed, using global $kernel
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface|null
      */
     public static function getContainer()
     {
-        // final solution: use global $kernel
-        global $kernel;
-        if (is_null($kernel)) {
-            return null;
-        }
+        // dump($GLOBALS['kernel']);
+        //
+//        if (is_null($GLOBALS['kernel'])) {
+//            return null;
+//        }
 
-        return $kernel->getContainer();
+        return $GLOBALS['kernel']->getContainer();
     }
 
     /**
