@@ -216,4 +216,13 @@ try {
 //        self::getContainer()->get("event_dispatcher")->dispatch("security.interactive_login", $event);
     }
 
+
+    /**
+     * 03/2018
+     */
+    public static function getEnvironment()
+    {
+        return self::getService('kernel')->getEnvironment();
+    }
+
 }
