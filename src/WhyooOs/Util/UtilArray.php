@@ -152,13 +152,13 @@ class UtilArray
     public static function getObjectProperties(array $arr, array $propertyNames)
     {
         $methodNames = [];
-        foreach($propertyNames as $propertyName) {
+        foreach ($propertyNames as $propertyName) {
             $methodNames[$propertyName] = "get" . ucfirst($propertyName);
         }
         // new keys (create ordinary numeric array)
         $newArray = array_map(function ($item) use ($methodNames) {
             $ret = [];
-            foreach($methodNames as $key => $getterName) {
+            foreach ($methodNames as $key => $getterName) {
                 $ret[$key] = $item->$getterName();
             }
             return $ret;
@@ -596,5 +596,20 @@ class UtilArray
         }, $items);
     }
 
+
+    /**
+     * 03/2018 used by ebaygen
+     *
+     * @param $arr
+     * @return bool
+     */
+    public static function isEmpty($arr)
+    {
+        foreach ($arr as &$val) {
+            if (!empty($val))
+                return false;
+        }
+        return true;
+    }
 
 }
