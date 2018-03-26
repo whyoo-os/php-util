@@ -219,6 +219,7 @@ try {
 
     /**
      * 03/2018
+     * @return string the symfony environment, eg. "dev", "prod", ...
      */
     public static function getEnvironment()
     {
