@@ -2,13 +2,20 @@
 
 namespace WhyooOs\Util;
 
+/**
+ * 04/2018
+ * AssertException
+ */
+class AssertException extends \Exception
+{
+}
+
 
 /**
  *
  */
 class UtilAssert
 {
-
 
     /**
      * @param $bAssertion
@@ -18,7 +25,7 @@ class UtilAssert
     public static function assertTrue($bAssertion, $errorMessage = "")
     {
         if ($bAssertion != true) {
-            throw new \Exception("Assertion failed: " . $errorMessage);
+            throw new AssertException("Assertion failed: " . $errorMessage);
         }
     }
 
@@ -30,7 +37,7 @@ class UtilAssert
     public static function assertNotNull($subject, $errorMessage = "")
     {
         if (is_null($subject)) {
-            throw new \Exception("Assertion 'Not Null' failed: " . $errorMessage);
+            throw new AssertException("Assertion 'Not Null' failed: " . $errorMessage);
         }
     }
 
@@ -42,7 +49,7 @@ class UtilAssert
     public static function assertGreaterZero($number, $errorMessage = "")
     {
         if (!($number > 0)) {
-            throw new \Exception("Assertion 'Greater Zero' failed ($number <= 0): " . $errorMessage);
+            throw new AssertException("Assertion 'Greater Zero' failed ($number <= 0): " . $errorMessage);
         }
     }
 
@@ -55,7 +62,7 @@ class UtilAssert
     public static function assertNotEmpty($subject, $errorMessage = "")
     {
         if (empty($subject)) {
-            throw new \Exception("Assertion 'Not Empty' failed: " . $errorMessage);
+            throw new AssertException("Assertion 'Not Empty' failed: " . $errorMessage);
         }
     }
 
@@ -67,7 +74,7 @@ class UtilAssert
     public static function assertEqual($v1, $v2, $errorMessage = "")
     {
         if ($v1 != $v2) {
-            throw new \Exception("Assertion failed ($v1 != $v2):" . $errorMessage);
+            throw new AssertException("Assertion failed ($v1 != $v2):" . $errorMessage);
         }
     }
 
@@ -79,7 +86,7 @@ class UtilAssert
     public static function assertFalse($bAssertion, $errorMessage = "")
     {
         if ($bAssertion != false) {
-            throw new \Exception("Assertion failed: " . $errorMessage);
+            throw new AssertException("Assertion failed: " . $errorMessage);
         }
     }
 
@@ -92,7 +99,7 @@ class UtilAssert
     public static function assertInArray($needle, array $haystack, $errorMessage = '')
     {
         if (!in_array($needle, $haystack)) {
-            throw new \Exception("InArray Assertion failed - '$needle' not in array' " . $errorMessage);
+            throw new AssertException("InArray Assertion failed - '$needle' not in array' " . $errorMessage);
         }
     }
 
@@ -102,7 +109,7 @@ class UtilAssert
     {
         if (!array_key_exists($key, $haystack)) {
             $strAvailable = implode(', ', array_keys($haystack));
-            throw new \Exception("arrayKeyExists Assertion failed - no '$key' in array keys. available keys: $strAvailable." . "\n" . $errorMessage);
+            throw new AssertException("arrayKeyExists Assertion failed - no '$key' in array keys. available keys: $strAvailable." . "\n" . $errorMessage);
         }
     }
 
@@ -110,14 +117,14 @@ class UtilAssert
     {
         $actualClass = is_object($object) ? get_class($object) : gettype($object);
         if ($actualClass != $neededClass) {
-            throw new \Exception("is class assertion failed: $actualClass != $neededClass. " . $errorMessage);
+            throw new AssertException("is class assertion failed: $actualClass != $neededClass. " . $errorMessage);
         }
     }
 
     public static function assertIsObject($object, $errorMessage = '')
     {
         if (!is_object($object)) {
-            throw new \Exception("IsObject assertion failed: " . gettype($object) . ". " . $errorMessage);
+            throw new AssertException("IsObject assertion failed: " . gettype($object) . ". " . $errorMessage);
         }
     }
 
@@ -126,7 +133,7 @@ class UtilAssert
     public static function assertIsArray($array, $errorMessage = '')
     {
         if (!is_array($array)) {
-            throw new \Exception("IsArray assertion failed: " . gettype($array) . ". " . $errorMessage);
+            throw new AssertException("IsArray assertion failed: " . gettype($array) . ". " . $errorMessage);
         }
     }
 
@@ -135,35 +142,35 @@ class UtilAssert
     {
         if ($object instanceof $forbiddenClass) {
             $actualClass = get_class($object);
-            throw new \Exception("NotInstanceOf assertion failed: $actualClass is instance of $forbiddenClass. " . $errorMessage);
+            throw new AssertException("NotInstanceOf assertion failed: $actualClass is instance of $forbiddenClass. " . $errorMessage);
         }
     }
 
     public static function assertFileExists($pathFile, $errorMessage = '')
     {
         if (!file_exists($pathFile)) {
-            throw new \Exception("file-exists assertion failed for path $pathFile. " . $errorMessage);
+            throw new AssertException("file-exists assertion failed for path $pathFile. " . $errorMessage);
         }
     }
 
     public static function assertIsFile($pathFile, $errorMessage = '')
     {
         if (!is_file($pathFile)) {
-            throw new \Exception("is-file assertion failed for path $pathFile. " . $errorMessage);
+            throw new AssertException("is-file assertion failed for path $pathFile. " . $errorMessage);
         }
     }
 
     public static function assertIsInt($x, $errorMessage = '')
     {
         if (!is_int($x)) {
-            throw new \Exception("is-int assertion failed for path $x. " . $errorMessage);
+            throw new AssertException("is-int assertion failed for path $x. " . $errorMessage);
         }
     }
 
     public static function assertIsDir($pathDir, $errorMessage = '')
     {
         if (!is_dir($pathDir)) {
-            throw new \Exception("is-dir assertion failed for path $pathDir. " . $errorMessage);
+            throw new AssertException("is-dir assertion failed for path $pathDir. " . $errorMessage);
         }
     }
 
@@ -179,7 +186,7 @@ class UtilAssert
     public static function assertArrayLength(array $array, int $length, $errorMessage = '')
     {
         if (count($array) != $length) {
-            throw new \Exception("Assertion failed: array length " . count($array) . " != $length. " . $errorMessage);
+            throw new AssertException("Assertion failed: array length " . count($array) . " != $length. " . $errorMessage);
         }
     }
 
@@ -195,7 +202,7 @@ class UtilAssert
     public static function assertStringIncludes(string $haystack, string $needle, $errorMessage = '')
     {
         if (strpos($haystack, $needle) === false) {
-            throw new \Exception("Assertion failed: string `$needle` not included in string `$haystack`. " . $errorMessage);
+            throw new AssertException("Assertion failed: string `$needle` not included in string `$haystack`. " . $errorMessage);
         }
     }
 
