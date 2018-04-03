@@ -20,7 +20,7 @@ class UtilAssert
     /**
      * @param $bAssertion
      * @param string $errorMessage
-     * @throws \Exception
+     * @throws AssertException
      */
     public static function assertTrue($bAssertion, $errorMessage = "")
     {
@@ -32,7 +32,7 @@ class UtilAssert
     /**
      * @param $subject
      * @param string $errorMessage
-     * @throws \Exception
+     * @throws AssertException
      */
     public static function assertNotNull($subject, $errorMessage = "")
     {
@@ -44,7 +44,7 @@ class UtilAssert
     /**
      * @param $subject
      * @param string $errorMessage
-     * @throws \Exception
+     * @throws AssertException
      */
     public static function assertGreaterZero($number, $errorMessage = "")
     {
@@ -57,7 +57,7 @@ class UtilAssert
     /**
      * @param $subject
      * @param string $errorMessage
-     * @throws \Exception
+     * @throws AssertException
      */
     public static function assertNotEmpty($subject, $errorMessage = "")
     {
@@ -69,7 +69,7 @@ class UtilAssert
     /**
      * @param $bAssertion
      * @param string $errorMessage
-     * @throws \Exception
+     * @throws AssertException
      */
     public static function assertEqual($v1, $v2, $errorMessage = "")
     {
@@ -78,10 +78,11 @@ class UtilAssert
         }
     }
 
+    
     /**
      * @param $bAssertion
      * @param string $errorMessage
-     * @throws \Exception
+     * @throws AssertException
      */
     public static function assertFalse($bAssertion, $errorMessage = "")
     {
@@ -89,12 +90,13 @@ class UtilAssert
             throw new AssertException("Assertion failed: " . $errorMessage);
         }
     }
+    
 
     /**
      * @param mixed $needle
      * @param array $haystack
      * @param string $errorMessage
-     * @throws \Exception
+     * @throws AssertException
      */
     public static function assertInArray($needle, array $haystack, $errorMessage = '')
     {
@@ -104,7 +106,12 @@ class UtilAssert
     }
 
 
-    // 01/2018
+    /**
+     * @param $key
+     * @param array $haystack
+     * @param string $errorMessage
+     * @throws AssertException
+     */
     public static function assertArrayKeyExists($key, array $haystack, $errorMessage = '')
     {
         if (!array_key_exists($key, $haystack)) {
@@ -181,7 +188,7 @@ class UtilAssert
      * @param array $array
      * @param int $length
      * @param string $errorMessage
-     * @throws \Exception
+     * @throws AssertException
      */
     public static function assertArrayLength(array $array, int $length, $errorMessage = '')
     {
@@ -197,7 +204,7 @@ class UtilAssert
      * @param string $haystack
      * @param string $needle
      * @param string $errorMessage
-     * @throws \Exception
+     * @throws AssertException
      */
     public static function assertStringIncludes(string $haystack, string $needle, $errorMessage = '')
     {
