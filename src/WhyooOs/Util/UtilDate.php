@@ -181,7 +181,13 @@ class UtilDate
     }
 
 
-
+    /**
+     * 03/2018 used for (C) in eqipoo
+     */
+    public static function getYear()
+    {
+        return date('Y');
+    }
 
 }
 
