@@ -175,8 +175,12 @@ class UtilDate
      * @param $isoString
      * @return \DateTime
      */
-    public static function isoStringToDateTime($isoString)
+    public static function isoStringToDateTime($isoString=null)
     {
+        if( $isoString == null) {
+            return null;
+        }
+
         return \DateTime::createFromFormat('Y-m-d\TH:i:s+', $isoString);
     }
 
