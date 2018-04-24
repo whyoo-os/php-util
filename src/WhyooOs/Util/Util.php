@@ -185,17 +185,6 @@ class Util
     }
 
 
-    /**
-     * TODO: move to UtilLog
-     *
-     * @param $string
-     */
-    public static function simpleLogError($string)
-    {
-        file_put_contents('/tmp/mcx-simple-log-error.txt', date('Y-m-d H:i') . "\t" . $string . "\n", FILE_APPEND);
-    }
-
-
     // ------------------------------------------------------------------------
     // ------------------------------------------------------------------------
     // ------------------------------------------------------------------------

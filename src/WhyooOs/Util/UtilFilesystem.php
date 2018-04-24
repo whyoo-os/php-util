@@ -158,22 +158,21 @@ class UtilFilesystem
     // from smartdonation
     // buggy? not working correctly?
     # similar to python's os.walk
-    public static function findFilesRecursive(string $dir = '.', string $pattern = '~.*~')
+    # 04/2018 fixed .. does only return files, no directories
+    public static function findFilesRecursive(string $strDir = '.', string $pattern = '~.*~')
     {
         $ret = [];
-        $prefix = $dir . '/';
-        $dir = dir($dir);
+        $dir = dir($strDir);
         while (false !== ($file = $dir->read())) {
             if ($file === '.' || $file === '..') {
                 continue;
             }
-            $file = $prefix . $file;
-            if (is_dir($file)) {
-                $ret = array_merge($ret, self::findFilesRecursive($file, $pattern));
+            $fullPath = self::joinPaths($strDir, $file);
+            if (is_dir($fullPath)) {
+                $ret = array_merge($ret, self::findFilesRecursive($fullPath, $pattern));
             }
-            if (preg_match($pattern, $file)) {
-                #echo $file . "\n";
-                $ret[] = $file;
+            if (is_file($fullPath) && preg_match($pattern, $fullPath)) {
+                $ret[] = $fullPath;
             }
         }
         return $ret;
@@ -188,7 +187,7 @@ class UtilFilesystem
                 \RecursiveIteratorIterator::CHILD_FIRST
             );
             foreach ($it as $file) {
-                if (in_array($file->getBasename(), array('.', '..'))) {
+                if (in_array($file->getBasename(), ['.', '..'])) {
                     continue;
                 } elseif ($file->isDir()) {
                     rmdir($file->getPathname());
@@ -240,7 +239,7 @@ class UtilFilesystem
 
     public static function joinPaths()
     {
-        $paths = array();
+        $paths = [];
 
         foreach (func_get_args() as $arg) {
             if ($arg !== '') {
