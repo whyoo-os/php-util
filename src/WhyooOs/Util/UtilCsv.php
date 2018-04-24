@@ -8,18 +8,19 @@ class UtilCsv
 
     /**
      * used by FixturesUtil
+     * TODO: add parameter bTrim
      *
      * @param $pathCsv
      * @param bool $bAssoc
      * @return array array of objects or assocArrays
      * @throws \Exception
      */
-    public static function parseCsvFile($pathCsv, bool $bAssoc = false)
+    public static function parseCsvFile($pathCsv, bool $bAssoc = false, $bTrim = true)
     {
         $fileHandle = fopen($pathCsv, 'r');
         $arr = [];
         while (($row = fgetcsv($fileHandle)) !== FALSE) {
-            $arr[] = $row;
+            $arr[] = UtilArray::trimArray($row);
         }
         fclose($fileHandle);
 
@@ -116,7 +117,6 @@ class UtilCsv
 
         return ob_get_clean();
     }
-
 
 
     /**

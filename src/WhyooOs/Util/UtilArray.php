@@ -33,6 +33,39 @@ class UtilArray
 
 
     /**
+     * source: http://php.net/manual/en/function.explode.php#111307
+     * 04/2018
+     *
+     * @param array $delimiters
+     * @param $string
+     * @return array
+     */
+    static function multiExplode(array $delimiters, $string)
+    {
+        $ready = str_replace($delimiters, $delimiters[0], $string);
+        $launch = explode($delimiters[0], $ready);
+
+        return $launch;
+    }
+
+
+    /**
+     * 04/2018
+     *
+     * @param $delimiters
+     * @param $string
+     * @return array
+     */
+    static function trimMultiExplode(array $delimiters, $string)
+    {
+        $ready = str_replace($delimiters, $delimiters[0], $string);
+
+        return self::trimExplode($delimiters[0], $ready);
+    }
+
+
+
+    /**
      * 09/2017 for scrapers
      *
      * trims all entries of 1d array
@@ -272,6 +305,9 @@ class UtilArray
      */
     public static function getRandomElements($array, $count)
     {
+        if( $count == 0) {
+            return [];
+        }
         if ($count > count($array)) {
             $count = count($array);
         }
