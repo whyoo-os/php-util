@@ -64,7 +64,6 @@ class UtilArray
     }
 
 
-
     /**
      * 09/2017 for scrapers
      *
@@ -145,6 +144,8 @@ class UtilArray
 
     /**
      * get single property of documents in an array using getters
+     * TODO: rename to getObjectAttribute()
+     *
      * example:
      * $posts = {'a' => post1, 'b' => post2, 'c' => post3]
      * getObjectProperty($posts, 'id', false) returns [1,2,3]
@@ -305,7 +306,7 @@ class UtilArray
      */
     public static function getRandomElements($array, $count)
     {
-        if( $count == 0) {
+        if ($count == 0) {
             return [];
         }
         if ($count > count($array)) {
@@ -570,7 +571,21 @@ class UtilArray
 
 
     /**
+     * 05/2018 marketer
+     *
+     * @param $arr
+     * @param $element
+     */
+    public static function addElementUnique(&$arr, $element)
+    {
+       if(!in_array($element, $arr)) {
+           $arr[] = $element;
+       }
+    }
+
+    /**
      * 07/2017 schlegel
+     * 05/2018 marketer
      *
      * @param $arr
      * @param $needle
