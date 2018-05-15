@@ -34,10 +34,10 @@ class UtilAssert
      * @param string $errorMessage
      * @throws AssertException
      */
-    public static function assertNotNull($subject, $errorMessage = "")
+    public static function assertGreaterZero($number, $errorMessage = "")
     {
-        if (is_null($subject)) {
-            throw new AssertException("Assertion 'Not Null' failed: " . $errorMessage);
+        if (!($number > 0)) {
+            throw new AssertException("Assertion 'Greater Zero' failed ($number <= 0). " . $errorMessage);
         }
     }
 
@@ -46,10 +46,23 @@ class UtilAssert
      * @param string $errorMessage
      * @throws AssertException
      */
-    public static function assertGreaterZero($number, $errorMessage = "")
+    public static function assertNull($subject, $errorMessage = "")
     {
-        if (!($number > 0)) {
-            throw new AssertException("Assertion 'Greater Zero' failed ($number <= 0): " . $errorMessage);
+        if (is_null($subject)) {
+            throw new AssertException("assertNull failed (got " . (string)$subject . "). " . $errorMessage);
+        }
+    }
+
+
+    /**
+     * @param $subject
+     * @param string $errorMessage
+     * @throws AssertException
+     */
+    public static function assertNotNull($subject, $errorMessage = "")
+    {
+        if (is_null($subject)) {
+            throw new AssertException("assertNotNull failed. " . $errorMessage);
         }
     }
 
@@ -78,7 +91,7 @@ class UtilAssert
         }
     }
 
-    
+
     /**
      * @param $bAssertion
      * @param string $errorMessage
@@ -90,7 +103,7 @@ class UtilAssert
             throw new AssertException("Assertion failed: " . $errorMessage);
         }
     }
-    
+
 
     /**
      * @param mixed $needle
@@ -101,7 +114,8 @@ class UtilAssert
     public static function assertInArray($needle, array $haystack, $errorMessage = '')
     {
         if (!in_array($needle, $haystack)) {
-            throw new AssertException("InArray Assertion failed - '$needle' not in array' " . $errorMessage);
+            $strAvailable = implode(', ', $haystack);
+            throw new AssertException("InArray Assertion failed - '$needle' not in array'. available values: $strAvailable." . $errorMessage);
         }
     }
 

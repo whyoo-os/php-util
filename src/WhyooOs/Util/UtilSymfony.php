@@ -226,4 +226,17 @@ try {
         return self::getService('kernel')->getEnvironment();
     }
 
+
+    /**
+     * 05/2018
+     * used eg to add the route name to serialization group
+     */
+    public static function getRouteName()
+    {
+        $request = self::getService('request_stack')->getCurrentRequest();
+        $routeName = $request->get('_route');
+
+        return $routeName;
+    }
+
 }
