@@ -205,8 +205,7 @@ class UtilImage
      */
     public static function watermarkImage($pathSrc, $pathDest, $pathTag, $position, $scalePercent)
     {
-        $imageTagger = new \WhyooOs\HelperClasses\ImageTagger();
-        $imageTagger->tagImage($pathSrc, $pathTag, $position, $scalePercent, $pathDest); // TODO: fix the hardcoded size=60%
+        \WhyooOs\HelperClasses\ImageTagger::tagImage($pathSrc, $pathTag, $position, $scalePercent, $pathDest); // TODO: fix the hardcoded size=60%
     }
 
 
