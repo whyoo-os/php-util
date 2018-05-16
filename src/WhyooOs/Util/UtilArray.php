@@ -64,7 +64,6 @@ class UtilArray
     }
 
 
-
     /**
      * 09/2017 for scrapers
      *
@@ -305,7 +304,7 @@ class UtilArray
      */
     public static function getRandomElements($array, $count)
     {
-        if( $count == 0) {
+        if ($count == 0) {
             return [];
         }
         if ($count > count($array)) {
@@ -646,6 +645,22 @@ class UtilArray
                 return false;
         }
         return true;
+    }
+
+    /**
+     * 05/2018
+     * used in ebay-gen
+     * @param $key
+     */
+    public static function pull(array &$arr, $key)
+    {
+        if( !array_key_exists($key, $arr)) {
+            throw new \Exception("$key not found");
+        }
+        $ret = $arr[$key];
+        unset($arr[$key]);
+
+        return $ret;
     }
 
 }
