@@ -668,13 +668,17 @@ class UtilArray
      * used in ebay-gen
      * @param $key
      */
-    public static function pull(array &$arr, $key)
+    public static function pull(array &$arr, $key, bool $bThrowException=false)
     {
-        if( !array_key_exists($key, $arr)) {
-            throw new \Exception("$key not found");
+        if( array_key_exists($key, $arr)) {
+            $ret = $arr[$key];
+            unset($arr[$key]);
+        } else {
+            if( $bThrowException) {
+                throw new \Exception("$key not found");
+            }
+            $ret = null;
         }
-        $ret = $arr[$key];
-        unset($arr[$key]);
 
         return $ret;
     }
