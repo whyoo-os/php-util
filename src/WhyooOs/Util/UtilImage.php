@@ -74,7 +74,6 @@ class UtilImage
         } else {
             throw new \Exception("unknown extension $extension for file $pathDest");
         }
-
     }
 
 
@@ -264,7 +263,7 @@ class UtilImage
      * @param string $size eg "300x400" or "300"
      * @return array with 2 elements: with and height
      */
-    private static function _sizeStringToIntArray($size)
+    public static function sizeStringToIntArray($size)
     {
         $ret = explode('x', $size);
         if (count($ret) == 1) {
@@ -297,7 +296,7 @@ class UtilImage
             return;
         }
 
-        list($width, $height) = self::_sizeStringToIntArray($size);
+        list($width, $height) = self::sizeStringToIntArray($size);
 //        if ($resizeMode === self::RESIZE_MODE_FILL) {
 //            $im = self::loadImage($pathSrc);
 //            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
@@ -325,7 +324,7 @@ class UtilImage
             return;
         }
 
-        list($width, $height) = self::_sizeStringToIntArray($size);
+        list($width, $height) = self::sizeStringToIntArray($size);
 //        if ($resizeMode === self::RESIZE_MODE_FILL) {
 //            $im = imagecreatefromstring($bytesSrc);
 //            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
@@ -348,7 +347,7 @@ class UtilImage
 //     */
 //    public static function resizeGifFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
 //    {
-//        list($width, $height) = self::_sizeStringToIntArray($size);
+//        list($width, $height) = self::sizeStringToIntArray($size);
 //
 //        $options = [
 //            'engine' => 'php_gd',
@@ -382,7 +381,7 @@ class UtilImage
 //     */
 //    public static function resizeGifFromBytesV2($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
 //    {
-//        list($width, $height) = self::_sizeStringToIntArray($size);
+//        list($width, $height) = self::sizeStringToIntArray($size);
 //        // ---- Read in the animated gif
 //        $animation = new \Imagick();
 //        $animation->setFormat('gif');
