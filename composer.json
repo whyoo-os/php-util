@@ -1,28 +1,32 @@
 {
-  "name": "whyoo-os/php-util",
-  "type": "library",
-  "description": "Utility classes for php",
-  "keywords": [
-    "util",
-    "utility"
-  ],
-  "homepage": "https://github.com/whyoo-os/php-util",
-  "license": "MIT",
-  "require": {
-    "php": ">=7.0"
-  },
-  "suggest": {
-    "symfony/var-dumper": "*",
-    "phpfastcache/phpfastcache": "^6.0",
-    "eventviva/php-image-resize": "*",
-    "jdorn/sql-formatter": "*"
-  },
-  "autoload": {
-    "psr-4": {
-      "WhyooOs\\Util\\": "src/WhyooOs/Util/",
-      "WhyooOs\\HelperClasses\\": "src/WhyooOs/HelperClasses/"
+    "name": "whyoo-os/php-util",
+    "type": "library",
+    "description": "Utility classes for php",
+    "keywords": [
+        "util",
+        "utility"
+    ],
+    "homepage": "https://github.com/whyoo-os/php-util",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.0"
+    },
+    "suggest": {
+        "symfony/var-dumper": "for UtilDebug",
+        "phpfastcache/phpfastcache": "for caching in UtilCurl",
+        "eventviva/php-image-resize": "for image resizing",
+        "jdorn/sql-formatter": "for UtilDebug::getSqlFormatted()",
+        "swiftmailer/swiftmailer": "for mails",
+        "tijsverkoyen/css-to-inline-styles": "for html mails with css",
+        "sunra/php-simple-html-dom-parser": "for scraping stuff",
+        "coldume/imagecraft": "for resizing animated gifs"
+    },
+    "autoload": {
+        "psr-4": {
+            "WhyooOs\\Util\\": "src/WhyooOs/Util/",
+            "WhyooOs\\HelperClasses\\": "src/WhyooOs/HelperClasses/"
+        }
     }
-  }
 }
 
 

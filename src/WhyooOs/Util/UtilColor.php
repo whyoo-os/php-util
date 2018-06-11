@@ -42,6 +42,11 @@ class UtilColor
         }
     }
 
+    public static function rgb2hex($r, $g, $b)
+    {
+        return sprintf('#%02x%02x%02x', intval($r), intval($g), intval($b));
+    }
+
 
     /**
      * 07/2017 moved from UtilImage to here
@@ -99,6 +104,52 @@ class UtilColor
         return $color;
     }
 
+
+    /**
+     * source: https://stackoverflow.com/a/42921358/2848530
+     *
+     * I think the best way is the Luminosity Contrast algorithm:
+     * ADVISE: The next functions works well most of the time, But sometimes there are colors in which it does not work properly.
+
+     * @param $hexColor
+     * @return string
+     */
+    public static function getContrastColor($hexColor) {
+
+        //////////// hexColor RGB
+        $R1 = hexdec(substr($hexColor, 0, 2));
+        $G1 = hexdec(substr($hexColor, 2, 2));
+        $B1 = hexdec(substr($hexColor, 4, 2));
+
+        //////////// Black RGB
+        $blackColor = "#000000";
+        $R2BlackColor = hexdec(substr($blackColor, 0, 2));
+        $G2BlackColor = hexdec(substr($blackColor, 2, 2));
+        $B2BlackColor = hexdec(substr($blackColor, 4, 2));
+
+        //////////// Calc contrast ratio
+        $L1 = 0.2126 * pow($R1 / 255, 2.2) +
+            0.7152 * pow($G1 / 255, 2.2) +
+            0.0722 * pow($B1 / 255, 2.2);
+
+        $L2 = 0.2126 * pow($R2BlackColor / 255, 2.2) +
+            0.7152 * pow($G2BlackColor / 255, 2.2) +
+            0.0722 * pow($B2BlackColor / 255, 2.2);
+
+        $contrastRatio = 0;
+        if ($L1 > $L2) {
+            $contrastRatio = (int)(($L1 + 0.05) / ($L2 + 0.05));
+        } else {
+            $contrastRatio = (int)(($L2 + 0.05) / ($L1 + 0.05));
+        }
+
+        //////////// If contrast is more than 5, return black color
+        if ($contrastRatio > 5) {
+            return 'black';
+        } else { //////////// if not, return white color.
+            return 'white';
+        }
+    }
 
 
 }

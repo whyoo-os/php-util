@@ -3,7 +3,6 @@
 namespace WhyooOs\Util;
 
 
-
 # see http://docs.python.org/2/library/os.path.html for inspiration
 # will not work under windows .. it assumes slash (/) as separator
 class UtilFilesystem
@@ -76,7 +75,7 @@ class UtilFilesystem
 
 
     /**
-     * not recursive .. returns files and directories
+     * not recursive .. returns files and directories ... relative to $path
      */
     public static function scanDir($path)
     {
@@ -141,27 +140,39 @@ class UtilFilesystem
         return $filename;
     }
 
+    /**
+     * eg: "example.csv" --> "example.xls"
+     * 09/2017
+     *
+     * @param string $pathCsv
+     * @param string $newExtension
+     * @return string
+     */
+    public static function replaceExtension(string $pathCsv, string $newExtension)
+    {
+        return self::getWithoutExtension($pathCsv) . ".$newExtension";
+    }
+
 
 
     // from smartdonation
     // buggy? not working correctly?
     # similar to python's os.walk
-    function findFilesRecursive($dir = '.', $pattern = '~.*~')
+    # 04/2018 fixed .. does only return files, no directories
+    public static function findFilesRecursive(string $strDir = '.', string $pattern = '~.*~')
     {
         $ret = [];
-        $prefix = $dir . '/';
-        $dir = dir($dir);
+        $dir = dir($strDir);
         while (false !== ($file = $dir->read())) {
             if ($file === '.' || $file === '..') {
                 continue;
             }
-            $file = $prefix . $file;
-            if (is_dir($file)) {
-                $ret = array_merge($ret, self::findFilesRecursive($file, $pattern));
+            $fullPath = self::joinPaths($strDir, $file);
+            if (is_dir($fullPath)) {
+                $ret = array_merge($ret, self::findFilesRecursive($fullPath, $pattern));
             }
-            if (preg_match($pattern, $file)) {
-                #echo $file . "\n";
-                $ret[] = $file;
+            if (is_file($fullPath) && preg_match($pattern, $fullPath)) {
+                $ret[] = $fullPath;
             }
         }
         return $ret;
@@ -176,7 +187,7 @@ class UtilFilesystem
                 \RecursiveIteratorIterator::CHILD_FIRST
             );
             foreach ($it as $file) {
-                if (in_array($file->getBasename(), array('.', '..'))) {
+                if (in_array($file->getBasename(), ['.', '..'])) {
                     continue;
                 } elseif ($file->isDir()) {
                     rmdir($file->getPathname());
@@ -194,22 +205,30 @@ class UtilFilesystem
     /**
      * returns alphabetically sorted filtered list of files
      *
-     * @param $dir
-     * @param $bRecursive
-     * @return array
+     * @param string $dir
+     * @param bool $bRecursive
+     * @return string[]
      */
-    public static function findImages($dir, $bRecursive = true)
+    public static function findImages(string $dir, $bRecursive = true)
     {
         $extensionsLowerCase = ['jpg', 'jpeg', 'png', 'gif'];
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
         if ($bRecursive) {
             $files = self::scanDirForFilesRecursive($dir);
         } else {
             $files = self::scanDir($dir);
         }
-        $ret = array_filter($files, function ($filename) use ($extensionsLowerCase) {
+#UtilDebug::dd($files);
+        $ret = array_filter($files, function ($filename) use ($dir, $extensionsLowerCase, $allowedMimeTypes) {
             //echo "#".self::getExtension( $filename);
-            return in_array(self::getExtension($filename), $extensionsLowerCase);
+            $ext = self::getExtension($filename);
+            if (empty($ext)) {
+                // filename has no extension .. we use mimeType
+                $mime = mime_content_type($dir . '/' . $filename);
+                return in_array($mime, $allowedMimeTypes);
+            }
+            return in_array($ext, $extensionsLowerCase);
         });
 
         asort($ret);
@@ -220,7 +239,7 @@ class UtilFilesystem
 
     public static function joinPaths()
     {
-        $paths = array();
+        $paths = [];
 
         foreach (func_get_args() as $arg) {
             if ($arg !== '') {
@@ -408,6 +427,22 @@ class UtilFilesystem
         return $pathDest;
     }
 
+    /**
+     * FIXME: currently it onlt works for images
+     * used by ebay-gen
+     *
+     * @param $fullPathFile
+     * @return string
+     */
+    public static function physicalFileToBase64($fullPathFile)
+    {
+        $type = pathinfo($fullPathFile, PATHINFO_EXTENSION);
+        $data = file_get_contents($fullPathFile);
+        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        return $base64;
+    }
+
 
     /**
      * @param string $pathDirectory
@@ -436,7 +471,7 @@ class UtilFilesystem
      * @param int $numBack
      * @return string
      */
-    public static function removeLeadingDirectories(string $path, int $numBack = 1, string $directorySeparator='/') : string
+    public static function removeLeadingDirectories(string $path, int $numBack = 1, string $directorySeparator = '/'): string
     {
         $tmp = explode($directorySeparator, $path);
 
@@ -444,5 +479,48 @@ class UtilFilesystem
     }
 
 
+    /**
+     * 09/2017
+     *
+     * for deleting older .csv files (scraper)
+     *
+     * @param $dirPath
+     * @param $numDays
+     */
+    public static function deleteOldFiles($dirPath, $numDays)
+    {
+        if (file_exists($dirPath)) {
+            foreach (new \DirectoryIterator($dirPath) as $fileInfo) {
+                if ($fileInfo->isDot()) {
+                    continue;
+                }
+                if (time() - $fileInfo->getCTime() >= 3600 * 24 * $numDays) {
+                    // dump("unlink: " . $fileInfo->getRealPath());
+                    unlink($fileInfo->getRealPath());
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 10/2017 used by ebayGen
+     * source https://stackoverflow.com/a/21409562/2848530
+     *
+     * @param $pathDir
+     * @return int size in bytes
+     */
+    public static function getDirectorySize($pathDir)
+    {
+        $bytesTotal = 0;
+        $pathDir = realpath($pathDir);
+        if ($pathDir !== false && $pathDir != '' && file_exists($pathDir)) {
+            foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($pathDir, \FilesystemIterator::SKIP_DOTS)) as $object) {
+                $bytesTotal += $object->getSize();
+            }
+        }
+
+        return $bytesTotal;
+    }
 
 }

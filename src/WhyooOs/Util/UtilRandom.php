@@ -15,6 +15,15 @@ class UtilRandom
         return substr($rectified, 0, $length);
     }
 
+    /**
+     * 12/2017 - returns random float between 0 and 1
+     * @return float|int
+     */
+    public static function getRandom01()
+    {
+        return mt_rand() / mt_getrandmax();
+    }
+
 //    // alternative version from smartdonation
 //    public static function createRandomString($length)
 //    {

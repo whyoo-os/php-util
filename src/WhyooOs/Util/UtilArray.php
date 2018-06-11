@@ -33,6 +33,38 @@ class UtilArray
 
 
     /**
+     * source: http://php.net/manual/en/function.explode.php#111307
+     * 04/2018
+     *
+     * @param array $delimiters
+     * @param $string
+     * @return array
+     */
+    static function multiExplode(array $delimiters, $string)
+    {
+        $ready = str_replace($delimiters, $delimiters[0], $string);
+        $launch = explode($delimiters[0], $ready);
+
+        return $launch;
+    }
+
+
+    /**
+     * 04/2018
+     *
+     * @param $delimiters
+     * @param $string
+     * @return array
+     */
+    static function trimMultiExplode(array $delimiters, $string)
+    {
+        $ready = str_replace($delimiters, $delimiters[0], $string);
+
+        return self::trimExplode($delimiters[0], $ready);
+    }
+
+
+    /**
      * 09/2017 for scrapers
      *
      * trims all entries of 1d array
@@ -45,12 +77,11 @@ class UtilArray
         foreach ($arr as $key => &$v) {
             $v = trim($v);
             if ($bRemoveEmpty && empty($v)) {
-                unset($arr[$key]);
+                unset($arr[$key]); // todo? use splice here?
             }
         }
         return $arr;
     }
-
 
 
     /**
@@ -77,7 +108,7 @@ class UtilArray
      */
     public static function searchObjectByAttribute($arr, string $attributeName, $attributeValue)
     {
-        if( empty($arr)) {
+        if (empty($arr)) {
             return null;
         }
 
@@ -113,32 +144,87 @@ class UtilArray
 
     /**
      * get single property of documents in an array using getters
+     * TODO: rename to getObjectAttribute()
+     *
      * example:
      * $posts = {'a' => post1, 'b' => post2, 'c' => post3]
      * getObjectProperty($posts, 'id', false) returns [1,2,3]
      * getObjectProperty($posts, 'id', true) returns { a:1, b:2, c:3 }
-     *
+     * TODO: rename getDocumentProperty?
+     * used in marketer
      * @param array $arr
      * @param $propertyName
-     * @param bool $includeKeys the thing with $includeKeys` is if array is associative to keep the old keys not to cretae new numeric array
+     * @param bool $keepOriginalKeys the thing with $keepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
      * @return array
      */
-    public static function getObjectProperty(array $arr, $propertyName, $includeKeys = false)
+    public static function getObjectProperty(array $arr, $propertyName, $keepOriginalKeys = false)
     {
         $methodName = "get" . ucfirst($propertyName);
-        if (!$includeKeys) {
-            // new keys (create ordinary numeric array)
-            $newArray = array_map(function ($object) use ($methodName) {
-                return $object->$methodName();
-            }, $arr);
-        } else {
+        if ($keepOriginalKeys) {
             // keep original keys
-            array_walk($arr, function (&$object, $key) use ($methodName) {
-                $object = $object->$methodName();
+            array_walk($arr, function (&$item, $key) use ($methodName) {
+                $item = $item->$methodName();
             });
             $newArray = $arr;
+        } else {
+            // new keys (create ordinary numeric array)
+            $newArray = array_map(function ($item) use ($methodName) {
+                return $item->$methodName();
+            }, $arr);
         }
 
+        return $newArray;
+    }
+
+    /**
+     * TODO: rename getDocumentProperties?
+     * used in eqipoo
+     * @param array $arr
+     * @param $propertyNames
+     * @return array
+     */
+    public static function getObjectProperties(array $arr, array $propertyNames)
+    {
+        $methodNames = [];
+        foreach ($propertyNames as $propertyName) {
+            $methodNames[$propertyName] = "get" . ucfirst($propertyName);
+        }
+        // new keys (create ordinary numeric array)
+        $newArray = array_map(function ($item) use ($methodNames) {
+            $ret = [];
+            foreach ($methodNames as $key => $getterName) {
+                $ret[$key] = $item->$getterName();
+            }
+            return $ret;
+        }, $arr);
+
+        return $newArray;
+    }
+
+
+    /**
+     * 12/2017
+     * basically a convenience wrapper array array_map
+     *
+     * @param array $arr
+     * @param $keyName
+     * @param bool $keepOriginalKeys
+     * @return array
+     */
+    public static function getAssocProperty(array $arr, $keyName, $keepOriginalKeys = false)
+    {
+        if ($keepOriginalKeys) {
+            // keep original keys
+            array_walk($arr, function (&$item, $key) use ($methodName) {
+                $item = $item[$keyName];
+            });
+            $newArray = $arr;
+        } else {
+            // new keys (create ordinary numeric array)
+            $newArray = array_map(function ($item) use ($keyName) {
+                return $item[$keyName];
+            }, $arr);
+        }
 
         return $newArray;
     }
@@ -147,9 +233,9 @@ class UtilArray
     /**
      * sorts an array of assoc arrays (= a table) by a column $keyName
      *
-     * @param $array
+     * @param array &$array
      * @param $keyName
-     * @return mixed
+     * @return array
      */
     public static function sortArrayOfArrays(&$array, $keyName, $sortOrder = SORT_ASC)
     {
@@ -157,6 +243,25 @@ class UtilArray
         foreach ($array as $idx => $row) {
             $sortArray[$idx] = $row[$keyName];
         }
+        array_multisort($sortArray, $sortOrder, $array);
+
+        return $array;
+    }
+
+
+    /**
+     * 03/2018
+     * sorts an array of objects
+     * used by marketer (for sorting list of participants by conversationRole)
+     * TODO: maybe there is faster version with a callback
+     *
+     * @param array &$array
+     * @param $keyName
+     * @return array
+     */
+    public static function sortArrayOfObjects(&$array, $attributeName, $sortOrder = SORT_ASC)
+    {
+        $sortArray = self::getObjectProperty($array, $attributeName);
         array_multisort($sortArray, $sortOrder, $array);
 
         return $array;
@@ -201,6 +306,9 @@ class UtilArray
      */
     public static function getRandomElements($array, $count)
     {
+        if ($count == 0) {
+            return [];
+        }
         if ($count > count($array)) {
             $count = count($array);
         }
@@ -245,13 +353,12 @@ class UtilArray
     }
 
 
-
     /**
      * @param $array
      * @param $keyName
      * @return array
      */
-    public static function arrayOfDocumentsToAssoc($array, $keyName='id')
+    public static function arrayOfDocumentsToAssoc($array, $keyName = 'id')
     {
         $values = array_values($array);
         $keys = [];
@@ -398,6 +505,7 @@ class UtilArray
      * todo: merge with filterByKey ?
      *
      * filters assoc array
+     * used by ebayGen
      *
      * @param array $arr
      * @param array $allowedKeys
@@ -412,6 +520,18 @@ class UtilArray
             }
         }
         return $new;
+    }
+
+    /**
+     * todo: merge with filterArrayByKeys ?
+     * Filter array by its keys using a callback.
+     * @return array numeric(!) array
+     */
+    public static function filterByKey(array $arr, $keys)
+    {
+        return array_map(function ($key) use ($arr) {
+            return $arr[$key];
+        }, $keys);
     }
 
 
@@ -433,25 +553,6 @@ class UtilArray
     }
 
 
-
-
-
-    /**
-     * todo: merge with filterArrayByKeys ?
-     * Filter array by its keys using a callback.
-     * @return array numeric(!) array
-     */
-    public static function filterByKey(array $arr, $keys)
-    {
-        return array_map(function ($key) use ($arr) {
-            return $arr[$key];
-        }, $keys);
-    }
-
-
-
-
-
     // from marketer v1
     public static function arrayToObject(array $arr)
     {
@@ -468,8 +569,23 @@ class UtilArray
         }, $arr);
     }
 
+
+    /**
+     * 05/2018 marketer
+     *
+     * @param $arr
+     * @param $element
+     */
+    public static function addElementUnique(&$arr, $element)
+    {
+       if(!in_array($element, $arr)) {
+           $arr[] = $element;
+       }
+    }
+
     /**
      * 07/2017 schlegel
+     * 05/2018 marketer
      *
      * @param $arr
      * @param $needle
@@ -483,5 +599,88 @@ class UtilArray
         }
     }
 
+
+    /**
+     * 11/2017 push4
+     * uses array_splice instead of unset .. thus the array must be numeric assay
+     *
+     * @param $arr
+     * @param $needle
+     */
+    public static function removeElementFromNumericArray(&$arr, $needle)
+    {
+        $idx = array_search($needle, $arr);
+
+        if ($idx !== false) {
+            UtilAssert::assertIsInt($idx);
+            array_splice($arr, $idx, 1);
+        }
+    }
+
+
+    /**
+     * 01/2018 moved from UtilMongo to here
+     *
+     * @param  \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|array $arr
+     * @return array
+     */
+    public static function iteratorToArray($arr, $useKeys = true)
+    {
+        if (is_array($arr)) {
+            return $arr;
+        }
+
+        return iterator_to_array($arr, $useKeys);
+    }
+
+    /**
+     * 02/2018 unused
+     *
+     * @param $getterName eg "getId"
+     * @param array $items
+     * @return array
+     */
+    public static function arrayColumnByGetter($getterName, $items)
+    {
+        return array_map(function ($f) use ($getterName) {
+            return $f->$getterName();
+        }, $items);
+    }
+
+
+    /**
+     * 03/2018 used by ebaygen
+     *
+     * @param $arr
+     * @return bool
+     */
+    public static function isEmpty($arr)
+    {
+        foreach ($arr as &$val) {
+            if (!empty($val))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * 05/2018
+     * used in ebay-gen
+     * @param $key
+     */
+    public static function pull(array &$arr, $key, bool $bThrowException=false)
+    {
+        if( array_key_exists($key, $arr)) {
+            $ret = $arr[$key];
+            unset($arr[$key]);
+        } else {
+            if( $bThrowException) {
+                throw new \Exception("$key not found");
+            }
+            $ret = null;
+        }
+
+        return $ret;
+    }
 
 }

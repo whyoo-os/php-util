@@ -111,6 +111,8 @@ class Util
 
 
     /**
+     * TODO: belongs to UtilDocument
+     *
      * @param $row
      * @param string $propertyName eg 'calculation.revenueGross'
      * @return mixed
@@ -184,17 +186,6 @@ class Util
     }
 
 
-    /**
-     * TODO: move to UtilLog
-     *
-     * @param $string
-     */
-    public static function simpleLogError($string)
-    {
-        file_put_contents('/tmp/mcx-simple-log-error.txt', date('Y-m-d H:i') . "\t" . $string . "\n", FILE_APPEND);
-    }
-
-
     // ------------------------------------------------------------------------
     // ------------------------------------------------------------------------
     // ------------------------------------------------------------------------
@@ -239,11 +230,21 @@ class Util
 
 
     /**
+     * 01/2018
+     * @return bool
+     */
+    public static function isCLi()
+    {
+        return php_sapi_name() == "cli";
+    }
+
+
+    /**
      * @return string \n or <br>
      */
     public static function getNewline()
     {
-        if (php_sapi_name() == "cli") {
+        if (self::isCli()) {
             // In cli-mode
             return "\n";
         } else {

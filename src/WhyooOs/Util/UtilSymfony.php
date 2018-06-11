@@ -6,25 +6,52 @@ use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\User;
-
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 class UtilSymfony
 {
 
     /**
-     * hack to get container where ever needed
+     * hack to get container where ever needed, using global $kernel
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface|null
      */
     public static function getContainer()
     {
-        // final solution: use global $kernel
-        global $kernel;
-        if (is_null($kernel)) {
-            return null;
-        }
+        // dump($GLOBALS['kernel']);
+        //
+//        if (is_null($GLOBALS['kernel'])) {
+//            return null;
+//        }
 
-        return $kernel->getContainer();
+        return $GLOBALS['kernel']->getContainer();
+    }
+
+    /**
+     * convenience hack
+     * 01/2018
+     * ebayGen
+     *
+     * @return mixed the service from the container
+     */
+    public static function getService(string $serviceId)
+    {
+        return self::getContainer()->get($serviceId);
+    }
+
+
+    /**
+     * convenience hack
+     * 01/2018
+     * ebayGen
+     *
+     * @return mixed the requested parameter from the container
+     */
+    public static function getParameter(string $name)
+    {
+        return self::getContainer()->getParameter($name);
     }
 
 
@@ -58,7 +85,36 @@ class UtilSymfony
     }
 
     /**
-     * alternative / faster version of UtilSymfony::createImageResponse ..
+     * 01/2018
+     * could be optimized
+     *
+     * @param string $pathFile
+     * @return Response
+     */
+    public static function createPdfResponse(string $pathFile)
+    {
+        // Generate response
+        $response = new Response();
+
+        // headers .. do NOT cache
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . basename($pathFile) . '";');
+        $response->headers->set('Content-Type', mime_content_type($pathFile));
+        $response->headers->set('Content-Length', filesize($pathFile));
+        $response->headers->set('Pragma', 'public');
+        $response->headers->set('Cache-Control', 'private');
+        $response->headers->set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time()));
+
+        $response->sendHeaders();
+        $response->setContent(readfile($pathFile));
+
+        return $response;
+    }
+
+
+
+
+    /**
+     * alternative / faster version of self::createImageResponse ..
      *
      * when using this be sure that there is no way to get some file like /etc/passwd ..
      * @see UtilFilesystem::sanitizeFilename()
@@ -87,10 +143,17 @@ class UtilSymfony
         if( !is_array($data) && !is_object($data)) {
             return $data;
         }
-        $serializationContext = UtilSymfony::getSerializationContext($groups);
-        $serializer = UtilSymfony::getContainer()->get('jms_serializer');
+        $serializationContext = self::getSerializationContext($groups);
+        $serializer = self::getContainer()->get('jms_serializer');
 
-        return $serializer->toArray($data, $serializationContext);
+        $arr = $serializer->toArray($data, $serializationContext);
+
+        // ---- add serializion groups to array for debugging
+//        if( !is_null($groups)) {
+//            $arr['__groups'] =  $serializationContext->attributes->get('groups');
+//        }
+
+        return $arr;
     }
 
 
@@ -107,7 +170,7 @@ class UtilSymfony
             if (is_string($groups)) {
                 $groups = [$groups];
             }
-            $groups[] = "formatters"; // HACK
+            // $groups[] = "formatters"; // HACK
             $groups[] = "ALWAYS"; // HACK
             $context->setGroups($groups);
         }
@@ -118,7 +181,7 @@ class UtilSymfony
 
     /**
      * returns currently logged in user (if any) or null (if no user logged in)
-     * @return User|null
+     * @return UserInterface
      */
     public static function getUser()
     {
@@ -129,5 +192,51 @@ class UtilSymfony
         }
     }
 
+    /**
+     * orig: https://ourcodeworld.com/articles/read/459/how-to-authenticate-login-manually-an-user-in-a-controller-with-or-without-fosuserbundle-on-symfony-3
+     * @param UserInterface $user
+     */
+    public static function loginUser(UserInterface $user, $firewallName = 'secured_area')
+    {
+        $token = new UsernamePasswordToken(
+            $user,
+            null,
+            $firewallName,
+            $user->getRoles());
+
+        self::getContainer()->get('security.token_storage')->setToken($token);
+try {
+    self::getContainer()->get('session')->set('_security_' . $firewallName, serialize($token));
+} catch (\Exception $e) {
+    // ignore RuntimeException: Failed to start the session because headers have already been sent
+}
+
+//        // Fire the login event manually
+//        $event = new InteractiveLoginEvent($request, $token);
+//        self::getContainer()->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+    }
+
+
+    /**
+     * 03/2018
+     * @return string the symfony environment, eg. "dev", "prod", ...
+     */
+    public static function getEnvironment()
+    {
+        return self::getService('kernel')->getEnvironment();
+    }
+
+
+    /**
+     * 05/2018
+     * used eg to add the route name to serialization group
+     */
+    public static function getRouteName()
+    {
+        $request = self::getService('request_stack')->getCurrentRequest();
+        $routeName = $request->get('_route');
+
+        return $routeName;
+    }
 
 }

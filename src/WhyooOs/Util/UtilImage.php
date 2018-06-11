@@ -3,8 +3,6 @@
 
 namespace WhyooOs\Util;
 
-use Eventviva\ImageResize;
-
 
 /**
  * image utility class
@@ -13,18 +11,22 @@ class UtilImage
 {
 
 
-    const RESIZE_MODE_STRETCH = 'S';
-    const RESIZE_MODE_INSET = 'I'; // not cropping .. Resize to fit a bounding box
-    const RESIZE_MODE_OUTBOUND = 'O'; // cropping
+    const RESIZE_MODE_STRETCH = 'STRETCH';
+//  const RESIZE_MODE_FILL = 'FILL'; // resize to fit inside box then add fill with space at TB or LR to fit size
+    const RESIZE_MODE_FIT = 'FIT'; // Resize to fit inside box
+    const RESIZE_MODE_CROP = 'CROP'; //
+    const RESIZE_MODE_ORIGINAL = 'ORIGINAL'; // NO RESIZING is done
 
+    
     private static $defaultJpegQuality = 95;
 
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
-/// MARKETER VERSION
+
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+
 
     /**
      * wrapper for php's imagecreatefrom***() functions
@@ -72,7 +74,6 @@ class UtilImage
         } else {
             throw new \Exception("unknown extension $extension for file $pathDest");
         }
-
     }
 
 
@@ -121,45 +122,6 @@ class UtilImage
     }
 
 
-    /**
-     * returns web path of icon for a give mime type
-     * @param $mimeType
-     * @return string
-     */
-    public static function getMimeTypeIcon($mimeType)
-    {
-        $pathIconsWeb = "/assets/images/mimetypes/96";
-        $fileNameSvg = str_replace('/', '-', $mimeType) . '.svg';
-
-        $pathIconsFull = UtilSymfony::getContainer()->getParameter('kernel.root_dir') . "/../web" . $pathIconsWeb;
-
-        if (file_exists($pathIconsFull . '/' . $fileNameSvg)) {
-            return $pathIconsWeb . '/' . $fileNameSvg;
-        }
-        // try with 'gnome-mime-' prefix
-        if (file_exists($pathIconsFull . '/' . 'gnome-mime-' . $fileNameSvg)) {
-            return $pathIconsWeb . '/' . 'gnome-mime-' . $fileNameSvg;
-        }
-        // try generic eg image.svg
-        $generic = explode('/', $mimeType)[0] . '.svg';
-        if (file_exists($pathIconsFull . '/' . $generic)) {
-            return $pathIconsWeb . '/' . $generic;
-        }
-
-        return $pathIconsWeb . '/' . 'unknown.svg';
-    }
-
-
-
-
-/// EB 5 VERSION
-/// EB 5 VERSION
-/// EB 5 VERSION
-/// EB 5 VERSION
-/// EB 5 VERSION
-/// EB 5 VERSION
-
-
     // ----------------------------------------------------------------------------------------
 
     /**
@@ -181,24 +143,6 @@ class UtilImage
     }
 
 
-    public static function calculateTextBox($text, $fontFile, $fontSize, $fontAngle = 0)
-    {
-        $rect = imagettfbbox($fontSize, $fontAngle, $fontFile, $text);
-        $minX = min(array($rect[0], $rect[2], $rect[4], $rect[6]));
-        $maxX = max(array($rect[0], $rect[2], $rect[4], $rect[6]));
-        $minY = min(array($rect[1], $rect[3], $rect[5], $rect[7]));
-        $maxY = max(array($rect[1], $rect[3], $rect[5], $rect[7]));
-
-        return [
-            "left" => abs($minX) - 1,
-            "top" => abs($minY) - 1,
-            "width" => $maxX - $minX,
-            "height" => $maxY - $minY,
-            "box" => $rect
-        ];
-    }
-
-
     public static function rotateImage($pathSrc, $pathDest, $degrees)
     {
         // Image 2 .... is Image 90 degrees rotated
@@ -213,134 +157,6 @@ class UtilImage
 
 
     /**
-     * renders text on an image file
-     */
-    public static function renderTextOnFile($pathSrc, $centerX01, $centerY01, $text, $textColor, $pathFont, $fontSizePercent, $pathDest)
-    {
-        // $colorInt = self::cssHexToInt($textColor);
-        $colorInt = UtilColor::cssHexToInt($textColor);
-
-        // ---- crop image
-        UtilFilesystem::mkdirIfNotExists('/tmp/renderTextOnFile');
-        $pathTmpCropped = '/tmp/renderTextOnFile/' . uniqid('cropped-') . '.' . UtilFilesystem::getExtension($pathSrc);
-        $pathSrc = self::cropImageByMetadata($pathSrc, $pathTmpCropped);
-
-        // ---- load image
-        $im = self::loadImage($pathSrc);
-
-
-        // ---- calculate fontsize relative to image size...
-
-        $srcImageWith = imagesx($im);
-        $srcImageHeight = imagesy($im);
-
-        $fontSizeInPx = min($srcImageWith, $srcImageHeight) / 100.0 * $fontSizePercent;
-        $fontSizeInPt = UtilUnit::px2pt($fontSizeInPx);
-
-
-        // ---- calculate size of textbox because we write text centered at (px/py)
-
-        $box = self::calculateTextBox($text, $pathFont, $fontSizeInPt);
-
-
-        // ---- calc position
-
-        $centerPosX = $centerX01 * $srcImageWith;
-        $centerPosY = $centerY01 * $srcImageHeight;
-
-
-        // ---- write text on image
-
-        imagettftext($im, $fontSizeInPt, 0, $centerPosX - $box['width'] / 2, $centerPosY + +$box['height'] / 2, $colorInt, $pathFont, $text);
-
-        self::saveImage($im, $pathDest);
-    }
-
-
-    /**
-     * saves caption in xmp-metadata of an image
-     * @param $pathImage
-     * @param $captionText
-     */
-    public static function setImageCaption($pathImage, $captionText)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-        $xmp = $image->getXmp();
-        $xmp->setCaption($captionText);
-        //$xmp->setHeadline('A test headline');
-        //$xmp->setCopyright('Marc Christenfeldt');
-        //$image->getIptc()->setCategory('Category');
-        $image->save();
-    }
-
-
-    /**
-     * get caption from xmp-metadata of image
-     */
-    public static function getImageCaption($pathImage)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-
-        return $image->getXmp()->getCaption();
-    }
-
-    /**
-     * saves crop in xmp-metadata of an image
-     * @param $pathImage
-     */
-    public static function setImageCrop($pathImage, $x1, $y1, $x2, $y2)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-        /** @var \Mcx\Image\Metadata\Xmp $xmp */
-        $xmp = $image->getXmp();
-        $xmp->setMcxCrop($x1, $y1, $x2, $y2);
-        $image->save();
-    }
-
-
-    /**
-     * get crop coordinates from xmp-metadata of image
-     */
-    public static function getImageCrop($pathImage)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-        $xmp = $image->getXmp();
-
-        return $xmp->getMcxCrop();
-    }
-
-    /**
-     * TODO: more generic way to set ANY custom metadata
-     *
-     * saves caption in xmp-metadata of an image
-     * @param $pathImage
-     * @param $watermarkPosition
-     */
-    public static function setWatermarkPosition($pathImage, $watermarkPosition)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-        $xmp = $image->getXmp();
-        $xmp->setMcxWatermarkPosition($watermarkPosition);
-        //$xmp->setHeadline('A test headline');
-        //$xmp->setCopyright('Marc Christenfeldt');
-        //$image->getIptc()->setCategory('Category');
-        $image->save();
-    }
-
-
-    /**
-     * get crop coordinates from xmp-metadata of image
-     */
-    public static function getWatermarkPosition($pathImage)
-    {
-        $image = \Mcx\Image\Image::fromFile($pathImage);
-        $xmp = $image->getXmp();
-
-        return $xmp->getMcxWatermarkPosition();
-    }
-
-
-    /**
      * @param string $fullPathImage
      * @param string $pathCropped
      * @param int $x1
@@ -348,7 +164,7 @@ class UtilImage
      * @param int $x2
      * @param int $y2
      */
-    public static function cropImage($fullPathImage, $pathCropped, $x1, $y1, $x2, $y2)
+    public static function cropImage(string $fullPathImage, string $pathCropped, $x1, $y1, $x2, $y2)
     {
         $im = UtilImage::loadImage($fullPathImage);
         $im2 = imagecrop($im, [
@@ -361,24 +177,6 @@ class UtilImage
         UtilImage::saveImage($im2, $pathCropped);
     }
 
-    /**
-     * crop by coordinates stored in xmp metadata (if any)
-     *
-     * @param $pathImage
-     * @param $pathCropped
-     * @return string path of cropped image or path of original image (if no cropping coordinates were found)
-     */
-    public static function cropImageByMetadata($pathImage, $pathCropped)
-    {
-        $crop = self::getImageCrop($pathImage);
-
-        if (!empty($crop)) {
-            UtilImage::cropImage($pathImage, $pathCropped, $crop['x1'], $crop['y1'], $crop['x2'], $crop['y2']);
-            return $pathCropped;
-        }
-
-        return $pathImage;
-    }
 
     /**
      * @param string $fullPathImage
@@ -392,20 +190,6 @@ class UtilImage
             'w' => $w,
             'h' => $h
         ];
-    }
-
-    /**
-     * wrapper function around
-     *
-     * @param $pathSrc
-     * @param $pathDest
-     * @param $pathTag
-     * @param $position
-     */
-    public static function watermarkImage($pathSrc, $pathDest, $pathTag, $position)
-    {
-        $imageTagger = new \WhyooOs\HelperClasses\ImageTagger();
-        $imageTagger->tagImage($pathSrc, $pathTag, $position, 70, $pathDest); // fix the hardcoded size=70%
     }
 
 
@@ -426,24 +210,52 @@ class UtilImage
     /**
      * private helper
      *
-     * @param ImageResize $image
+     * @param \Eventviva\ImageResize $image
      * @param array $dimensions
      * @param string $resizeMode
+     * @param bool $bAllowUpscale
      * @throws \Exception
      */
-    private static function _resize(ImageResize $image, array $dimensions, string $resizeMode)
+    private static function _resize(\Eventviva\ImageResize $image, int $width, int $height, string $resizeMode, bool $bAllowUpscale)
     {
         if ($resizeMode == self::RESIZE_MODE_STRETCH) {
-            $image->resize($dimensions[0], $dimensions[1]);
-        } elseif ($resizeMode == self::RESIZE_MODE_INSET) {
-            $image->resizeToBestFit($dimensions[0], $dimensions[1]);
-        } elseif ($resizeMode == self::RESIZE_MODE_OUTBOUND) {
-            $image->crop($dimensions[0], $dimensions[1]);
+            $image->resize($width, $height, $bAllowUpscale);
+        } elseif ($resizeMode == self::RESIZE_MODE_FIT) {
+            $image->resizeToBestFit($width, $height, $bAllowUpscale);
+        } elseif ($resizeMode == self::RESIZE_MODE_CROP) {
+            $image->crop($width, $height, $bAllowUpscale);
         } else {
             throw new \Exception('Unknown resizeMode: ' . $resizeMode);
         }
     }
 
+//    /**
+//     * 03/2018
+//     *
+//     * @param $file
+//     * @param $w
+//     * @param $h
+//     * @return resource
+//     */
+//    public static function resizeWithFilling($im, $destWidth, $destHeight)
+//    {
+//        $imWidth = imagesx($im);
+//        $imHeight= imagesy($im);
+//
+//        $r = $imWidth / $imHeight;
+//        if ($destWidth / $destHeight > $r) {
+//            $newwidth = $destHeight * $r;
+//            $newheight = $destHeight;
+//        } else {
+//            $newheight = $destWidth / $r;
+//            $newwidth = $destWidth;
+//        }
+//
+//        $dst = imagecreatetruecolor($destWidth, $destHeight);
+//        imagecopyresampled($dst, $im, 0, 0, 0, 0, $newwidth, $newheight, $imWidth, $imHeight);
+//
+//        return $dst;
+//    }
 
     /**
      * private helper
@@ -451,21 +263,22 @@ class UtilImage
      * @param string $size eg "300x400" or "300"
      * @return array with 2 elements: with and height
      */
-    private static function _sizeStringToArray($size)
+    public static function sizeStringToIntArray($size)
     {
-        $arr = explode('x', $size);
-        if (count($arr) == 1) {
-            $arr[1] = $arr[0];
+        $ret = explode('x', $size);
+        if (count($ret) == 1) {
+            $ret[1] = $ret[0];
         }
-        UtilAssert::assertArrayLength($arr, 2);
+        UtilAssert::assertArrayLength($ret, 2);
 
-        return $arr;
+        return array_map('intval', $ret);
     }
 
 
     /**
      * 07/2017 used by schlegel for stretching pdf-background to cover whole page
      * 08/2017 used by ebaygen
+     * 03/2018 does NOT WORK for animated gifs
      *
      * resizes image to $dimension .. doesn't take care of aspect ratio - image is "stretched"
      * uses eventviva/php-image-resize (composer require eventviva/php-image-resize)
@@ -476,12 +289,22 @@ class UtilImage
      * @param string $resizeMode
      * @throws \Exception
      */
-    public static function resizeImage(string $pathSrc, string $pathDest, string $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    public static function resizeImage(string $pathSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH, bool $bAllowUpscale = true)
     {
-        $size = self::_sizeStringToArray($size);
-        $image = @(new ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
-        self::_resize($image, $size, $resizeMode);
-        $image->save($pathDest);
+        if( $resizeMode == self::RESIZE_MODE_ORIGINAL) {
+            file_put_contents($pathDest, $bytesSrc);
+            return;
+        }
+
+        list($width, $height) = self::sizeStringToIntArray($size);
+//        if ($resizeMode === self::RESIZE_MODE_FILL) {
+//            $im = self::loadImage($pathSrc);
+//            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
+//        } else {
+            $image = @(new \Eventviva\ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+            self::_resize($image, $width, $height, $resizeMode, $bAllowUpscale);
+            $image->save($pathDest);
+//        }
     }
 
 
@@ -494,13 +317,89 @@ class UtilImage
      * @param string $resizeMode
      * @throws \Exception
      */
-    public static function resizeImageFromBytes($bytesSrc, string $pathDest, string $size, string $resizeMode = self::RESIZE_MODE_STRETCH)
+    public static function resizeImageFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode = self::RESIZE_MODE_STRETCH, bool $bAllowUpscale = true)
     {
-        $size = self::_sizeStringToArray($size);
-        $image = @(ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
-        self::_resize($image, $size, $resizeMode);
-        $image->save($pathDest);
+        if( $resizeMode == self::RESIZE_MODE_ORIGINAL) {
+            file_put_contents($pathDest, $bytesSrc);
+            return;
+        }
+
+        list($width, $height) = self::sizeStringToIntArray($size);
+//        if ($resizeMode === self::RESIZE_MODE_FILL) {
+//            $im = imagecreatefromstring($bytesSrc);
+//            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
+//        } else {
+            $image = @(\Eventviva\ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+            self::_resize($image, $width, $height, $resizeMode, $bAllowUpscale);
+            $image->save($pathDest);
+//        }
     }
+//
+//
+//    /**
+//     * 03/2018 used for gridfs files (marketer) ... for animated emojis / stickers
+//     * uses coldume/imagecraft FIXME: it flickers .. need better solution https://stackoverflow.com/questions/718491/resize-animated-gif-file-without-destroying-animation
+//     * @param $bytesSrc
+//     * @param string $pathDest
+//     * @param string $size eg "300x400" or "300"
+//     * @param string $resizeMode
+//     * @throws \Exception
+//     */
+//    public static function resizeGifFromBytes($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
+//    {
+//        list($width, $height) = self::sizeStringToIntArray($size);
+//
+//        $options = [
+//            'engine' => 'php_gd',
+//            'gif_animation' => true,
+//            'output_format' => 'gif',
+//            'debug' => false,
+//        ];
+//        $builder = new \Imagecraft\ImageBuilder($options);
+//        $image = $builder
+//            ->addBackgroundLayer()
+//            ->contents($bytesSrc)
+//            ->resize($width, $height, 'shrink')
+//            ->done()
+//            ->save();
+//        if ($image->isValid()) {
+//            file_put_contents($pathDest, $image->getContents());
+//        } else {
+//            echo $image->getMessage() . PHP_EOL;
+//        }
+//    }
+//
+//
+//    /**
+//     * 03/2018 used for gridfs files (marketer) ... for animated emojis / stickers
+//     * uses coldume/imagecraft FIXME: it flickers also .. need better solution https://stackoverflow.com/questions/718491/resize-animated-gif-file-without-destroying-animation
+//     * @param $bytesSrc
+//     * @param string $pathDest
+//     * @param string $size eg "300x400" or "300"
+//     * @param string $resizeMode
+//     * @throws \Exception
+//     */
+//    public static function resizeGifFromBytesV2($bytesSrc, string $pathDest, $size, string $resizeMode__CURRENTLY_IGNORED = self::RESIZE_MODE_STRETCH)
+//    {
+//        list($width, $height) = self::sizeStringToIntArray($size);
+//        // ---- Read in the animated gif
+//        $animation = new \Imagick();
+//        $animation->setFormat('gif');
+//        $animation->readImageBlob($bytesSrc);
+//
+//        // ---- Loop through the frames
+//        foreach ($animation as $frame) {
+//
+//            // ---- Thumbnail each frame
+//            $frame->thumbnailImage($width, $height);
+//
+//            // ---- Set virtual canvas size to 100x100
+//            $frame->setImagePage($width, $height, 0, 0);
+//        }
+//
+//        // ---- Write image to disk. Notice writeImages instead of writeImage
+//        $animation->writeImages($pathDest, true);
+//    }
 
 
 }

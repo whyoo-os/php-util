@@ -170,16 +170,28 @@ class UtilDate
 
 
     /**
+     * used by marketer
+     *
      * @param $isoString
      * @return \DateTime
      */
-    public static function isoStringToDateTime($isoString)
+    public static function isoStringToDateTime($isoString=null)
     {
+        if( $isoString == null) {
+            return null;
+        }
+
         return \DateTime::createFromFormat('Y-m-d\TH:i:s+', $isoString);
     }
 
 
-
+    /**
+     * 03/2018 used for (C) in eqipoo
+     */
+    public static function getYear()
+    {
+        return date('Y');
+    }
 
 }
 

@@ -103,7 +103,7 @@ class UtilString
      * @param string $suffix
      * @return string
      */
-    public static function maxLength(string $str, int $maxLength, $suffix='...')
+    public static function maxLength(string $str, int $maxLength, $suffix = '...')
     {
         $lenSuffix = strlen($suffix);
         if (strlen($str) > $maxLength - $lenSuffix) {
@@ -112,8 +112,6 @@ class UtilString
 
         return $str;
     }
-
-
 
 
     function str_pad_unicode($str, $pad_len, $pad_str = ' ', $dir = STR_PAD_RIGHT)
@@ -160,6 +158,7 @@ class UtilString
     {
         return strpos($haystack, $needle) === 0;
     }
+
 
 }
 
