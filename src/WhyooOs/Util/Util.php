@@ -96,6 +96,7 @@ class Util
         return trim($line);
     }
 
+
     /**
      * TODO: move to UtilFormatter
      *

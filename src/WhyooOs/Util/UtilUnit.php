@@ -6,6 +6,8 @@ use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
+ * class for converting between different units
+ *
  *       paper sizes
  *       -----------
  *       A3    297 x 420 mm
