@@ -665,6 +665,24 @@ class UtilArray
         return true;
     }
 
+    /**
+     * 05/2018
+     * used in ebay-gen
+     * @param $key
+     */
+    public static function pull(array &$arr, $key, bool $bThrowException=false)
+    {
+        if( array_key_exists($key, $arr)) {
+            $ret = $arr[$key];
+            unset($arr[$key]);
+        } else {
+            if( $bThrowException) {
+                throw new \Exception("$key not found");
+            }
+            $ret = null;
+        }
 
+        return $ret;
+    }
 
 }
