@@ -215,7 +215,7 @@ class UtilArray
     {
         if ($keepOriginalKeys) {
             // keep original keys
-            array_walk($arr, function (&$item, $key) use ($methodName) {
+            array_walk($arr, function (&$item, $key) use ($keyName) {
                 $item = $item[$keyName];
             });
             $newArray = $arr;
@@ -636,7 +636,7 @@ class UtilArray
     /**
      * 02/2018 unused
      *
-     * @param $getterName eg "getId"
+     * @param string $getterName eg "getId"
      * @param array $items
      * @return array
      */
@@ -657,10 +657,14 @@ class UtilArray
     public static function isEmpty($arr)
     {
         foreach ($arr as &$val) {
-            if (!empty($val))
+            if (!empty($val)) {
                 return false;
+            }
         }
+
         return true;
     }
+
+
 
 }
