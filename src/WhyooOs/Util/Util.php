@@ -4,6 +4,8 @@
 namespace WhyooOs\Util;
 
 
+use Colors\Color;
+
 class Util
 {
 
@@ -105,7 +107,7 @@ class Util
      */
     public static function humanReadableSize($size)
     {
-        $filesizename = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
+        $filesizename = [" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
         return $size ? round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . $filesizename[$i] : '0 Bytes';
     }
 
@@ -250,6 +252,33 @@ class Util
         } else {
             return '<br>';
         }
+    }
+
+
+    /**
+     * 07/2018
+     * needs https://github.com/kevinlebrun/colors.php
+     *
+     * @param string $text
+     * @param string|null $fg
+     * @param string|null $bg
+     * @param bool $bold
+     */
+    public static function printColored(string $text, string $fg = null, string $bg = null, bool $bold = false)
+    {
+        $c = new Color();
+        $c($text);
+        if( $fg) {
+            $c->fg($fg);
+        }
+        if( $bg) {
+            $c->bg($bg);
+        }
+        if ($bold) {
+            $c->bold();
+        }
+
+        echo $c . "\n";
     }
 
 
