@@ -5,6 +5,8 @@ namespace WhyooOs\Util;
 
 # see http://docs.python.org/2/library/os.path.html for inspiration
 # will not work under windows .. it assumes slash (/) as separator
+use Whyoo\MarketerBundle\Util\UtilMimeType;
+
 class UtilFilesystem
 {
 
@@ -396,7 +398,7 @@ class UtilFilesystem
      * former rawDataToPhysicalFile
      *
      * moved from UtilImage to here
-     * decode image and save to temporary file
+     * decode file and save to temporary file
      *
      * @param $base64EncodedString
      * @param $pathDestDir
@@ -407,20 +409,10 @@ class UtilFilesystem
     {
         $binData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64EncodedString));
 
-        // check mime type .. must be an image
-        $finfo = new \finfo(FILEINFO_MIME);
-        $mime = $finfo->buffer($binData);
-        if (!preg_match('#image/(\w+)#', $mime, $gr)) {
-            // not an image
-            throw new \Exception("not an image: $mime");
-        }
+        $extension = self::guessExtensionOfRawData($binData);
 
-        $imageType = $gr[1];
-
-        UtilAssert::assertInArray($imageType, ['png', 'jpeg', 'gif'], "unsupported image type: $imageType");
-
-        // how image will be named
-        $destFilename = sprintf('%s-%s.%s', md5(microtime()), md5(rand() . 'xxx' . rand()), $imageType);
+        // how file will be named
+        $destFilename = sprintf('%s-%s.%s', md5(microtime()), md5(rand() . 'xxx' . rand()), $extension);
         $pathDest = UtilFilesystem::joinPaths($pathDestDir, $destFilename);
         file_put_contents($pathDest, $binData);
 
@@ -521,6 +513,23 @@ class UtilFilesystem
         }
 
         return $bytesTotal;
+    }
+
+    /**
+     * 07/2018 some hack
+     * @param $binData
+     * @return mixed
+     */
+    public static function guessExtensionOfRawData($binData)
+    {
+        // check mime type .. must be an image
+        $finfo = new \finfo(FILEINFO_MIME);
+        $mime = $finfo->buffer($binData);
+        if (!preg_match('#.*/(\w+)#', $mime, $gr)) {
+            throw new \Exception("mimetype fail $mime");
+        }
+
+        return $gr[1];
     }
 
 }

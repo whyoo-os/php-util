@@ -44,6 +44,8 @@ class UtilImage
             return imagecreatefrompng($pathImg);
         } elseif ($extension == "gif") {
             return imagecreatefromgif($pathImg);
+        } elseif ($extension == "webp") {
+            return imagecreatefromwbmp($pathImg);
         }
 
         throw new \Exception("unknown extension $extension for file $pathImg");

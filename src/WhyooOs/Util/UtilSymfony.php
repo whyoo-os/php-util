@@ -158,12 +158,15 @@ class UtilSymfony
 
 
     /**
+     * 06/2018 added $context->setSerializeNull(true)
+     *
      * @param null|array|string $groups Serialization Group Names
      * @return SerializationContext
      */
     public static function getSerializationContext($groups = null)
     {
         $context = SerializationContext::create();
+        $context->setSerializeNull(true);
         $context->enableMaxDepthChecks();
 
         if (!is_null($groups)) {
