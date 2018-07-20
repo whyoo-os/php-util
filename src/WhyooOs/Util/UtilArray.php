@@ -372,24 +372,63 @@ class UtilArray
 
 
     /**
+     * 07/2018 signature changed: replaced $key, $value with $criteria
+     *
      * @param array $arr
-     * @param $key
-     * @param $value
+     * @param array $criteria
      * @return mixed|null
      */
-    public static function findOne(array $arr, $key, $value)
+    public static function findOne(array $arr, array $criteria)
     {
         foreach ($arr as $item) {
-            if (is_object($item) && $item->$key == $value) {
-                return $item;
-            }
-            if (is_array($item) && $item[$key] == $value) {
+            if( self::_matchCriteria($item, $criteria)) {
                 return $item;
             }
         }
 
         return null;
     }
+
+
+    /**
+     * 07/2018
+     * used by Schlegel, untested
+     *
+     * @param array $arr
+     * @param array $criteria
+     * @return array
+     */
+    public static function findMany(array $arr, array $criteria)
+    {
+        $ret = [];
+        foreach ($arr as &$item) {
+            if( self::_matchCriteria($item, $criteria)) {
+                $ret[] = $item;
+            }
+        }
+
+        return $ret;
+    }
+
+
+    /**
+     * 07/2018
+     * used by Schlegel
+     *
+     * @param array $arr
+     * @param string $key
+     * @return array
+     */
+    public static function groupByKey(array $arr, string $key)
+    {
+        $ret = [];
+        foreach ($arr as &$item) {
+            $ret[$item[$key]][] = $item;
+        }
+
+        return $ret;
+    }
+
 
     /**
      * @param array $arr
@@ -681,6 +720,32 @@ class UtilArray
         }
 
         return $ret;
+    }
+
+
+    /**
+     * 07/2018
+     *
+     * @param $item
+     * @param $criteria
+     * @return bool
+     */
+    private static function _matchCriteria($item, array $criteria)
+    {
+        $bMatch = true;
+
+        foreach($criteria as $key=> $val) {
+            if (is_array($item) && $item[$key] != $val) {
+                $bMatch = false;
+                break;
+            }
+            if (is_object($item) && $item->$key != $val) {
+                $bMatch = false;
+                break;
+            }
+        }
+
+        return $bMatch;
     }
 
 }
