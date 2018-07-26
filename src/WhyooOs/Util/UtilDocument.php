@@ -40,6 +40,31 @@ class UtilDocument
 
 
 
+    /**
+     * 07/2018
+     * checks if setter exists
+     *
+     * TODO? subfields?
+     *
+     * @param $formatterArr
+     * @param $object
+     * @param string[] $blacklist
+     */
+    public static function copyDataFromArrayToDocumentWithBlacklist($formatterArr, $object, array $blacklist)
+    {
+        foreach ($formatterArr as $key => $value) {
+            if (in_array($key, $blacklist)) {
+                continue;
+            }
+            $setterName = 'set' . ucfirst($key);
+            if( method_exists($object, $setterName)) {
+                $object->$setterName($value);
+            }
+        }
+    }
+
+
+
 //    /**
 //     * not used by ebaygen5
 //     *
