@@ -5,7 +5,6 @@ namespace WhyooOs\Util;
 
 # see http://docs.python.org/2/library/os.path.html for inspiration
 # will not work under windows .. it assumes slash (/) as separator
-use Whyoo\MarketerBundle\Util\UtilMimeType;
 
 class UtilFilesystem
 {
@@ -530,6 +529,23 @@ class UtilFilesystem
         }
 
         return $gr[1];
+    }
+
+
+    /**
+     * 07/2018
+     * used by Schlegel
+     *
+     * @param string $pathFile
+     * @param string $suffix
+     * @return string
+     */
+    public static function appendSuffix(string $pathFile, string $suffix)
+    {
+        $base = self::getWithoutExtension($pathFile);
+        $ext = self::getExtension($pathFile);
+
+        return $base . $suffix . '.' . $ext;
     }
 
 }
