@@ -381,7 +381,7 @@ class UtilArray
     public static function findOne(array $arr, array $criteria)
     {
         foreach ($arr as $item) {
-            if (self::_matchCriteria($item, $criteria)) {
+            if( self::_matchCriteria($item, $criteria)) {
                 return $item;
             }
         }
@@ -402,7 +402,7 @@ class UtilArray
     {
         $ret = [];
         foreach ($arr as &$item) {
-            if (self::_matchCriteria($item, $criteria)) {
+            if( self::_matchCriteria($item, $criteria)) {
                 $ret[] = $item;
             }
         }
@@ -617,9 +617,9 @@ class UtilArray
      */
     public static function addElementUnique(&$arr, $element)
     {
-        if (!in_array($element, $arr)) {
-            $arr[] = $element;
-        }
+       if(!in_array($element, $arr)) {
+           $arr[] = $element;
+       }
     }
 
     /**
@@ -709,13 +709,13 @@ class UtilArray
      * used in ebay-gen
      * @param $key
      */
-    public static function pull(array &$arr, $key, bool $bThrowException = false)
+    public static function pull(array &$arr, $key, bool $bThrowException=false)
     {
-        if (array_key_exists($key, $arr)) {
+        if( array_key_exists($key, $arr)) {
             $ret = $arr[$key];
             unset($arr[$key]);
         } else {
-            if ($bThrowException) {
+            if( $bThrowException) {
                 throw new \Exception("$key not found");
             }
             $ret = null;
@@ -736,7 +736,7 @@ class UtilArray
     {
         $bMatch = true;
 
-        foreach ($criteria as $key => $val) {
+        foreach($criteria as $key=> $val) {
             if (is_array($item) && $item[$key] != $val) {
                 $bMatch = false;
                 break;
@@ -762,5 +762,34 @@ class UtilArray
         return count($array) > count(array_flip($array));
     }
 
+
+    /**
+     * 07/2018 used by Schlegel
+     *
+     * @param $array
+     * @param $idx1
+     * @param $idx2
+     */
+    public static function swapElements(array &$array, $idx1, $idx2)
+    {
+        list($array[$idx1], $array[$idx2]) = [$array[$idx2], $array[$idx1]];
+    }
+
+
+    /**
+     * 07/2018 used by Schlegel
+     *
+     * @param array $array
+     * @param int $maxElements
+     * @return array
+     */
+    public static function cut(array $array, int $maxElements)
+    {
+        if( count($array) > $maxElements) {
+            return array_slice($array, 0, $maxElements);
+        } else {
+            return $array;
+        }
+    }
 
 }
