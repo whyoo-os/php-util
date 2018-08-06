@@ -752,6 +752,30 @@ class UtilArray
 
 
     /**
+     * 08/2018 used for UtilAssert
+     *
+     * @param array $array
+     * @return bool
+     */
+    public static function hasDuplicates(array $array)
+    {
+        return count($array) > count(array_flip($array));
+    }
+
+
+    /**
+     * 08/2018 used for UtilAssert
+     *
+     * @param array $array
+     * @return bool
+     */
+    public static function getDuplicates(array $array)
+    {
+        return array_values(array_unique(array_diff_assoc($array, array_unique($array))));
+    }
+
+
+    /**
      * 07/2018 used by Schlegel
      *
      * @param $array
