@@ -227,5 +227,21 @@ class UtilAssert
         }
     }
 
+
+    /**
+     * 08/2018
+     *
+     * @param array $arr
+     * @param string $errorMessage
+     * @throws AssertException
+     */
+    public static function assertArrayHasNoDuplicates(array $arr, $errorMessage = '')
+    {
+        if (UtilArray::hasDuplicates($arr)) {
+            throw new AssertException("Assertion failed: array has duplicate/s. " . $errorMessage);
+        }
+    }
+
+
 }
 
