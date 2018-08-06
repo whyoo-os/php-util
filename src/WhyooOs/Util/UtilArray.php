@@ -797,7 +797,7 @@ class UtilArray
      */
     public static function cut(array $array, int $maxElements)
     {
-        if( count($array) > $maxElements) {
+        if (count($array) > $maxElements) {
             return array_slice($array, 0, $maxElements);
         } else {
             return $array;

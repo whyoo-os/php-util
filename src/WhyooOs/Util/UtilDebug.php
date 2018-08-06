@@ -73,5 +73,19 @@ class UtilDebug
         return $length;
     }
 
+    /**
+     * calls UtilSymfony::toArray to each parameter before dumping it
+     *
+     * @param 08/2018
+     */
+    public static function d2($mainCriteriaSet)
+    {
+        $ddSource = debug_backtrace()[0];
+        echo $ddSource['file'] . ':' . $ddSource['line'] . Util::getNewline();
+        foreach (func_get_args() as $arg) {
+            dump(UtilSymfony::toArray($arg));
+        }
+    }
+
 
 }
