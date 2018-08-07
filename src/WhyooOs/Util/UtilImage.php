@@ -271,7 +271,7 @@ class UtilImage
         if (count($ret) == 1) {
             $ret[1] = $ret[0];
         }
-        UtilAssert::assertArrayLength($ret, 2);
+        UtilAssert::assertArrayLengthEquals($ret, 2);
 
         return array_map('intval', $ret);
     }

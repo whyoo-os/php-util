@@ -204,7 +204,7 @@ class UtilAssert
      * @param string $errorMessage
      * @throws AssertException
      */
-    public static function assertArrayLength(array $array, int $length, $errorMessage = '')
+    public static function assertArrayLengthEquals(array $array, int $length, $errorMessage = '')
     {
         if (count($array) != $length) {
             throw new AssertException("Assertion failed: array length " . count($array) . " != $length. " . $errorMessage);
