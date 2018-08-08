@@ -26,11 +26,10 @@ class UtilGit
 
 
     /**
-     * legacy
+     * legacy - where is this used?
      */
     public static function version(string $path = null)
     {
-        
         self::_git($path, " describe --always", $version_mini_hash);
         self::_git($path, " rev-list HEAD | wc -l", $version_number);
         self::_git($path, " log -1", $line);
