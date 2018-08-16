@@ -158,12 +158,22 @@ class UtilAssert
         }
     }
 
-
     public static function assertNotInstanceOf($object, string $forbiddenClass, $errorMessage = '')
     {
         if ($object instanceof $forbiddenClass) {
             $actualClass = get_class($object);
             throw new AssertException("NotInstanceOf assertion failed: $actualClass is instance of $forbiddenClass. " . $errorMessage);
+        }
+    }
+
+    /**
+     * 08/2018
+     */
+    public static function assertInstanceOf($object, string $class, $errorMessage = '')
+    {
+        if (!($object instanceof $class)) {
+            $actualClass = get_class($object);
+            throw new AssertException("instanceOf assertion failed: $actualClass is not instance of $class. " . $errorMessage);
         }
     }
 

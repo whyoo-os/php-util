@@ -104,8 +104,23 @@ class UtilSymfony
         $response->headers->set('Cache-Control', 'private');
         $response->headers->set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time()));
 
-        $response->sendHeaders();
+        $response->sendHeaders(); // FIXME .. really?
         $response->setContent(readfile($pathFile));
+
+        return $response;
+    }
+
+
+    /**
+     * 08/2018 used for sending svg in ebaygen
+     *
+     * @param string $strSvg
+     * @return Response
+     */
+    public static function createSvgResponse(string $strSvg)
+    {
+        $response = new Response($strSvg);
+        $response->headers->set('content-type', 'image/svg+xml');
 
         return $response;
     }
