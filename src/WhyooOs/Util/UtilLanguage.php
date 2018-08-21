@@ -53,9 +53,12 @@ class UtilLanguage
         try {
             return $tr->translate($phrase);
         } catch(\Exception $exception) {
+            // could be eg. that ip is blocked
+//            var_dump($phrase);
+//            var_dump($exception->getMessage());
+//            UtilDebug::dd($exception->getMessage());
             return false;
         }
-
     }
 
 
