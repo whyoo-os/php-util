@@ -13,7 +13,7 @@
     },
     "suggest": {
         "symfony/var-dumper": "for UtilDebug",
-        "phpfastcache/phpfastcache": "for caching in UtilCurl",
+        "phpfastcache/phpfastcache": "6.X for caching in UtilCurl",
         "eventviva/php-image-resize": "for image resizing",
         "jdorn/sql-formatter": "for UtilDebug::getSqlFormatted()",
         "swiftmailer/swiftmailer": "for mails",
