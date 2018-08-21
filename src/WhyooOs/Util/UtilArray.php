@@ -145,7 +145,7 @@ class UtilArray
     /**
      * get single property of documents in an array using getters
      * TODO: rename to getObjectAttribute()
-     *
+     * 08/2018 also sorts by sub-documents like 'userProfile.birthday'
      * example:
      * $posts = {'a' => post1, 'b' => post2, 'c' => post3]
      * getObjectProperty($posts, 'id', false) returns [1,2,3]
@@ -153,23 +153,38 @@ class UtilArray
      * TODO: rename getDocumentProperty?
      * used in marketer
      * @param array $arr
-     * @param $propertyName
+     * @param string $propertyName also sub-documents like 'userProfile.birthday' are possible
      * @param bool $keepOriginalKeys the thing with $keepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
      * @return array
      */
     public static function getObjectProperty(array $arr, $propertyName, $keepOriginalKeys = false)
     {
-        $methodName = "get" . ucfirst($propertyName);
-        if ($keepOriginalKeys) {
+        $subfields = explode('.', $propertyName);
+
+        $getterNames = [];
+        foreach ($subfields as $subfield) {
+            $getterNames[] = 'get' . ucfirst($subfield);
+        }
+
+
+
+        // $methodName = "get" . ucfirst($propertyName);
+
+         if ($keepOriginalKeys) {
             // keep original keys
-            array_walk($arr, function (&$item, $key) use ($methodName) {
-                $item = $item->$methodName();
+            array_walk($arr, function (&$item, $key) use ($getterNames) {
+                foreach($getterNames as $getterName) {
+                    $item = $item->$getterName();
+                }
             });
             $newArray = $arr;
         } else {
             // new keys (create ordinary numeric array)
-            $newArray = array_map(function ($item) use ($methodName) {
-                return $item->$methodName();
+            $newArray = array_map(function ($item) use ($getterNames) {
+                foreach($getterNames as $getterName) {
+                    $item = $item->$getterName();
+                }
+                return $item;
             }, $arr);
         }
 
@@ -250,13 +265,16 @@ class UtilArray
 
 
     /**
-     * 03/2018
      * sorts an array of objects
      * used by marketer (for sorting list of participants by conversationRole)
      * TODO: maybe there is faster version with a callback
      *
+     * 03/2018
+     * 08/2018 also sorts by sub-documents like 'userProfile.birthday'
+     *
      * @param array &$array
-     * @param $keyName
+     * @param string $attributeName eg "conversationRole", "userProfile.birthday"
+     * @param int $sortOrder
      * @return array
      */
     public static function sortArrayOfObjects(&$array, $attributeName, $sortOrder = SORT_ASC)

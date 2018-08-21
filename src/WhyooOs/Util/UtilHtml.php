@@ -7,8 +7,6 @@ use tidy;
 
 class UtilHtml
 {
-
-
     /**
      * 09/2017 ebaygen - used for emails
      *
@@ -76,7 +74,7 @@ class UtilHtml
      * @param int $maxLength
      * @return array [htmlWithLinksClickable, $textWasTruncated)
      */
-    public static function linkifyAndTruncateText(string $text, int $maxLength = 0)
+    public static function linkifyAndTruncateText(string $text = null, int $maxLength = 0)
     {
         // 1) replace html tags to avoid replacements inside of html tags
         $text = self::replaceHtmlTags($text);
