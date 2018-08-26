@@ -678,7 +678,7 @@ class UtilArray
     /**
      * 01/2018 moved from UtilMongo to here
      *
-     * @param  \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|array $arr
+     * @param  \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|\Iterator|array $arr
      * @return array
      */
     public static function iteratorToArray($arr, $useKeys = true)
