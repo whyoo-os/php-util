@@ -822,4 +822,24 @@ class UtilArray
         }
     }
 
+    /**
+     * calls a method with (optional) parameters, returns results as array
+     *
+     * 08/2018 created for marketer
+     *
+     * @param array $arr
+     * @param $methodName
+     * .. possible more arguments are passed to called method
+     */
+    public static function callMethod(array $arr, $methodName)
+    {
+        $params = array_slice(func_get_args(), 2); // skip first 2 passed params
+        $res = [];
+        foreach($arr as $item) {
+            $res[] = call_user_func_array([$item, $methodName], $params);
+        }
+
+        return $res;
+    }
+
 }
