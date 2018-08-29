@@ -36,4 +36,18 @@ class UtilRandom
 //    }
 
 
+    /**
+     * used to get random indexes
+     *
+     * @param $numIntegers
+     */
+    public static function getRandomIntegers(int $min, int $max, int $numIntegers)
+    {
+        $numbers = range($min, $max);
+        shuffle($numbers);
+
+        return array_slice($numbers, 0, $numIntegers);
+    }
+
+
 }

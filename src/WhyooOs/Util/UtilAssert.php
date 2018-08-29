@@ -75,7 +75,7 @@ class UtilAssert
     public static function assertNotEmpty($subject, $errorMessage = "")
     {
         if (empty($subject)) {
-            throw new AssertException("Assertion 'Not Empty' failed: " . $errorMessage);
+            throw new AssertException("Assertion 'Not Empty' failed " . $errorMessage);
         }
     }
 
@@ -87,7 +87,22 @@ class UtilAssert
     public static function assertEqual($v1, $v2, $errorMessage = "")
     {
         if ($v1 != $v2) {
-            throw new AssertException("Assertion failed ($v1 != $v2):" . $errorMessage);
+            throw new AssertException("Assertion failed ($v1 != $v2) " . $errorMessage);
+        }
+    }
+
+
+    /**
+     * 08/2018
+     * @param $bAssertion
+     * @param string $errorMessage
+     * @throws AssertException
+     */
+    public static function assertMaxAbsDelta($v1, $v2, $maxAbsDelta, $errorMessage = "")
+    {
+        if (abs($v1 - $v2) > $maxAbsDelta) {
+            $absDelta = abs($v1 - $v2);
+            throw new AssertException("assertMaxAbsDelta failed (abs($v1 - $v2) = $absDelta > $maxAbsDelta) " . $errorMessage);
         }
     }
 

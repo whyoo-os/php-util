@@ -169,6 +169,7 @@ class Util
 
     /**
      * used for calculation of PricePerPiece (ebayGen)
+     * TODO: belongs to UtilNumber
      *
      * @param $number
      * @param int $precision
@@ -181,6 +182,14 @@ class Util
     }
 
 
+
+    /**
+     * TODO: belongs to UtilNumber
+     *
+     * @param $number
+     * @param int $precision
+     * @return float|int
+     */
     public static function roundDown($number, $precision = 2)
     {
         $fig = pow(10, $precision);
@@ -257,7 +266,10 @@ class Util
 
     /**
      * 07/2018
+     * used by marketer, next-steps-app
      * needs https://github.com/kevinlebrun/colors.php
+     * 
+     *       composer require kevinlebrun/colors.php
      *
      * @param string $text
      * @param string|null $fg
