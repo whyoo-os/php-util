@@ -14,6 +14,10 @@ class UtilScraper
 
     public static $dom;
 
+    /** @var array */
+    private static $lastRequestAt = [];
+
+    
     /**
      * 09/2017 helper
      *
@@ -98,6 +102,32 @@ class UtilScraper
         }
 
         return $link;
+    }
+
+
+
+
+    /**
+     * 09/2018
+     *
+     * for throttling requests
+     *
+     * @param int $milliSeconds
+     * @param string $id
+     */
+    public static function wait(int $milliSeconds, $id = 'default')
+    {
+        if (!in_array($id, self::$lastRequestAt)) {
+            self::$lastRequestAt[$id] = microtime(true);
+            return;
+        }
+
+        while (microtime(true) - self::$lastRequestAt[$id] < $ms) {
+            // sleep 100ths of max delay 
+            sleep($ms / 1000 / 100);
+        }
+
+        self::$lastRequestAt[$id] = microtime(true);
     }
 
 
