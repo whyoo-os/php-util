@@ -7,6 +7,7 @@
 
 namespace WhyooOs\Util;
 
+// assumes version 6.* of phpFastCache, version 7.x breaks
 use phpFastCache\CacheManager;
 
 class UtilCurl

@@ -39,6 +39,7 @@ class UtilLanguage
 
     /**
      * free by reverse engineered token generation
+     *
      * uses https://github.com/Stichoza/google-translate-php
      *
      * @param $sourceLanguage
@@ -53,13 +54,20 @@ class UtilLanguage
         try {
             return $tr->translate($phrase);
         } catch(\Exception $exception) {
+            // could be eg. that ip is blocked
+//            var_dump($phrase);
+//            var_dump($exception->getMessage());
+//            UtilDebug::dd($exception->getMessage());
             return false;
         }
-
     }
 
 
-    public static function detectLanguage($text)
+    /**
+     * @param string $text
+     * @return int|null|string
+     */
+    public static function detectLanguage(string $text)
     {
         $ld = new \LanguageDetection\Language;
 

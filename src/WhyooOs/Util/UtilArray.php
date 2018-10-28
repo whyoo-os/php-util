@@ -677,7 +677,7 @@ class UtilArray
     /**
      * 01/2018 moved from UtilMongo to here
      *
-     * @param  \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|array $arr
+     * @param  \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|\Iterator|array $arr
      * @return array
      */
     public static function iteratorToArray($arr, $useKeys = true)
@@ -821,6 +821,28 @@ class UtilArray
         }
     }
 
+
+    /**
+     * calls a method with (optional) parameters, returns results as array
+     *
+     * 08/2018 created for marketer
+     *
+     * @param array $arr
+     * @param $methodName
+     * .. possible more arguments are passed to called method
+     */
+    public static function callMethod(array $arr, $methodName)
+    {
+        $params = array_slice(func_get_args(), 2); // skip first 2 passed params
+        $res = [];
+        foreach($arr as $item) {
+            $res[] = call_user_func_array([$item, $methodName], $params);
+        }
+
+        return $res;
+    }
+
+
     /**
      * filters array of strings by searchterm
      * 10/2018 used by ebay-gen
@@ -834,11 +856,12 @@ class UtilArray
         $ret = array_filter($arr, function ($val) use ($searchterm) {
             return stripos($val, $searchterm, 0) !== FALSE;
         });
-        
+
         if( !$bKeepOriginalKeys) {
             $ret = array_values($ret);
         }
 
         return $ret;
     }
+
 }
