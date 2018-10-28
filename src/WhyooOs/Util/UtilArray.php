@@ -154,10 +154,10 @@ class UtilArray
      * used in marketer
      * @param array $arr
      * @param string $propertyName also sub-documents like 'userProfile.birthday' are possible
-     * @param bool $keepOriginalKeys the thing with $keepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
+     * @param bool $bKeepOriginalKeys the thing with $bKeepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
      * @return array
      */
-    public static function getObjectProperty(array $arr, $propertyName, $keepOriginalKeys = false)
+    public static function getObjectProperty(array $arr, $propertyName, $bKeepOriginalKeys = false)
     {
         $subfields = explode('.', $propertyName);
 
@@ -167,13 +167,12 @@ class UtilArray
         }
 
 
-
         // $methodName = "get" . ucfirst($propertyName);
 
-         if ($keepOriginalKeys) {
+        if ($bKeepOriginalKeys) {
             // keep original keys
             array_walk($arr, function (&$item, $key) use ($getterNames) {
-                foreach($getterNames as $getterName) {
+                foreach ($getterNames as $getterName) {
                     $item = $item->$getterName();
                 }
             });
@@ -181,7 +180,7 @@ class UtilArray
         } else {
             // new keys (create ordinary numeric array)
             $newArray = array_map(function ($item) use ($getterNames) {
-                foreach($getterNames as $getterName) {
+                foreach ($getterNames as $getterName) {
                     $item = $item->$getterName();
                 }
                 return $item;
@@ -223,12 +222,12 @@ class UtilArray
      *
      * @param array $arr
      * @param $keyName
-     * @param bool $keepOriginalKeys
+     * @param bool $bKeepOriginalKeys
      * @return array
      */
-    public static function getAssocProperty(array $arr, $keyName, $keepOriginalKeys = false)
+    public static function getAssocProperty(array $arr, $keyName, $bKeepOriginalKeys = false)
     {
-        if ($keepOriginalKeys) {
+        if ($bKeepOriginalKeys) {
             // keep original keys
             array_walk($arr, function (&$item, $key) use ($keyName) {
                 $item = $item[$keyName];
@@ -822,4 +821,24 @@ class UtilArray
         }
     }
 
+    /**
+     * filters array of strings by searchterm
+     * 10/2018 used by ebay-gen
+     *
+     * @param array $arr
+     * @param string $searchterm
+     * @return array the filtered array
+     */
+    public static function filterBySearchterm(array $arr, string $searchterm, $bKeepOriginalKeys = false)
+    {
+        $ret = array_filter($arr, function ($val) use ($searchterm) {
+            return stripos($val, $searchterm, 0) !== FALSE;
+        });
+        
+        if( !$bKeepOriginalKeys) {
+            $ret = array_values($ret);
+        }
+
+        return $ret;
+    }
 }
