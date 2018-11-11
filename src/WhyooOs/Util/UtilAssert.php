@@ -80,7 +80,8 @@ class UtilAssert
     }
 
     /**
-     * @param $bAssertion
+     * @param $v1
+     * @param $v2
      * @param string $errorMessage
      * @throws AssertException
      */
@@ -88,6 +89,21 @@ class UtilAssert
     {
         if ($v1 != $v2) {
             throw new AssertException("Assertion failed ($v1 != $v2) " . $errorMessage);
+        }
+    }
+
+    /**
+     * 09/2018
+     *
+     * @param $v1
+     * @param $v2
+     * @param string $errorMessage
+     * @throws AssertException
+     */
+    public static function assertNotEqual($v1, $v2, $errorMessage = "")
+    {
+        if ($v1 == $v2) {
+            throw new AssertException("Assertion failed ($v1 == $v2) " . $errorMessage);
         }
     }
 
