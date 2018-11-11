@@ -17,7 +17,7 @@ class UtilScraper
     /** @var array */
     private static $lastRequestAt = [];
 
-    
+
     /**
      * 09/2017 helper
      *
@@ -117,14 +117,16 @@ class UtilScraper
      */
     public static function wait(int $milliSeconds, $id = 'default')
     {
-        if (!in_array($id, self::$lastRequestAt)) {
+        $seconds = $milliSeconds / 1000.0;
+
+        if (!key_exists($id, self::$lastRequestAt)) {
             self::$lastRequestAt[$id] = microtime(true);
             return;
         }
 
-        while (microtime(true) - self::$lastRequestAt[$id] < $ms) {
+        while (microtime(true) - self::$lastRequestAt[$id] < $seconds) {
             // sleep 100ths of max delay 
-            sleep($ms / 1000 / 100);
+            sleep($seconds / 100);
         }
 
         self::$lastRequestAt[$id] = microtime(true);
