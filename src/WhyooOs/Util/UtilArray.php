@@ -494,6 +494,7 @@ class UtilArray
         } else {
             next($arr);
         }
+
         return $el;
     }
 
@@ -575,6 +576,7 @@ class UtilArray
                 $new[$key] = $val;
             }
         }
+
         return $new;
     }
 
@@ -835,7 +837,7 @@ class UtilArray
     {
         $params = array_slice(func_get_args(), 2); // skip first 2 passed params
         $res = [];
-        foreach($arr as $item) {
+        foreach ($arr as $item) {
             $res[] = call_user_func_array([$item, $methodName], $params);
         }
 
@@ -857,11 +859,24 @@ class UtilArray
             return stripos($val, $searchterm, 0) !== FALSE;
         });
 
-        if( !$bKeepOriginalKeys) {
+        if (!$bKeepOriginalKeys) {
             $ret = array_values($ret);
         }
 
         return $ret;
     }
 
+
+    /**
+     * 12/2018 used for ImageCompositor
+     *
+     * @param $m
+     * @param $n
+     * @param $value
+     * @return array 2d array
+     */
+    public static function declare2d($m, $n, $value = null)
+    {
+        return array_fill(0, $m, array_fill(0, $n, $value));
+    }
 }
