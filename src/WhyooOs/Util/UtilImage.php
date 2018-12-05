@@ -55,13 +55,15 @@ class UtilImage
     /**
      * wrapper for php's image***() functions
      *
-     * @param $image
-     * @param $pathDest
+     * 12/2018 TODO: put into UtilGdImage
+     *
+     * @param resource $image
+     * @param string $pathDest
      * @param null $jpegQuality default is self::$defaultJpegQuality
      * @return bool
      * @throws \Exception
      */
-    public static function saveImage($image, $pathDest, $jpegQuality = null)
+    public static function saveImage($image, string $pathDest, $jpegQuality = null)
     {
         $extension = UtilFilesystem::getExtension($pathDest);
         if ($extension == 'jpg' || $extension == 'jpeg') {
