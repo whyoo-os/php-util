@@ -280,6 +280,8 @@ class UtilImage
 
 
     /**
+     * TODO: remove EventViva\ImageResize dependency
+     *
      * 07/2017 used by schlegel for stretching pdf-background to cover whole page
      * 08/2017 used by ebaygen
      * 03/2018 does NOT WORK for animated gifs

@@ -194,5 +194,19 @@ class UtilString
 
 
 
+    /**
+     * 01/2019
+     * 
+     * @param $str
+     * @param $replacements
+     * @return mixed|string
+     */
+    public static function tpl($str, $replacements)
+    {
+        $engine = new \StringTemplate\Engine;
+        return $engine->render($str, $replacements);
+    }
+
+
 }
 

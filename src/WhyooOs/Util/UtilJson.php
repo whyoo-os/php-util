@@ -50,7 +50,12 @@ class UtilJson
      */
     public static function saveJsonFile(string $pathJsonFile, $data, $options=JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)
     {
-        return file_put_contents($pathJsonFile, json_encode($data, $options));
+        $json = json_encode($data, $options);
+        if (json_last_error() != JSON_ERROR_NONE) {
+            throw new \Exception("JSON ENCODE ERROR: " . json_last_error_msg() . "!");
+        }
+
+        return file_put_contents($pathJsonFile, $json);
     }
 
 
