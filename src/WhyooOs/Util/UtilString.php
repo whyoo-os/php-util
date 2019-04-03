@@ -38,6 +38,7 @@ class UtilString
 
     /**
      * indents multiline string
+     *
      * @param string $string
      * @param int $numSpaces
      * @return string indented string

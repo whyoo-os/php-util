@@ -31,7 +31,12 @@ class UtilColor
         return $ret;
     }
 
-    public static function hex2rgb($col)
+    /**
+     * @param string $col
+     * @return array
+     * @throws \Exception
+     */
+    public static function hex2rgb(string $col)
     {
         if (preg_match('~^#([0-f]{1})([0-f]{1})([0-f]{1})$~i', trim($col), $gr)) {
             return [hexdec($gr[1] . $gr[1]), hexdec($gr[2] . $gr[2]), hexdec($gr[3] . $gr[3])];
@@ -42,19 +47,13 @@ class UtilColor
         }
     }
 
-    public static function rgb2hex($r, $g, $b)
-    {
-        return sprintf('#%02x%02x%02x', intval($r), intval($g), intval($b));
-    }
-
-
     /**
      * 07/2017 moved from UtilImage to here
      *
      * @param $strHex
-     * @return mixed
+     * @return int
      */
-    public static function cssHexToInt($strHex)
+    public static function hex2int(string $strHex)
     {
         $strHex = str_replace('#', '', $strHex);
         list($r, $g, $b) = sscanf($strHex, "%02x%02x%02x");
@@ -62,6 +61,11 @@ class UtilColor
         return $r * 0x10000 + $g * 0x100 + $b;
     }
 
+
+    public static function rgb2hex($r, $g, $b)
+    {
+        return sprintf('#%02x%02x%02x', intval($r), intval($g), intval($b));
+    }
 
 
     /**
