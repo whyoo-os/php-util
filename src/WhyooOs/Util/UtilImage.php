@@ -262,7 +262,8 @@ class UtilImage
 //    }
 
     /**
-     * private helper
+     * helper
+     * 04/2019 .. todo: remove.. same as UtilImageSize::str2int
      *
      * @param string $size eg "300x400" or "300"
      * @return array with 2 elements: with and height

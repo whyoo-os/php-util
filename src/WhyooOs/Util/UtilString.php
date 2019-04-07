@@ -196,7 +196,11 @@ class UtilString
 
     /**
      * 01/2019
-     * 
+     *
+     * needs nicmart/string-template
+     *
+     * example: UtilString::tpl("My name is {name} {surname}", ['name' => 'Nicolò', 'surname' => 'Martini']);
+     *
      * @param $str
      * @param $replacements
      * @return mixed|string
