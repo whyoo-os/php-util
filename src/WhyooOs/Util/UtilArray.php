@@ -152,6 +152,7 @@ class UtilArray
      * getObjectProperty($posts, 'id', true) returns { a:1, b:2, c:3 }
      * TODO: rename getDocumentProperty?
      * used in marketer
+     * 
      * @param array $arr
      * @param string $propertyName also sub-documents like 'userProfile.birthday' are possible
      * @param bool $bKeepOriginalKeys the thing with $bKeepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
@@ -879,4 +880,45 @@ class UtilArray
     {
         return array_fill(0, $m, array_fill(0, $n, $value));
     }
+
+
+    /**
+     * 04/2019 used by ebaygen for sorting products by reorderStatus
+     *
+     * @param array $array
+     * @param string $key
+     * @param array $order
+     * @return array
+     */
+    public static function sortByCustomOrder(array $array, string $key, array $order)
+    {
+        usort($array, function ($a, $b) use ($order) {
+            $pos_a = array_search($a[$key], $order);
+            $pos_b = array_search($b[$key], $order);
+            return $pos_a - $pos_b;
+        });
+
+        return $array;
+    }
+
+    /**
+     * 04/2019 used by ebaygen for sorting products by reorderStatus
+     *
+     * @param array $array
+     * @param string $key
+     * @param array $order
+     * @return array
+     */
+    public static function sortObjectsByCustomOrder(array $array, string $key, array $order)
+    {
+        $getter = 'get' . ucfirst($key);
+        usort($array, function ($a, $b) use ($order, $getter) {
+            $pos_b = array_search($b->$getter(), $order);
+            $pos_a = array_search($a->$getter(), $order);
+            return $pos_a - $pos_b;
+        });
+
+        return $array;
+    }
+
 }
