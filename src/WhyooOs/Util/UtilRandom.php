@@ -6,7 +6,8 @@ class UtilRandom
 {
     public static function createRandomString($length)
     {
-        $initVector = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
+        // $initVector = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
+        $initVector = random_bytes($length);
         $rectified = preg_replace_callback("#[^a-zA-Z0-9]{1}#",
             function ($x) {
                 return md5(time())[0];
