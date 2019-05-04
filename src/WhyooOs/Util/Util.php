@@ -10,11 +10,24 @@ class Util
 {
 
     /**
+     * TODO: move this somewhere else..
+     *
      * @return bool
      */
-    public static function isLive()
+    public static function isLive():bool
     {
         return preg_match('#^/home/marc/devel/#', __DIR__) == 0;
+    }
+
+
+    /**
+     * TODO: move this somewhere else..
+     *
+     * @return bool
+     */
+    public static function isDevel(): bool
+    {
+        return !self::isLive();
     }
 
 
@@ -182,7 +195,6 @@ class Util
     }
 
 
-
     /**
      * TODO: belongs to UtilNumber
      *
@@ -268,7 +280,7 @@ class Util
      * 07/2018
      * used by marketer, next-steps-app
      * needs https://github.com/kevinlebrun/colors.php
-     * 
+     *
      *       composer require kevinlebrun/colors.php
      *
      * @param string $text
@@ -280,10 +292,10 @@ class Util
     {
         $c = new Color();
         $c($text);
-        if( $fg) {
+        if ($fg) {
             $c->fg($fg);
         }
-        if( $bg) {
+        if ($bg) {
             $c->bg($bg);
         }
         if ($bold) {
