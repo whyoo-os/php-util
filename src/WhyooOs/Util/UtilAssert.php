@@ -46,6 +46,18 @@ class UtilAssert
      * @param string $errorMessage
      * @throws AssertException
      */
+    public static function assertZero($number, $errorMessage = "")
+    {
+        if (($number != 0)) {
+            throw new AssertException("Assertion 'Zero' failed ($number != 0). " . $errorMessage);
+        }
+    }
+
+    /**
+     * @param $subject
+     * @param string $errorMessage
+     * @throws AssertException
+     */
     public static function assertNull($subject, $errorMessage = "")
     {
         if (is_null($subject)) {
@@ -88,7 +100,7 @@ class UtilAssert
     public static function assertEqual($v1, $v2, $errorMessage = "")
     {
         if ($v1 != $v2) {
-            throw new AssertException("Assertion failed ($v1 != $v2) " . $errorMessage);
+            throw new AssertException("Assertion failed ($v1 != $v2) " . '@'.$errorMessage.'@');
         }
     }
 
