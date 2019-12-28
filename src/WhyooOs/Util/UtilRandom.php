@@ -4,6 +4,11 @@ namespace WhyooOs\Util;
 
 class UtilRandom
 {
+    /**
+     * @param $length
+     * @return bool|string
+     * @throws \Exception
+     */
     public static function createRandomString($length)
     {
         // $initVector = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);

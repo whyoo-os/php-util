@@ -152,7 +152,7 @@ class UtilArray
      * getObjectProperty($posts, 'id', true) returns { a:1, b:2, c:3 }
      * TODO: rename getDocumentProperty?
      * used in marketer
-     * 
+     *
      * @param array $arr
      * @param string $propertyName also sub-documents like 'userProfile.birthday' are possible
      * @param bool $bKeepOriginalKeys the thing with $bKeepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
@@ -581,35 +581,8 @@ class UtilArray
         return $new;
     }
 
-    /**
-     * todo: merge with filterArrayByKeys ?
-     * Filter array by its keys using a callback.
-     * @return array numeric(!) array
-     */
-    public static function filterByKey(array $arr, $keys)
-    {
-        return array_map(function ($key) use ($arr) {
-            return $arr[$key];
-        }, $keys);
-    }
 
 
-    /**
-     * 09/2017 from scrapers
-     *
-     * @param array $hash dict
-     * @param array $keys
-     * @return array (numeric array / list)
-     */
-    public static function extractByKeys(array $hash, array $keys)
-    {
-        $ret = [];
-        foreach ($keys as $key) {
-            $ret[] = @$hash[$key];
-        }
-
-        return $ret;
-    }
 
 
     // from marketer v1
@@ -680,7 +653,7 @@ class UtilArray
     /**
      * 01/2018 moved from UtilMongo to here
      *
-     * @param  \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|\Iterator|array $arr
+     * @param \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|\Iterator|array $arr
      * @return array
      */
     public static function iteratorToArray($arr, $useKeys = true)
@@ -884,6 +857,7 @@ class UtilArray
 
     /**
      * 04/2019 used by ebaygen for sorting products by reorderStatus
+     * ?? does this work ??
      *
      * @param array $array
      * @param string $key
@@ -920,5 +894,9 @@ class UtilArray
 
         return $array;
     }
+
+
+
+
 
 }

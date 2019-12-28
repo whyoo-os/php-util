@@ -192,8 +192,6 @@ class UtilString
     }
 
 
-
-
     /**
      * 01/2019
      *
@@ -210,6 +208,7 @@ class UtilString
         $engine = new \StringTemplate\Engine;
         return $engine->render($str, $replacements);
     }
+
 
 
 }
