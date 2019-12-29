@@ -181,7 +181,7 @@ class Util
 
 
     /**
-     * used for calculation of PricePerPiece (ebayGen)
+     * used for calculation of PricePerPiece (mcxlister)
      * TODO: belongs to UtilNumber
      *
      * @param $number

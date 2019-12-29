@@ -60,7 +60,7 @@ class UtilException
 
 
     /**
-     * used by ebaygen
+     * used by mcxlister
      *
      * installs exception handler which writes Timestamp + jTraceEx to STDERR
      * useful to see in error logs of supervisor when the error happens

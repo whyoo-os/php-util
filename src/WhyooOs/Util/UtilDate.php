@@ -84,7 +84,7 @@ class UtilDate
 
 
     /**
-     * from ebaygen used for monthly reports
+     * from mcxlister used for monthly reports
      *
      * @param int $numMonths
      * @return \DateTime[] last N months
@@ -110,7 +110,7 @@ class UtilDate
 
 
     /**
-     * fom ebaygen
+     * fom mcxlister
      *
      * used for statistics
      *

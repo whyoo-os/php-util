@@ -4,23 +4,25 @@
 namespace WhyooOs\Util;
 
 
-
+/**
+ * 07/2017
+ */
 class UtilDocument
 {
 
 
     /**
-     * used by ebaygen5, schlegel
+     * used by mcxlister5, schlegel
      *
      * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
      *
      * @param $srcArray
      * @param \stdClass (AbstractDocument) $destDocument the document with getters and setters
-     * @param $fieldNames
+     * @param $whiteList
      */
-    public static function copyDataFromArrayToDocument(array $srcArray, $destDocument, array $fieldNames)
+    public static function copyDataFromArrayToDocument(array $srcArray, $destDocument, array $whiteList)
     {
-        foreach ($fieldNames as $attributeName) {
+        foreach ($whiteList as $attributeName) {
             $myDoc = $destDocument;
             $myArr = $srcArray;
 
@@ -66,7 +68,7 @@ class UtilDocument
 
 
 //    /**
-//     * not used by ebaygen5
+//     * not used by mcxlister5
 //     *
 //     * @param array $src
 //     * @param AbstractDocument $dest the document with getters and setters
@@ -79,6 +81,30 @@ class UtilDocument
 //            $dest->$setterName( @$src[$fieldName]);
 //        }
 //    }
+
+
+
+    /**
+     * 04/2019 used by mcxlister for sorting products by reorderStatus
+     * 12/2019 moved to UtilDocument from UtilArray
+     *
+     * @param array $array
+     * @param string $key
+     * @param array $customOrder
+     * @return array
+     */
+    public static function sortDocumentsByCustomOrder(array $array, string $key, array $customOrder)
+    {
+        $getter = 'get' . ucfirst($key);
+        usort($array, function ($a, $b) use ($customOrder, $getter) {
+            $pos_b = array_search($b->$getter(), $customOrder);
+            $pos_a = array_search($a->$getter(), $customOrder);
+            return $pos_a - $pos_b;
+        });
+
+        return $array;
+    }
+
 
 
 

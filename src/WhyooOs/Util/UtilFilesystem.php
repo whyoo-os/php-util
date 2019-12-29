@@ -495,7 +495,7 @@ class UtilFilesystem
 
 
     /**
-     * 10/2017 used by ebayGen
+     * 10/2017 used by mcxlister
      * source https://stackoverflow.com/a/21409562/2848530
      *
      * @param $pathDir

@@ -563,7 +563,7 @@ class UtilArray
      * todo: merge with filterByKey ?
      *
      * filters assoc array
-     * used by ebayGen
+     * used by mcxlister
      *
      * @param array $arr
      * @param array $allowedKeys
@@ -681,7 +681,7 @@ class UtilArray
 
 
     /**
-     * 03/2018 used by ebaygen
+     * 03/2018 used by mcxlister
      *
      * @param $arr
      * @return bool
@@ -854,46 +854,6 @@ class UtilArray
         return array_fill(0, $m, array_fill(0, $n, $value));
     }
 
-
-    /**
-     * 04/2019 used by ebaygen for sorting products by reorderStatus
-     * ?? does this work ??
-     *
-     * @param array $array
-     * @param string $key
-     * @param array $order
-     * @return array
-     */
-    public static function sortByCustomOrder(array $array, string $key, array $order)
-    {
-        usort($array, function ($a, $b) use ($order) {
-            $pos_a = array_search($a[$key], $order);
-            $pos_b = array_search($b[$key], $order);
-            return $pos_a - $pos_b;
-        });
-
-        return $array;
-    }
-
-    /**
-     * 04/2019 used by ebaygen for sorting products by reorderStatus
-     *
-     * @param array $array
-     * @param string $key
-     * @param array $order
-     * @return array
-     */
-    public static function sortObjectsByCustomOrder(array $array, string $key, array $order)
-    {
-        $getter = 'get' . ucfirst($key);
-        usort($array, function ($a, $b) use ($order, $getter) {
-            $pos_b = array_search($b->$getter(), $order);
-            $pos_a = array_search($a->$getter(), $order);
-            return $pos_a - $pos_b;
-        });
-
-        return $array;
-    }
 
 
 

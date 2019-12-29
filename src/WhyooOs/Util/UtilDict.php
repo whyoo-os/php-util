@@ -55,6 +55,25 @@ class UtilDict
     }
 
 
+    /**
+     * 12/2019 moved from UtilArray to here .. because list of dicts is sorted
+     *
+     * @param array $array
+     * @param string $key
+     * @param array $order
+     * @return array
+     */
+    public static function sortManyByCustomOrder(array $array, string $key, array $order)
+    {
+        usort($array, function ($a, $b) use ($order, $key) {
+            $pos_a = array_search($a[$key], $order);
+            $pos_b = array_search($b[$key], $order);
+            return $pos_a - $pos_b;
+        });
+
+        return $array;
+    }
+
 
 
 }
