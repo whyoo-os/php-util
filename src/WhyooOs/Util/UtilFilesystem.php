@@ -243,7 +243,7 @@ class UtilFilesystem
         $paths = [];
 
         foreach (func_get_args() as $arg) {
-            if ($arg !== '') {
+            if ($arg !== '' && $arg !== '.') {
                 $paths[] = $arg;
             }
         }
@@ -420,7 +420,7 @@ class UtilFilesystem
 
     /**
      * FIXME: currently it onlt works for images
-     * used by ebay-gen
+     * used by mcxlister
      *
      * @param $fullPathFile
      * @return string
@@ -547,5 +547,8 @@ class UtilFilesystem
 
         return $base . $suffix . '.' . $ext;
     }
+
+
+
 
 }

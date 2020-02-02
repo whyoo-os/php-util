@@ -196,6 +196,7 @@ class UtilString
      * 01/2019
      *
      * needs nicmart/string-template
+     * composer require nicmart/string-template
      *
      * example: UtilString::tpl("My name is {name} {surname}", ['name' => 'Nicolò', 'surname' => 'Martini']);
      *

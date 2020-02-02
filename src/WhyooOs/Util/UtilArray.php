@@ -699,7 +699,7 @@ class UtilArray
 
     /**
      * 05/2018
-     * used in ebay-gen
+     * used in mcxlister
      * @param $key
      */
     public static function pull(array &$arr, $key, bool $bThrowException = false)
@@ -821,7 +821,7 @@ class UtilArray
 
     /**
      * filters array of strings by searchterm
-     * 10/2018 used by ebay-gen
+     * 10/2018 used by mcxlister
      *
      * @param array $arr
      * @param string $searchterm

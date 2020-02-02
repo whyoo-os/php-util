@@ -12,7 +12,7 @@ class UtilDocument
 
 
     /**
-     * used by mcxlister5, schlegel
+     * used by mcxlister, schlegel
      *
      * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
      *
@@ -68,7 +68,7 @@ class UtilDocument
 
 
 //    /**
-//     * not used by mcxlister5
+//     * not used by mcxlister
 //     *
 //     * @param array $src
 //     * @param AbstractDocument $dest the document with getters and setters

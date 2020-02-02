@@ -100,7 +100,7 @@ class UtilAssert
     public static function assertEqual($v1, $v2, $errorMessage = "")
     {
         if ($v1 != $v2) {
-            throw new AssertException(__METHOD__ . " failed ($v1 != $v2) " . '@'.$errorMessage.'@');
+            throw new AssertException(__METHOD__ . " failed ($v1 != $v2). " . $errorMessage);
         }
     }
 
@@ -154,7 +154,7 @@ class UtilAssert
      * @param string $errorMessage
      * @throws AssertException
      */
-    public static function assertInArray($needle, array $haystack, $errorMessage = '')
+    public static function assertInArray($needle, array $haystack, string $errorMessage = '')
     {
         if (!in_array($needle, $haystack)) {
             $strAvailable = implode(', ', $haystack);
@@ -169,7 +169,7 @@ class UtilAssert
      * @param string $errorMessage
      * @throws AssertException
      */
-    public static function assertArrayKeyExists($key, array $haystack, $errorMessage = '')
+    public static function assertArrayKeyExists($key, array $haystack, string $errorMessage = '')
     {
         if (!array_key_exists($key, $haystack)) {
             $strAvailable = implode(', ', array_keys($haystack));
@@ -185,7 +185,7 @@ class UtilAssert
         }
     }
 
-    public static function assertIsObject($object, $errorMessage = '')
+    public static function assertIsObject($object, string $errorMessage = '')
     {
         if (!is_object($object)) {
             throw new AssertException(__METHOD__ . " failed: " . gettype($object) . ". " . $errorMessage);
@@ -194,14 +194,14 @@ class UtilAssert
 
 
     // 01/2018
-    public static function assertIsArray($array, $errorMessage = '')
+    public static function assertIsArray($array, string $errorMessage = '')
     {
         if (!is_array($array)) {
             throw new AssertException(__METHOD__ . " failed: " . gettype($array) . ". " . $errorMessage);
         }
     }
 
-    public static function assertNotInstanceOf($object, string $forbiddenClass, $errorMessage = '')
+    public static function assertNotInstanceOf($object, string $forbiddenClass, string $errorMessage = '')
     {
         if ($object instanceof $forbiddenClass) {
             $actualClass = get_class($object);
@@ -212,7 +212,7 @@ class UtilAssert
     /**
      * 08/2018
      */
-    public static function assertInstanceOf($object, string $class, $errorMessage = '')
+    public static function assertInstanceOf($object, string $class, string $errorMessage = '')
     {
         if (!($object instanceof $class)) {
             $actualClass = get_class($object);
@@ -220,28 +220,57 @@ class UtilAssert
         }
     }
 
-    public static function assertFileExists($pathFile, $errorMessage = '')
+    public static function assertFileExists($pathFile, string $errorMessage = '')
     {
         if (!file_exists($pathFile)) {
             throw new AssertException(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
         }
     }
 
-    public static function assertIsFile($pathFile, $errorMessage = '')
+    public static function assertIsFile($pathFile, string $errorMessage = '')
     {
         if (!is_file($pathFile)) {
             throw new AssertException(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
         }
     }
 
-    public static function assertIsInt($x, $errorMessage = '')
+    /**
+     * 01/2020
+     *
+     * @param $pathFile
+     * @param string $errorMessage
+     * @throws AssertException
+     */
+    public static function assertFileDoesNotExists($pathFile, string $errorMessage = '')
+    {
+        if (file_exists($pathFile)) {
+            throw new AssertException(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
+        }
+    }
+
+
+    /**
+     * 01/2020
+     *
+     * @param string $pathFile
+     * @throws AssertException
+     */
+    public static function assertIsWriteable(string $pathFile, string $errorMessage = '')
+    {
+        if (!is_writeable($pathFile)) {
+            throw new AssertException(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
+        }
+    }
+
+
+    public static function assertIsInt($x, string $errorMessage = '')
     {
         if (!is_int($x)) {
             throw new AssertException(__METHOD__ . " failed for path $x. " . $errorMessage);
         }
     }
 
-    public static function assertIsDir($pathDir, $errorMessage = '')
+    public static function assertIsDir($pathDir, string $errorMessage = '')
     {
         if (!is_dir($pathDir)) {
             throw new AssertException(__METHOD__ . " failed for path $pathDir. " . $errorMessage);
@@ -257,7 +286,7 @@ class UtilAssert
      * @param string $errorMessage
      * @throws AssertException
      */
-    public static function assertArrayLengthEquals(array $array, int $length, $errorMessage = '')
+    public static function assertArrayLengthEquals(array $array, int $length, string $errorMessage = '')
     {
         if (count($array) != $length) {
             throw new AssertException(__METHOD__ . " failed: array length " . count($array) . " != $length. " . $errorMessage);
@@ -273,7 +302,7 @@ class UtilAssert
      * @param string $errorMessage
      * @throws AssertException
      */
-    public static function assertStringIncludes(string $haystack, string $needle, $errorMessage = '')
+    public static function assertStringIncludes(string $haystack, string $needle, string $errorMessage = '')
     {
         if (strpos($haystack, $needle) === false) {
             throw new AssertException(__METHOD__ . " failed: string `$needle` not included in string `$haystack`. " . $errorMessage);
@@ -288,7 +317,7 @@ class UtilAssert
      * @param string $errorMessage
      * @throws AssertException
      */
-    public static function assertArrayHasNoDuplicates(array $array, $errorMessage = '')
+    public static function assertArrayHasNoDuplicates(array $array, string $errorMessage = '')
     {
         if (UtilArray::hasDuplicates($array)) {
             $duplicates = json_encode(UtilArray::getDuplicates($array));
@@ -296,6 +325,18 @@ class UtilAssert
         }
     }
 
+
+    /**
+     * @param string $haystack
+     * @param string $needle
+     * @throws AssertException
+     */
+    public static function assertStringStartsWith(string $haystack, string $needle, string $errorMessage = '')
+    {
+        if (!UtilString::startsWith($haystack, $needle)) {
+            throw new AssertException(__METHOD__ . " failed: string `$haystack` does not start with `$needle`. " . $errorMessage);
+        }
+    }
 
 }
 

@@ -3,8 +3,6 @@
 namespace WhyooOs\Util;
 
 
-use phpFastCache\Util\MemcacheDriverCollisionDetectorTrait;
-
 class UtilCsv
 {
 
@@ -79,6 +77,7 @@ class UtilCsv
     /**
      * flattens array of rows and exports to .csv
      * 09/2017 for scrapers
+     * 12/2019 updated
      *
      * @param array $rows
      * @param array|null $columns
