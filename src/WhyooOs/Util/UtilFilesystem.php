@@ -549,6 +549,19 @@ class UtilFilesystem
     }
 
 
+    /**
+     * 03/2020
+     *
+     * @param string $path
+     * @return string|string[]|null
+     */
+    public static function normalizePath(string $path)
+    {
+        $patterns = ['~/{2,}~', '~/(\./)+~', '~([^/\.]+/(?R)*\.{2,}/)~', '~\.\./~'];
+        $replacements = ['/', '/', '', ''];
+
+        return preg_replace($patterns, $replacements, $path);
+    }
 
 
 }
