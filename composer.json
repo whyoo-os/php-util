@@ -18,7 +18,7 @@
         "jdorn/sql-formatter": "for UtilDebug::getSqlFormatted()",
         "swiftmailer/swiftmailer": "for mails",
         "tijsverkoyen/css-to-inline-styles": "for html mails with css",
-        "sunra/php-simple-html-dom-parser": "for scraping stuff",
+        "kub-at/php-simple-html-dom-parser": "for scraping stuff",
         "coldume/imagecraft": "for resizing animated gifs"
     },
     "autoload": {

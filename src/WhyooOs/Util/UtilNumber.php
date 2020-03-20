@@ -25,6 +25,7 @@ class UtilNumber
      * replaces komma (german notation) with dot (american notation)
      * separators NOT allowed
      * eg "100,12" --> 100.12
+     *
      * @param $string
      * @return float
      */

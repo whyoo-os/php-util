@@ -563,5 +563,4 @@ class UtilFilesystem
         return preg_replace($patterns, $replacements, $path);
     }
 
-
 }

@@ -6,8 +6,7 @@
 
 namespace WhyooOs\Util;
 
-use Sunra\PhpSimple\HtmlDomParser;
-
+use KubAT\PhpSimple\HtmlDomParser;
 
 class UtilScraper
 {
@@ -130,6 +129,22 @@ class UtilScraper
         }
 
         self::$lastRequestAt[$id] = microtime(true);
+    }
+
+    /**
+     * 03/2020
+     *
+     * used in scraper-service
+     * returns only positive integers
+     *
+     * @param string $param
+     * @return array with the positive integer numbers
+     */
+    public static function parseDecimals(string $string=null)
+    {
+        preg_match_all('~\d+~', $string, $matches, PREG_PATTERN_ORDER);
+
+        return $matches[0];
     }
 
 
