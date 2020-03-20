@@ -136,11 +136,12 @@ class UtilScraper
      *
      * used in scraper-service
      * returns only positive integers
+     * eg: "1.2 foo -200" ==> [1, 2, 200]
      *
      * @param string $param
      * @return array with the positive integer numbers
      */
-    public static function parseDecimals(string $string=null)
+    public static function parsePositiveIntegers(string $string=null)
     {
         preg_match_all('~\d+~', $string, $matches, PREG_PATTERN_ORDER);
 
