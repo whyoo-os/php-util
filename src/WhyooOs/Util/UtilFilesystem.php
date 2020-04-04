@@ -557,10 +557,14 @@ class UtilFilesystem
      */
     public static function normalizePath(string $path)
     {
-        $patterns = ['~/{2,}~', '~/(\./)+~', '~([^/\.]+/(?R)*\.{2,}/)~', '~\.\./~'];
-        $replacements = ['/', '/', '', ''];
-
-        return preg_replace($patterns, $replacements, $path);
+        $r = [
+            '~/{2,}~'                  => '/',
+            '~/(\./)+~'                => '/',
+            '~([^/\.]+/(?R)*\.{2,}/)~' => '',
+            '~\.\./~'                  => '',
+            '~/[^/\.]+/\.\.$~'         => '', // 04/2020 added: /a/b/c/.. --> a/b
+        ];
+        return preg_replace(array_keys($r), array_values($r), $path);
     }
 
 }
