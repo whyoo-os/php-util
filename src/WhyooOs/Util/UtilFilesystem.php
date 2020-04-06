@@ -420,7 +420,7 @@ class UtilFilesystem
 
     /**
      * FIXME: currently it onlt works for images
-     * used by mcxlister
+     * used by mcx-lister
      *
      * @param $fullPathFile
      * @return string

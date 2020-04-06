@@ -12,7 +12,7 @@ class UtilDocument
 
 
     /**
-     * used by mcxlister, schlegel
+     * used by mcx-lister, schlegel
      *
      * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
      *
@@ -40,6 +40,23 @@ class UtilDocument
         }
     }
 
+    /**
+     * copies properties from one document to another
+     * used by mcx-lister ... useful for making a clone of a document
+     * 03/2020
+     *
+     * @param \stdClass (AbstractDocument) $srcDocument
+     * @param \stdClass (AbstractDocument) $destDocument the document with getters and setters
+     * @param $whiteList
+     */
+    public static function copyDataFromDocumentToDocument($srcDocument, $destDocument, array $whiteList)
+    {
+        foreach ($whiteList as $propertyName) {
+            $getterName = 'get' . ucfirst($propertyName);
+            $setterName = 'set' . ucfirst($propertyName);
+            $destDocument->$setterName($srcDocument->$getterName());
+        }
+    }
 
 
     /**
@@ -59,7 +76,7 @@ class UtilDocument
                 continue;
             }
             $setterName = 'set' . ucfirst($key);
-            if( method_exists($object, $setterName)) {
+            if (method_exists($object, $setterName)) {
                 $object->$setterName($value);
             }
         }
@@ -68,7 +85,7 @@ class UtilDocument
 
 
 //    /**
-//     * not used by mcxlister
+//     * not used by mcx-lister
 //     *
 //     * @param array $src
 //     * @param AbstractDocument $dest the document with getters and setters
@@ -85,7 +102,7 @@ class UtilDocument
 
 
     /**
-     * 04/2019 used by mcxlister for sorting products by reorderStatus
+     * 04/2019 used by mcx-lister for sorting products by reorderStatus
      * 12/2019 moved to UtilDocument from UtilArray
      *
      * @param array $array

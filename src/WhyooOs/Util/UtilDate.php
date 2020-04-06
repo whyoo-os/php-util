@@ -84,7 +84,7 @@ class UtilDate
 
 
     /**
-     * from mcxlister used for monthly reports
+     * from mcx-lister used for monthly reports
      *
      * @param int $numMonths
      * @return \DateTime[] last N months
@@ -110,7 +110,7 @@ class UtilDate
 
 
     /**
-     * fom mcxlister
+     * fom mcx-lister
      *
      * used for statistics
      *

@@ -181,7 +181,7 @@ class Util
 
 
     /**
-     * used for calculation of PricePerPiece (mcxlister)
+     * used for calculation of PricePerPiece (mcx-lister)
      * TODO: belongs to UtilNumber
      *
      * @param $number
