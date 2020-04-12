@@ -214,13 +214,13 @@ class UtilImage
     /**
      * private helper
      *
-     * @param \Eventviva\ImageResize $image
+     * @param \Gumlet\ImageResize $image
      * @param array $dimensions
      * @param string $resizeMode
      * @param bool $bAllowUpscale
      * @throws \Exception
      */
-    private static function _resize(\Eventviva\ImageResize $image, int $width, int $height, string $resizeMode, bool $bAllowUpscale)
+    private static function _resize(\Gumlet\ImageResize $image, int $width, int $height, string $resizeMode, bool $bAllowUpscale)
     {
         if ($resizeMode == self::RESIZE_MODE_STRETCH) {
             $image->resize($width, $height, $bAllowUpscale);
@@ -281,7 +281,7 @@ class UtilImage
 
 
     /**
-     * TODO: remove EventViva\ImageResize dependency
+     * TODO: remove Gumlet\ImageResize dependency
      *
      * 07/2017 used by schlegel for stretching pdf-background to cover whole page
      * 08/2017 used by mcx-lister
@@ -308,7 +308,7 @@ class UtilImage
 //            $im = self::loadImage($pathSrc);
 //            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
 //        } else {
-            $image = @(new \Eventviva\ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+            $image = @(new \Gumlet\ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
             self::_resize($image, $width, $height, $resizeMode, $bAllowUpscale);
             $image->save($pathDest);
 //        }
@@ -336,7 +336,7 @@ class UtilImage
 //            $im = imagecreatefromstring($bytesSrc);
 //            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
 //        } else {
-            $image = @(\Eventviva\ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+            $image = @(\Gumlet\ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
             self::_resize($image, $width, $height, $resizeMode, $bAllowUpscale);
             $image->save($pathDest);
 //        }

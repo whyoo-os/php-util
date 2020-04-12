@@ -624,9 +624,7 @@ class UtilArray
      */
     public static function removeElement(&$arr, $needle)
     {
-        $key = array_search($needle, $arr);
-
-        if ($key !== false) {
+        if($key = array_search($needle, $arr) !== false) {
             unset($arr[$key]);
         }
     }
