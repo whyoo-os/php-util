@@ -563,7 +563,7 @@ class UtilArray
      * todo: merge with filterByKey ?
      *
      * filters assoc array
-     * used by mcx-lister
+     * used by mcxlister
      *
      * @param array $arr
      * @param array $allowedKeys
@@ -697,14 +697,10 @@ class UtilArray
         return true;
     }
 
-
     /**
      * 05/2018
-     * used in mcx-lister
-     *
+     * used in mcxlister
      * @param $key
-     * @return mixed the pulled value
-     * @throws \Exception
      */
     public static function pull(array &$arr, $key, bool $bThrowException = false)
     {
@@ -825,7 +821,7 @@ class UtilArray
 
     /**
      * filters array of strings by searchterm
-     * 10/2018 used by mcx-lister
+     * 10/2018 used by mcxlister
      *
      * @param array $arr
      * @param string $searchterm

@@ -32,7 +32,7 @@ class UtilSymfony
     /**
      * convenience hack
      * 01/2018
-     * mcx-lister
+     * mcxlister
      *
      * @return mixed the service from the container
      */
@@ -45,7 +45,7 @@ class UtilSymfony
     /**
      * convenience hack
      * 01/2018
-     * mcx-lister
+     * mcxlister
      *
      * @return mixed the requested parameter from the container
      */
@@ -112,7 +112,7 @@ class UtilSymfony
 
 
     /**
-     * 08/2018 used for sending svg in mcx-lister
+     * 08/2018 used for sending svg in mcxlister
      *
      * @param string $strSvg
      * @return Response

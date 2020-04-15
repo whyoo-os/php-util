@@ -8,7 +8,7 @@ use tidy;
 class UtilHtml
 {
     /**
-     * 09/2017 mcx-lister - used for emails
+     * 09/2017 mcxlister - used for emails
      *
      * extracts <style> css and converts to inline style
      * TODO: use shippingplatform's UtilMail::cssToInline instead!
