@@ -618,13 +618,15 @@ class UtilArray
     /**
      * 07/2017 schlegel
      * 05/2018 marketer
+     * 04/2020 bugfixed (pypush4 graphgen)
      *
      * @param $arr
      * @param $needle
      */
     public static function removeElement(&$arr, $needle)
     {
-        if($key = array_search($needle, $arr) !== false) {
+        $key = array_search($needle, $arr);
+        if($key !== false) {
             unset($arr[$key]);
         }
     }
