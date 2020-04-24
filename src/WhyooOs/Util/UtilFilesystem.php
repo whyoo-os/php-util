@@ -234,7 +234,7 @@ class UtilFilesystem
 
         asort($ret);
 
-        return $ret;
+        return array_values($ret);
     }
 
 
