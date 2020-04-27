@@ -40,6 +40,23 @@ class UtilDocument
         }
     }
 
+    /**
+     * copies properties from one document to another
+     * used by mcx-lister ... useful for making a clone of a document
+     * 03/2020
+     *
+     * @param \stdClass (AbstractDocument) $srcDocument
+     * @param \stdClass (AbstractDocument) $destDocument the document with getters and setters
+     * @param $whiteList
+     */
+    public static function copyDataFromDocumentToDocument($srcDocument, $destDocument, array $whiteList)
+    {
+        foreach ($whiteList as $propertyName) {
+            $getterName = 'get' . ucfirst($propertyName);
+            $setterName = 'set' . ucfirst($propertyName);
+            $destDocument->$setterName($srcDocument->$getterName());
+        }
+    }
 
 
     /**
