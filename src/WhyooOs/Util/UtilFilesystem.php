@@ -35,10 +35,10 @@ class UtilFilesystem
     /**
      * returns LOWERCASE extension
      *
-     * @param $filePath
+     * @param string $filePath
      * @return string eg "png"
      */
-    public static function getExtension($filePath)
+    public static function getExtension(string $filePath)
     {
         $pos = strrpos($filePath, '.');
         if ($pos !== false) {
@@ -155,11 +155,16 @@ class UtilFilesystem
     }
 
 
-
-    // from smartdonation
-    // buggy? not working correctly?
-    # similar to python's os.walk
-    # 04/2018 fixed .. does only return files, no directories
+    /**
+     * from smartdonation
+     * buggy? not working correctly?
+     * similar to python's os.walk
+     * 04/2018 fixed .. does only return files, no directories
+     *
+     * @param string $strDir
+     * @param string $pattern
+     * @return array FULL paths of found files
+     */
     public static function findFilesRecursive(string $strDir = '.', string $pattern = '~.*~')
     {
         $ret = [];
@@ -180,11 +185,16 @@ class UtilFilesystem
     }
 
 
-    public static function deleteDirectoryRecursive($path)
+    /**
+     * rm -rf /path/to/dir
+     *
+     * @param $pathDirectory
+     */
+    public static function deleteDirectoryRecursive($pathDirectory)
     {
         try {
             $it = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path),
+                new \RecursiveDirectoryIterator($pathDirectory),
                 \RecursiveIteratorIterator::CHILD_FIRST
             );
             foreach ($it as $file) {
@@ -199,35 +209,83 @@ class UtilFilesystem
         } catch (\Exception $e) {
             // ...
         }
-        @rmdir($path);
+        @rmdir($pathDirectory);
     }
 
 
     /**
      * returns alphabetically sorted filtered list of files
+     * used by push4
      *
-     * @param string $dir
+     * @param string $pathDirectory
      * @param bool $bRecursive
      * @return string[]
      */
-    public static function findImages(string $dir, $bRecursive = true)
+    public static function findImages(string $pathDirectory, $bRecursive = true)
     {
         $extensionsLowerCase = ['jpg', 'jpeg', 'png', 'gif'];
         $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
+        return self::findByExtensionsOrMimeTypes($pathDirectory, $extensionsLowerCase, $allowedMimeTypes, $bRecursive);
+    }
+
+    /**
+     * @param $pathDirectory
+     * @param $extensionsLowerCase
+     * @param $allowedMimeTypes
+     * @param $bRecursive
+     * @return array
+     */
+    public static function findByExtensionsOrMimeTypes($pathDirectory, $extensionsLowerCase, $allowedMimeTypes, $bRecursive)
+    {
         if ($bRecursive) {
-            $files = self::scanDirForFilesRecursive($dir);
+            $files = self::scanDirForFilesRecursive($pathDirectory);
         } else {
-            $files = self::scanDir($dir);
+            $files = self::scanDir($pathDirectory);
         }
-#UtilDebug::dd($files);
-        $ret = array_filter($files, function ($filename) use ($dir, $extensionsLowerCase, $allowedMimeTypes) {
+
+        $ret = array_filter($files, function ($filename) use ($extensionsLowerCase, $allowedMimeTypes, $pathDirectory) {
             //echo "#".self::getExtension( $filename);
             $ext = self::getExtension($filename);
             if (empty($ext)) {
+                if(empty($allowedMimeTypes)) {
+                    return false;
+                }
                 // filename has no extension .. we use mimeType
-                $mime = mime_content_type($dir . '/' . $filename);
+                $mime = mime_content_type($pathDirectory . '/' . $filename);
                 return in_array($mime, $allowedMimeTypes);
+            }
+            return in_array($ext, $extensionsLowerCase);
+        });
+
+        asort($ret);
+
+        return array_values($ret);
+    }
+
+
+    /**
+     * 05/2020
+     * used by push4
+     *
+     * @param $pathDirectory
+     * @param $extensionsLowerCase
+     * @param $bRecursive
+     * @return array
+     */
+    public static function findByExtensions($pathDirectory, array $extensionsLowerCase, $bRecursive)
+    {
+        if ($bRecursive) {
+            $files = self::scanDirForFilesRecursive($pathDirectory);
+        } else {
+            $files = self::scanDir($pathDirectory);
+        }
+
+        $ret = array_filter($files, function ($filename) use ($extensionsLowerCase) {
+            //echo "#".self::getExtension( $filename);
+            $ext = self::getExtension($filename);
+            if (empty($ext)) {
+                return false;
             }
             return in_array($ext, $extensionsLowerCase);
         });
