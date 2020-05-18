@@ -4,10 +4,6 @@
 namespace WhyooOs\Util;
 
 
-
-
-
-
 class UtilColor
 {
     public static function lighten($hex, $percent)
@@ -74,7 +70,7 @@ class UtilColor
      * @param $idx
      * @return mixed|string
      */
-    static function getLegendColor( $idx)
+    static function getLegendColor($idx)
     {
         $grundfarben = [
             '#fc0',
@@ -100,10 +96,10 @@ class UtilColor
             ['#f0f', 0.75],
             ['#0f0', 0.75],
         ];
-        $grundfarbe = $grundfarben[ $idx % count( $grundfarben)];
-        $variation_idx = $idx / count( $grundfarben) - 1;
-        $variation_idx = $variation_idx % count( $variations); # so it never gets out of range
-        $color = ($variation_idx >= 0) ? self::mix( $grundfarbe, $variations[$variation_idx][0], $variations[$variation_idx][1]) : $grundfarbe;
+        $grundfarbe = $grundfarben[$idx % count($grundfarben)];
+        $variation_idx = $idx / count($grundfarben) - 1;
+        $variation_idx = $variation_idx % count($variations); # so it never gets out of range
+        $color = ($variation_idx >= 0) ? self::mix($grundfarbe, $variations[$variation_idx][0], $variations[$variation_idx][1]) : $grundfarbe;
 
         return $color;
     }
@@ -114,22 +110,19 @@ class UtilColor
      *
      * I think the best way is the Luminosity Contrast algorithm:
      * ADVISE: The next functions works well most of the time, But sometimes there are colors in which it does not work properly.
-
      * @param $hexColor
      * @return string
+     * @throws \Exception
      */
-    public static function getContrastColor($hexColor) {
-
+    public static function getContrastColor($hexColor)
+    {
         //////////// hexColor RGB
-        $R1 = hexdec(substr($hexColor, 0, 2));
-        $G1 = hexdec(substr($hexColor, 2, 2));
-        $B1 = hexdec(substr($hexColor, 4, 2));
+        list($R1, $G1, $B1) = self::hex2rgb($hexColor);
 
         //////////// Black RGB
         $blackColor = "#000000";
-        $R2BlackColor = hexdec(substr($blackColor, 0, 2));
-        $G2BlackColor = hexdec(substr($blackColor, 2, 2));
-        $B2BlackColor = hexdec(substr($blackColor, 4, 2));
+        list($R2BlackColor, $G2BlackColor, $B2BlackColor) = self::hex2rgb($blackColor);
+
 
         //////////// Calc contrast ratio
         $L1 = 0.2126 * pow($R1 / 255, 2.2) +
@@ -149,9 +142,9 @@ class UtilColor
 
         //////////// If contrast is more than 5, return black color
         if ($contrastRatio > 5) {
-            return 'black';
+            return '#000000';
         } else { //////////// if not, return white color.
-            return 'white';
+            return '#ffffff';
         }
     }
 
