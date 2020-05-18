@@ -573,7 +573,7 @@ class UtilArray
     {
         $new = [];
         foreach ($arr as $key => &$val) {
-            if (in_array($key, $allowedKeys)) {
+            if (in_array($key, $allowedKeys, true)) {
                 $new[$key] = $val;
             }
         }
@@ -610,7 +610,7 @@ class UtilArray
      */
     public static function addElementUnique(&$arr, $element)
     {
-        if (!in_array($element, $arr)) {
+        if (!in_array($element, $arr, true)) {
             $arr[] = $element;
         }
     }
@@ -625,7 +625,7 @@ class UtilArray
      */
     public static function removeElement(&$arr, $needle)
     {
-        $key = array_search($needle, $arr);
+        $key = array_search($needle, $arr, true);
         if($key !== false) {
             unset($arr[$key]);
         }
@@ -641,7 +641,7 @@ class UtilArray
      */
     public static function removeElementFromNumericArray(&$arr, $needle)
     {
-        $idx = array_search($needle, $arr);
+        $idx = array_search($needle, $arr, true);
 
         if ($idx !== false) {
             UtilAssert::assertIsInt($idx);
