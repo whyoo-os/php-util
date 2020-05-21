@@ -352,6 +352,9 @@ class UtilFilesystem
 
         $p = '';
         foreach ($parts as $part) {
+            if($p === '') {
+                continue; // bugfix/workaround for absolute path
+            }
             $p = $p . '/' . $part;
             if (!is_dir($p)) {
                 if (!@mkdir($p, $perm)) {
