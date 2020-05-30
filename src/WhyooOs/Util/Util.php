@@ -14,7 +14,7 @@ class Util
      *
      * @return bool
      */
-    public static function isLive():bool
+    public static function isLive(): bool
     {
         return preg_match('#^/home/marc/devel/#', __DIR__) == 0;
     }
@@ -33,11 +33,15 @@ class Util
 
     /**
      * TODO: move to UtilMongo
+     * 05/2020 \MongoDB\BSON\ObjectId added
      *
-     * @return \MongoId
+     * @return \MongoDB\BSON\ObjectId|\MongoId
      */
     public static function createMongoId()
     {
+        if(class_exists(\MongoDB\BSON\ObjectId::class)) {
+            return new \MongoDB\BSON\ObjectId();
+        }
         return new \MongoId(); // deprecated
         // LATER: return new \MongoDB\BSON\ObjectId();
     }
@@ -57,15 +61,18 @@ class Util
 
     /**
      * TODO: move to UtilMongo
+     * 05/2020 \MongoDB\BSON\ObjectId added
      *
      * @param $str
-     * @return \MongoId
+     * @return \MongoDB\BSON\ObjectId|\MongoId
      */
     public static function toMongoId($str)
     {
-        if (self::isMongoId($str)) {
+        if (class_exists(\MongoDB\BSON\ObjectId::class)) { // 05/2020
+            return new \MongoDB\BSON\ObjectId($str);
+        }
+        if (self::isMongoId($str)) { // deprecated
             return new \MongoId($str);
-            // LATER: fix .. it is deprecated
         }
     }
 
@@ -84,7 +91,7 @@ class Util
 
 
     /**
-     * @param  \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|array $arr
+     * @param \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|array $arr
      * @return array
      */
     public static function toArray($arr, $useKeys = true)
