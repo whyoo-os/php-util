@@ -248,7 +248,7 @@ class UtilFilesystem
             //echo "#".self::getExtension( $filename);
             $ext = self::getExtension($filename);
             if (empty($ext)) {
-                if(empty($allowedMimeTypes)) {
+                if (empty($allowedMimeTypes)) {
                     return false;
                 }
                 // filename has no extension .. we use mimeType
@@ -331,7 +331,7 @@ class UtilFilesystem
     /**
      * @param $path
      */
-    public static function mkdirIfNotExists($path)
+    public static function mkdirIfNotExists(string $path)
     {
         if (!is_dir($path)) {
             self::mkdir($path);
@@ -350,22 +350,22 @@ class UtilFilesystem
 //		$offset = count($parts) - $maxLevelsDown;
 //		$parts = array_slice( $parts, $offset, $maxLevelsDown);
 
-        $p = '';
+        $currentPath = '';
         foreach ($parts as $part) {
-            if($p === '') {
+            if ($part === '') {
                 continue; // bugfix/workaround for absolute path
             }
-            $p = $p . '/' . $part;
-            if (!is_dir($p)) {
-                if (!@mkdir($p, $perm)) {
+            $currentPath .= '/' . $part;
+            if (!is_dir($currentPath)) {
+                if (!@mkdir($currentPath, $perm)) {
 //					return false;
-                    throw new \Exception("could not create directory $p");
+                    throw new \Exception("could not create directory $currentPath");
                 }
-                @chmod($p, $perm);
+                @chmod($currentPath, $perm);
             }
-            if (!@chdir($p)) {
+            if (!@chdir($currentPath)) {
 //				return false
-                throw new \Exception("could not enter $p");
+                throw new \Exception("could not enter $currentPath");
             }
         }
     }
@@ -374,10 +374,10 @@ class UtilFilesystem
     /**
      * move content of one directory to another
      *
-     * @param $pathOld
-     * @param $pathNew
+     * @param string $pathOld
+     * @param string $pathNew
      */
-    public static function moveFiles($pathOld, $pathNew)
+    public static function moveFiles(string $pathOld, string $pathNew)
     {
         foreach (scandir($pathOld) as $fname) {
             if ($fname != '.' && $fname != '..') {
