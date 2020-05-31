@@ -1,9 +1,10 @@
 <?php
 
 
-
 namespace WhyooOs\Util;
 
+
+use phpFastCache\Util\MemcacheDriverCollisionDetectorTrait;
 
 /**
  * Util class for generating datetime intervals (for statistics)
@@ -32,7 +33,7 @@ class UtilDate
             $mondays[] = $d;
         }
         return $mondays;
-     }
+    }
 
 
     /**
@@ -42,7 +43,7 @@ class UtilDate
      * @param \DateTime $startDate
      * @return \DateTime[] days
      */
-    public static function getDaysUntilToday( \DateTime $startDate)
+    public static function getDaysUntilToday(\DateTime $startDate)
     {
         $startAtNoon = strtotime('noon', $startDate->getTimestamp());
         $today = (new \DateTime())->getTimestamp();
@@ -70,7 +71,7 @@ class UtilDate
 
         // from = 24h ago
         $from = (clone($to));
-        $from->modify( "-24 hours");
+        $from->modify("-24 hours");
 
         $hours = [];
         for ($timestamp = $from->getTimestamp(); $timestamp < $to->getTimestamp(); $timestamp += 3600) {
@@ -85,24 +86,31 @@ class UtilDate
 
     /**
      * from mcxlister used for monthly reports
+     * 05/2020 bugfixed
      *
      * @param int $numMonths
+     * @param string $timezone time zone, eg 'UTC'.. if NULL, then php's default timezone is used
      * @return \DateTime[] last N months
+     * @throws \Exception
      */
-    public static function getMonthlyIntervals(int $numMonths)
+    public static function getMonthlyIntervals(int $numMonths, string $timezone = null)
     {
         // to = now Full Hour
-        $now = new \DateTime("+1 month");
+        if($timezone) {
+            $now = new \DateTime("now", new \DateTimeZone($timezone));
+        } else {
+            $now = new \DateTime("now");
+        }
         $nowMonth = (int)$now->format('m'); // eg 11
         $nowYear = (int)$now->format('Y'); // eg 11
         $to = $now->setTime(0, 0, 0); // full hour .. eg. 2015-08-30 00:00
         $to = $to->setDate($nowYear, $nowMonth, 1); // eg 1.4.2017
 
         $months = [];
-        for ($numMonthsBack = 0; $numMonthsBack <= $numMonths; $numMonthsBack++) {
+        for ($numMonthsBack = -1; $numMonthsBack < $numMonths; $numMonthsBack++) {
             $date = clone($to);
             $date->modify("-$numMonthsBack months");
-            $months[] = clone($date);;
+            $months[] = clone($date);
         }
 
         return array_reverse($months);
@@ -150,11 +158,11 @@ class UtilDate
         $from = clone $to;
 
         $modify = [
-            '1d' => '-1 day',
-            '1w' => '-1 week',
-            '1m' => '-1 month',
-            '3m' => '-3 month',
-            '6m' => '-6 month',
+            '1d'  => '-1 day',
+            '1w'  => '-1 week',
+            '1m'  => '-1 month',
+            '3m'  => '-3 month',
+            '6m'  => '-6 month',
             '12m' => '-12 month',
         ];
 
@@ -162,11 +170,9 @@ class UtilDate
 
         return [
             'from' => $from,
-            'to' => $to,
+            'to'   => $to,
         ];
     }
-
-
 
 
     /**
@@ -175,9 +181,9 @@ class UtilDate
      * @param $isoString
      * @return \DateTime
      */
-    public static function isoStringToDateTime($isoString=null)
+    public static function isoStringToDateTime($isoString = null)
     {
-        if( $isoString == null) {
+        if ($isoString == null) {
             return null;
         }
 
