@@ -306,6 +306,28 @@ class UtilArray
         return array_keys($arr) === range(0, count($arr) - 1);
     }
 
+    /**
+     * 06/2020
+     *
+     * @param array $arr
+     * @return bool
+     */
+    public static function isNumericArray($arr)
+    {
+        return is_array($arr) && self::isNumeric($arr);
+    }
+
+    /**
+     * 06/2020
+     *
+     * @param array $arr
+     * @return bool
+     */
+    public static function isAssocArray($arr)
+    {
+        return is_array($arr) && self::isAssoc($arr);
+    }
+
 
     public static function toOneDimensionalArray(array $array)
     {
