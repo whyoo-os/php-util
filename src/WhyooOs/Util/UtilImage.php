@@ -32,23 +32,37 @@ class UtilImage
      * wrapper for php's imagecreatefrom***() functions
      *
      * @param $pathImg
+     * @param int|null $backgroundColor optional .. when loading transparent png .. add background color, eg 0xffffff
      * @return resource
      * @throws \Exception
      */
-    public static function loadImage($pathImg)
+    public static function loadImage($pathImg, int $backgroundColor=null)
     {
         $extension = UtilFilesystem::getExtension($pathImg);
         if ($extension == 'jpg' || $extension == 'jpeg') {
-            return imagecreatefromjpeg($pathImg);
+            $im = imagecreatefromjpeg($pathImg);
         } elseif ($extension == 'png') {
-            return imagecreatefrompng($pathImg);
+            $im = imagecreatefrompng($pathImg);
         } elseif ($extension == "gif") {
-            return imagecreatefromgif($pathImg);
+            $im = imagecreatefromgif($pathImg);
         } elseif ($extension == "webp") {
-            return imagecreatefromwbmp($pathImg);
+            $im = imagecreatefromwbmp($pathImg);
+        } else {
+            throw new \Exception("unknown extension $extension for file $pathImg");
         }
 
-        throw new \Exception("unknown extension $extension for file $pathImg");
+        if($backgroundColor !== null && in_array($extension, ['png', 'gif', 'webp'])) {
+            // ---- add background color for image with transparency
+            $width  = imagesx($im);
+            $height = imagesy($im);
+            $im2 = imagecreatetruecolor($width, $height);
+            imagefilledrectangle($im2, 0, 0, $width, $height, $backgroundColor);
+            imagecopy($im2, $im, 0, 0, 0, 0, $width, $height);
+            imagedestroy($im);
+            return $im2;
+        } else {
+            return $im;
+        }
     }
 
 
@@ -92,7 +106,7 @@ class UtilImage
      */
     public static function extendToSquare(string $pathSrc, string $pathDest, int $backgroundColor = 0xffffff)
     {
-        list($x, $y) = getimagesize($pathSrc);
+        [$x, $y] = getimagesize($pathSrc);
 
         // ---- if image is already square --> just copy (if pathSrc and pathDest are different)
         if ($x == $y) {
@@ -136,7 +150,7 @@ class UtilImage
      */
     public static function getAspectRatio($pathImage)
     {
-        list($w, $h) = getimagesize($pathImage);
+        [$w, $h] = getimagesize($pathImage);
         $min = min($w, $h);
         for ($teiler = $min; $teiler > 0; $teiler--) {
             if (($w % $teiler == 0) && ($h % $teiler == 0)) {
@@ -188,7 +202,7 @@ class UtilImage
      */
     public static function getImageSize(string $fullPathImage)
     {
-        list($w, $h) = getimagesize($fullPathImage);
+        [$w, $h] = getimagesize($fullPathImage);
 
         return [
             'w' => $w,
@@ -303,7 +317,7 @@ class UtilImage
             return;
         }
 
-        list($width, $height) = self::sizeStringToIntArray($size);
+        [$width, $height] = self::sizeStringToIntArray($size);
 //        if ($resizeMode === self::RESIZE_MODE_FILL) {
 //            $im = self::loadImage($pathSrc);
 //            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
@@ -331,7 +345,7 @@ class UtilImage
             return;
         }
 
-        list($width, $height) = self::sizeStringToIntArray($size);
+        [$width, $height] = self::sizeStringToIntArray($size);
 //        if ($resizeMode === self::RESIZE_MODE_FILL) {
 //            $im = imagecreatefromstring($bytesSrc);
 //            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
