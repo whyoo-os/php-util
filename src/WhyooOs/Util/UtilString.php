@@ -194,21 +194,25 @@ class UtilString
 
     /**
      * 01/2019
+     * 06/2020 parameters $left and $right added
      *
      * needs nicmart/string-template
      * composer require nicmart/string-template
      *
      * example: UtilString::tpl("My name is {name} {surname}", ['name' => 'Nicolò', 'surname' => 'Martini']);
      *
-     * @param $str
-     * @param $replacements
+     * @param string $template
+     * @param array $replacements
+     * @param string $left
+     * @param string $right
      * @return mixed|string
      */
-    public static function tpl($str, $replacements)
+    public static function tpl(string $template, array $replacements, string $left='{', string $right='}')
     {
-        $engine = new \StringTemplate\Engine;
-        return $engine->render($str, $replacements);
+        $engine = new \StringTemplate\Engine($left, $right);
+        return $engine->render($template, $replacements);
     }
+
 
 
 
