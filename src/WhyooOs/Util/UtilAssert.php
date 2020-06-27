@@ -280,16 +280,57 @@ class UtilAssert
     /**
      * asserts that array has specific length
      * 08/2017
+     * 06/2020 also handles \Traversable
+     * WARNING: if $array is a \Traversable it is not guaranteed that the current position of the iterator is retained
      *
-     * @param array $array
+     * @param array|\Traversable $array
      * @param int $length
      * @param string $errorMessage
      * @throws AssertException
      */
-    public static function assertArrayLengthEquals(array $array, int $length, string $errorMessage = '')
+    public static function assertArrayLengthEquals($array, int $length, string $errorMessage = '')
     {
-        if (count($array) != $length) {
-            throw new AssertException(__METHOD__ . " failed: array length " . count($array) . " != $length. " . $errorMessage);
+        // ---- array
+        if(is_array($array)){
+            if (count($array) != $length) {
+                throw new AssertException(__METHOD__ . " failed: Array length " . count($array) . " != $length. " . $errorMessage);
+            }
+        }
+
+        // ---- \Traversable
+        if($array instanceof \Traversable){
+            $ic = iterator_count($array);
+            if ($ic != $length) {
+                throw new AssertException(__METHOD__ . " failed: Traversable length $ic != $length. " . $errorMessage);
+            }
+        }
+    }
+
+    /**
+     * asserts that array has maximum length
+     * 06/2020 created
+     * WARNING: if $array is a \Traversable it is not guaranteed that the current position of the iterator is retained
+     *
+     * @param array|\Traversable $array
+     * @param int $maxLength
+     * @param string $errorMessage
+     * @throws AssertException
+     */
+    public static function assertArrayLengthLessOrEquals($array, int $maxLength, string $errorMessage = '')
+    {
+        // ---- array
+        if(is_array($array)){
+            if (count($array) > $maxLength) {
+                throw new AssertException(__METHOD__ . " failed: Array length " . count($array) . " > $maxLength. " . $errorMessage);
+            }
+        }
+
+        // ---- \Traversable
+        if($array instanceof \Traversable){
+            $ic = iterator_count($array);
+            if ($ic > $maxLength) {
+                throw new AssertException(__METHOD__ . " failed: Traversable length $ic > $maxLength. " . $errorMessage);
+            }
         }
     }
 
