@@ -136,7 +136,7 @@ class Util
      * TODO: belongs to UtilDocument
      *
      * @param $row
-     * @param string $propertyName eg 'calculation.revenueGross'
+     * @param string $propertyName eg 'calculation.priceTotalGross'
      * @return mixed
      */
     public static function getPropertyDeep($row, $propertyName)

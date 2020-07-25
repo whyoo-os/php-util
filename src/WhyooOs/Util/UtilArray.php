@@ -674,9 +674,11 @@ class UtilArray
 
     /**
      * 01/2018 moved from UtilMongo to here
+     * 07/2020 handling of null added
      *
      * @param \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|\Iterator|array $arr
-     * @return array
+     * @param bool $useKeys
+     * @return array|null
      */
     public static function iteratorToArray($arr, $useKeys = true)
     {
@@ -684,17 +686,22 @@ class UtilArray
             return $arr;
         }
 
+        if( is_null($arr)) {
+            return null;
+        }
+
         return iterator_to_array($arr, $useKeys);
     }
 
     /**
      * 02/2018 unused
+     * 07/2020 swapped parameters
      *
-     * @param string $getterName eg "getId"
      * @param array $items
+     * @param string $getterName eg "getId"
      * @return array
      */
-    public static function arrayColumnByGetter($getterName, $items)
+    public static function arrayColumnByGetter($items, string $getterName)
     {
         return array_map(function ($f) use ($getterName) {
             return $f->$getterName();
