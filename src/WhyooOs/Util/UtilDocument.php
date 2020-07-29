@@ -47,7 +47,7 @@ class UtilDocument
      *
      * @param \stdClass (AbstractDocument) $srcDocument
      * @param \stdClass (AbstractDocument) $destDocument the document with getters and setters
-     * @param $whiteList
+     * @param string[] $whiteList
      */
     public static function copyDataFromDocumentToDocument($srcDocument, $destDocument, array $whiteList)
     {
@@ -56,6 +56,26 @@ class UtilDocument
             $setterName = 'set' . ucfirst($propertyName);
             $destDocument->$setterName($srcDocument->$getterName());
         }
+    }
+
+    /**
+     * copies properties from one document to an assoc array
+     *
+     * 07/2020 unused/untested
+     *
+     * @param \stdClass (AbstractDocument) $srcDocument
+     * @param array $destArray an Assoc Array
+     * @param string[] $whiteList
+     * @return array the $destArray
+     */
+    public static function copyDataFromDocumentToArray($srcDocument, array $destArray, array $whiteList)
+    {
+        foreach ($whiteList as $propertyName) {
+            $getterName = 'get' . ucfirst($propertyName);
+            $destArray[$propertyName] = $srcDocument->$getterName();
+        }
+
+        return $destArray;
     }
 
 

@@ -12,12 +12,15 @@ class UtilDict
 
     /**
      * 12/2019
+     * 07/2020 skip entries if not existing
      */
     public static function getOneFilteredByWhitelist(array $one, $whitelistedKeys)
     {
         $newDict = [];
         foreach($whitelistedKeys as $key) {
-            $newDict[$key] = $one[$key];
+            if(array_key_exists($key, $one)) {
+                $newDict[$key] = $one[$key];
+            }
         }
 
         return $newDict;
