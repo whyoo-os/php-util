@@ -10,21 +10,38 @@ class Util
 {
 
     /**
+     * TODO: move this somewhere else..
+     *
      * @return bool
      */
-    public static function isLive()
+    public static function isLive(): bool
     {
         return preg_match('#^/home/marc/devel/#', __DIR__) == 0;
     }
 
 
     /**
-     * TODO: move to UtilMongo
+     * TODO: move this somewhere else..
      *
-     * @return \MongoId
+     * @return bool
+     */
+    public static function isDevel(): bool
+    {
+        return !self::isLive();
+    }
+
+
+    /**
+     * TODO: move to UtilMongo
+     * 05/2020 \MongoDB\BSON\ObjectId added
+     *
+     * @return \MongoDB\BSON\ObjectId|\MongoId
      */
     public static function createMongoId()
     {
+        if(class_exists(\MongoDB\BSON\ObjectId::class)) {
+            return new \MongoDB\BSON\ObjectId();
+        }
         return new \MongoId(); // deprecated
         // LATER: return new \MongoDB\BSON\ObjectId();
     }
@@ -44,15 +61,18 @@ class Util
 
     /**
      * TODO: move to UtilMongo
+     * 05/2020 \MongoDB\BSON\ObjectId added
      *
      * @param $str
-     * @return \MongoId
+     * @return \MongoDB\BSON\ObjectId|\MongoId
      */
     public static function toMongoId($str)
     {
-        if (self::isMongoId($str)) {
+        if (class_exists(\MongoDB\BSON\ObjectId::class)) { // 05/2020
+            return new \MongoDB\BSON\ObjectId($str);
+        }
+        if (self::isMongoId($str)) { // deprecated
             return new \MongoId($str);
-            // LATER: fix .. it is deprecated
         }
     }
 
@@ -71,7 +91,7 @@ class Util
 
 
     /**
-     * @param  \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|array $arr
+     * @param \Doctrine\Common\Collections\ArrayCollection|\Doctrine\ODM\MongoDB\Cursor|\MongoCursor|array $arr
      * @return array
      */
     public static function toArray($arr, $useKeys = true)
@@ -168,7 +188,7 @@ class Util
 
 
     /**
-     * used for calculation of PricePerPiece (ebayGen)
+     * used for calculation of PricePerPiece (mcxlister)
      * TODO: belongs to UtilNumber
      *
      * @param $number
@@ -180,7 +200,6 @@ class Util
         $fig = pow(10, $precision);
         return ceil($number * $fig) / $fig;
     }
-
 
 
     /**
@@ -268,7 +287,7 @@ class Util
      * 07/2018
      * used by marketer, next-steps-app
      * needs https://github.com/kevinlebrun/colors.php
-     * 
+     *
      *       composer require kevinlebrun/colors.php
      *
      * @param string $text
@@ -280,10 +299,10 @@ class Util
     {
         $c = new Color();
         $c($text);
-        if( $fg) {
+        if ($fg) {
             $c->fg($fg);
         }
-        if( $bg) {
+        if ($bg) {
             $c->bg($bg);
         }
         if ($bold) {

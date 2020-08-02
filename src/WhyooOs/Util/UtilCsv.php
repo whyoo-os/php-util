@@ -20,7 +20,7 @@ class UtilCsv
         $fileHandle = fopen($pathCsv, 'r');
         $arr = [];
         while (($row = fgetcsv($fileHandle)) !== FALSE) {
-            $arr[] = UtilArray::trimArray($row);
+            $arr[] = $bTrim ? UtilArray::trimArray($row) : $row;
         }
         fclose($fileHandle);
 
@@ -77,6 +77,7 @@ class UtilCsv
     /**
      * flattens array of rows and exports to .csv
      * 09/2017 for scrapers
+     * 12/2019 updated
      *
      * @param array $rows
      * @param array|null $columns
@@ -93,25 +94,22 @@ class UtilCsv
             $row = self::_flatten($row);
         }
 
-        // 2) find keys, sort
-        $keys = [];
-        foreach ($rows as &$row) {
-            $keys = array_unique(array_merge($keys, array_keys($row)));
-        }
-
-        // 3) sort keys alphabetically OR filter array keys
+        // 2) (optional) find and sort keys alphabetically
         if (is_null($columns)) {
-            asort($keys);
-        } else {
-            $keys = array_intersect($keys, $columns);
+            $union = [];
+            foreach ($rows as &$row) {
+                $union += $row;
+            }
+            $columns = array_keys($union);
+            asort($columns);
         }
 
-        // 4) write header + rows
+        // 3) write header + rows
         ob_start();
         $df = fopen("php://output", 'w');
-        fputcsv($df, $keys);
-        foreach ($rows as $row) {
-            fputcsv($df, UtilArray::extractByKeys($row, $keys));
+        fputcsv($df, $columns);
+        foreach ($rows as &$row) {
+            fputcsv($df, self::dictToList($row, $columns));
         }
         fclose($df);
 
@@ -129,18 +127,52 @@ class UtilCsv
      */
     public static function csvToExcel(string $pathCsv, string $format = 'xls')
     {
-        // 1st try with libreoffice's unoconv
+        // ---- 1st try with libreoffice's unoconv
         exec("unoconv -i FilterOptions=44,34,76 -f $format $pathCsv", $output, $return);
         if ($return == 0) {
             return true;
         }
 
-        // 2nd try: use gnumeric's ssconvert
+        // ---- 2nd try: use gnumeric's ssconvert
         $pathXls = UtilFilesystem::replaceExtension($pathCsv, $format);
         exec("ssconvert  $pathCsv $pathXls", $output, $return);
 
         return $return == 0;
     }
+
+
+
+    /**
+     * Filters dict ("assoc array") by its keys and convert it to a list ("numeric array")
+     *
+     * example:
+     *
+     * UtilCsv::dictToList(['aaa' => 123, 'bbb' => 456], ['bbb', 'ccc']) -->
+     *
+     * array:2 [
+     *   0 => 456
+     *   1 => null
+     * ]
+     *
+     *
+     * 09/2017 from scrapers
+     * 12/2019 merged UtilArray::filterByKey and UtilArray::extractByKeys to this
+     * @return array numeric(!) array
+     */
+    public static function dictToList(array $dict, array $keys)
+    {
+        return array_map(function ($key) use ($dict) {
+            return @$dict[$key];
+        }, $keys);
+
+//        # alternative implementation...
+//        $ret = [];
+//        foreach ($keys as $key) {
+//            $ret[] = @$hash[$key];
+//        }
+//        return $ret;
+    }
+
 
 
 }

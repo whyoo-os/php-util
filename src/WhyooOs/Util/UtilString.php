@@ -157,7 +157,67 @@ class UtilString
      */
     public static function startsWith(string $haystack, string $needle)
     {
-        return strpos($haystack, $needle) === 0;
+        // return strpos($haystack, $needle) === 0;
+        return substr($haystack, 0, strlen($needle)) === $needle;
+    }
+
+
+    /**
+     * 07/2020 created (tldr2anki)
+     *
+     * @param string $haystack
+     * @param string $needle
+     * @return bool
+     */
+    public static function endsWith(string $haystack, string $needle)
+    {
+        return substr($haystack, strlen($haystack) - strlen($needle)) === $needle;
+    }
+
+
+    /**
+     * 07/2020 created (tldr2anki)
+     *
+     * @param string $str
+     * @param string $ch
+     * @return false|string
+     */
+    public static function removeFromBeginning(string $str, string $ch)
+    {
+        if (self::startsWith($str, $ch)) {
+            return substr($str, strlen($ch));
+        }
+        return $str;
+    }
+
+    /**
+     * 07/2020 created (tldr2anki)
+     *
+     * @param string $str
+     * @param string $ch
+     * @return false|string
+     */
+    public static function removeFromEnd(string $str, string $ch)
+    {
+        if (self::endsWith($str, $ch)) {
+            return substr($str, 0, strlen($str) - strlen($ch));
+        }
+        return $str;
+    }
+
+    /**
+     * 07/2020 created (tldr2anki)
+     *
+     * @param string $str
+     * @param string $beginning
+     * @param string $end
+     * @return false|string
+     */
+    public static function removeFromBeginningAndEnd(string $str, string $beginning, string $end)
+    {
+        $str = self::removeFromBeginning($str, $beginning);
+        $str = self::removeFromEnd($str, $end);
+        return $str;
     }
 
 
@@ -192,23 +252,25 @@ class UtilString
     }
 
 
-
-
     /**
      * 01/2019
+     * 06/2020 parameters $left and $right added
      *
      * needs nicmart/string-template
+     * composer require nicmart/string-template
      *
      * example: UtilString::tpl("My name is {name} {surname}", ['name' => 'Nicolò', 'surname' => 'Martini']);
      *
-     * @param $str
-     * @param $replacements
+     * @param string $template
+     * @param array $replacements
+     * @param string $left
+     * @param string $right
      * @return mixed|string
      */
-    public static function tpl($str, $replacements)
+    public static function tpl(string $template, array $replacements, string $left = '{', string $right = '}')
     {
-        $engine = new \StringTemplate\Engine;
-        return $engine->render($str, $replacements);
+        $engine = new \StringTemplate\Engine($left, $right);
+        return $engine->render($template, $replacements);
     }
 
 

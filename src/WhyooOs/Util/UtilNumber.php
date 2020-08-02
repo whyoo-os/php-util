@@ -25,6 +25,7 @@ class UtilNumber
      * replaces komma (german notation) with dot (american notation)
      * separators NOT allowed
      * eg "100,12" --> 100.12
+     *
      * @param $string
      * @return float
      */
@@ -45,6 +46,18 @@ class UtilNumber
     }
 
 
+    /**
+     * 02/2020
+     * 
+     * @param float $y
+     * @param float $minY
+     * @param float $maxY
+     * @return float normalized y between 0 and 1
+     */
+    public static function normalize(float $y, float $minY, float $maxY)
+    {
+        return ($y - $minY) / ($maxY - $minY);
+    }
 
 }
 

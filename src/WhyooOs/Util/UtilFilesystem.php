@@ -35,10 +35,10 @@ class UtilFilesystem
     /**
      * returns LOWERCASE extension
      *
-     * @param $filePath
+     * @param string $filePath
      * @return string eg "png"
      */
-    public static function getExtension($filePath)
+    public static function getExtension(string $filePath)
     {
         $pos = strrpos($filePath, '.');
         if ($pos !== false) {
@@ -155,11 +155,16 @@ class UtilFilesystem
     }
 
 
-
-    // from smartdonation
-    // buggy? not working correctly?
-    # similar to python's os.walk
-    # 04/2018 fixed .. does only return files, no directories
+    /**
+     * from smartdonation
+     * buggy? not working correctly?
+     * similar to python's os.walk
+     * 04/2018 fixed .. does only return files, no directories
+     *
+     * @param string $strDir
+     * @param string $pattern
+     * @return array FULL paths of found files
+     */
     public static function findFilesRecursive(string $strDir = '.', string $pattern = '~.*~')
     {
         $ret = [];
@@ -180,11 +185,16 @@ class UtilFilesystem
     }
 
 
-    public static function deleteDirectoryRecursive($path)
+    /**
+     * rm -rf /path/to/dir
+     *
+     * @param $pathDirectory
+     */
+    public static function deleteDirectoryRecursive($pathDirectory)
     {
         try {
             $it = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path),
+                new \RecursiveDirectoryIterator($pathDirectory),
                 \RecursiveIteratorIterator::CHILD_FIRST
             );
             foreach ($it as $file) {
@@ -199,34 +209,50 @@ class UtilFilesystem
         } catch (\Exception $e) {
             // ...
         }
-        @rmdir($path);
+        @rmdir($pathDirectory);
     }
 
 
     /**
      * returns alphabetically sorted filtered list of files
+     * used by push4
      *
-     * @param string $dir
+     * @param string $pathDirectory
      * @param bool $bRecursive
      * @return string[]
      */
-    public static function findImages(string $dir, $bRecursive = true)
+    public static function findImages(string $pathDirectory, $bRecursive = true)
     {
         $extensionsLowerCase = ['jpg', 'jpeg', 'png', 'gif'];
         $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
+        return self::findByExtensionsOrMimeTypes($pathDirectory, $extensionsLowerCase, $allowedMimeTypes, $bRecursive);
+    }
+
+    /**
+     * @param $pathDirectory
+     * @param $extensionsLowerCase
+     * @param $allowedMimeTypes
+     * @param $bRecursive
+     * @return array
+     */
+    public static function findByExtensionsOrMimeTypes($pathDirectory, $extensionsLowerCase, $allowedMimeTypes, $bRecursive)
+    {
         if ($bRecursive) {
-            $files = self::scanDirForFilesRecursive($dir);
+            $files = self::scanDirForFilesRecursive($pathDirectory);
         } else {
-            $files = self::scanDir($dir);
+            $files = self::scanDir($pathDirectory);
         }
-#UtilDebug::dd($files);
-        $ret = array_filter($files, function ($filename) use ($dir, $extensionsLowerCase, $allowedMimeTypes) {
+
+        $ret = array_filter($files, function ($filename) use ($extensionsLowerCase, $allowedMimeTypes, $pathDirectory) {
             //echo "#".self::getExtension( $filename);
             $ext = self::getExtension($filename);
             if (empty($ext)) {
+                if (empty($allowedMimeTypes)) {
+                    return false;
+                }
                 // filename has no extension .. we use mimeType
-                $mime = mime_content_type($dir . '/' . $filename);
+                $mime = mime_content_type($pathDirectory . '/' . $filename);
                 return in_array($mime, $allowedMimeTypes);
             }
             return in_array($ext, $extensionsLowerCase);
@@ -234,7 +260,39 @@ class UtilFilesystem
 
         asort($ret);
 
-        return $ret;
+        return array_values($ret);
+    }
+
+
+    /**
+     * 05/2020
+     * used by push4
+     *
+     * @param $pathDirectory
+     * @param $extensionsLowerCase
+     * @param $bRecursive
+     * @return array
+     */
+    public static function findByExtensions($pathDirectory, array $extensionsLowerCase, $bRecursive)
+    {
+        if ($bRecursive) {
+            $files = self::scanDirForFilesRecursive($pathDirectory);
+        } else {
+            $files = self::scanDir($pathDirectory);
+        }
+
+        $ret = array_filter($files, function ($filename) use ($extensionsLowerCase) {
+            //echo "#".self::getExtension( $filename);
+            $ext = self::getExtension($filename);
+            if (empty($ext)) {
+                return false;
+            }
+            return in_array($ext, $extensionsLowerCase);
+        });
+
+        asort($ret);
+
+        return array_values($ret);
     }
 
 
@@ -243,7 +301,7 @@ class UtilFilesystem
         $paths = [];
 
         foreach (func_get_args() as $arg) {
-            if ($arg !== '') {
+            if ($arg !== '' && $arg !== '.') {
                 $paths[] = $arg;
             }
         }
@@ -273,7 +331,7 @@ class UtilFilesystem
     /**
      * @param $path
      */
-    public static function mkdirIfNotExists($path)
+    public static function mkdirIfNotExists(string $path)
     {
         if (!is_dir($path)) {
             self::mkdir($path);
@@ -292,19 +350,22 @@ class UtilFilesystem
 //		$offset = count($parts) - $maxLevelsDown;
 //		$parts = array_slice( $parts, $offset, $maxLevelsDown);
 
-        $p = '';
+        $currentPath = '';
         foreach ($parts as $part) {
-            $p = $p . '/' . $part;
-            if (!is_dir($p)) {
-                if (!@mkdir($p, $perm)) {
-//					return false;
-                    throw new \Exception("could not create directory $p");
-                }
-                @chmod($p, $perm);
+            if ($part === '') {
+                continue; // bugfix/workaround for absolute path
             }
-            if (!@chdir($p)) {
+            $currentPath .= '/' . $part;
+            if (!is_dir($currentPath)) {
+                if (!@mkdir($currentPath, $perm)) {
+//					return false;
+                    throw new \Exception("could not create directory $currentPath");
+                }
+                @chmod($currentPath, $perm);
+            }
+            if (!@chdir($currentPath)) {
 //				return false
-                throw new \Exception("could not enter $p");
+                throw new \Exception("could not enter $currentPath");
             }
         }
     }
@@ -313,10 +374,10 @@ class UtilFilesystem
     /**
      * move content of one directory to another
      *
-     * @param $pathOld
-     * @param $pathNew
+     * @param string $pathOld
+     * @param string $pathNew
      */
-    public static function moveFiles($pathOld, $pathNew)
+    public static function moveFiles(string $pathOld, string $pathNew)
     {
         foreach (scandir($pathOld) as $fname) {
             if ($fname != '.' && $fname != '..') {
@@ -420,7 +481,7 @@ class UtilFilesystem
 
     /**
      * FIXME: currently it onlt works for images
-     * used by ebay-gen
+     * used by mcxlister
      *
      * @param $fullPathFile
      * @return string
@@ -495,7 +556,7 @@ class UtilFilesystem
 
 
     /**
-     * 10/2017 used by ebayGen
+     * 10/2017 used by mcxlister
      * source https://stackoverflow.com/a/21409562/2848530
      *
      * @param $pathDir
@@ -546,6 +607,25 @@ class UtilFilesystem
         $ext = self::getExtension($pathFile);
 
         return $base . $suffix . '.' . $ext;
+    }
+
+
+    /**
+     * 03/2020
+     *
+     * @param string $path
+     * @return string|string[]|null
+     */
+    public static function normalizePath(string $path)
+    {
+        $r = [
+            '~/{2,}~'                  => '/',
+            '~/(\./)+~'                => '/',
+            '~([^/\.]+/(?R)*\.{2,}/)~' => '',
+            '~\.\./~'                  => '',
+            '~/[^/\.]+/\.\.$~'         => '', // 04/2020 added: /a/b/c/.. --> a/b
+        ];
+        return preg_replace(array_keys($r), array_values($r), $path);
     }
 
 }

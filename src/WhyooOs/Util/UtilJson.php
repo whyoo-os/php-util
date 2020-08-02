@@ -42,11 +42,29 @@ class UtilJson
     }
 
 
+
+    /**
+     * 04/2020 used by scraper.service
+     *
+     * composer require colinodell/json5
+     *
+     * @param string $pathJson5File
+     * @param bool $bAssoc
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function loadJson5File(string $pathJson5File, $bAssoc = false)
+    {
+        return json5_decode(file_get_contents($pathJson5File), $bAssoc);
+    }
+
+
     /**
      * @param string $pathJsonFile
      * @param $data
      * @param int $options
      * @return bool|int
+     * @throws \Exception
      */
     public static function saveJsonFile(string $pathJsonFile, $data, $options=JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)
     {
@@ -69,7 +87,6 @@ class UtilJson
     {
         return Pygmentize::highlight($code, 'json', 'utf-8', 'terminal');
     }
-
 
 
 }

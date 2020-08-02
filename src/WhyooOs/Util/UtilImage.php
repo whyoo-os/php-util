@@ -32,23 +32,37 @@ class UtilImage
      * wrapper for php's imagecreatefrom***() functions
      *
      * @param $pathImg
+     * @param int|null $backgroundColor optional .. when loading transparent png .. add background color, eg 0xffffff
      * @return resource
      * @throws \Exception
      */
-    public static function loadImage($pathImg)
+    public static function loadImage($pathImg, int $backgroundColor=null)
     {
         $extension = UtilFilesystem::getExtension($pathImg);
         if ($extension == 'jpg' || $extension == 'jpeg') {
-            return imagecreatefromjpeg($pathImg);
+            $im = imagecreatefromjpeg($pathImg);
         } elseif ($extension == 'png') {
-            return imagecreatefrompng($pathImg);
+            $im = imagecreatefrompng($pathImg);
         } elseif ($extension == "gif") {
-            return imagecreatefromgif($pathImg);
+            $im = imagecreatefromgif($pathImg);
         } elseif ($extension == "webp") {
-            return imagecreatefromwbmp($pathImg);
+            $im = imagecreatefromwbmp($pathImg);
+        } else {
+            throw new \Exception("unknown extension $extension for file $pathImg");
         }
 
-        throw new \Exception("unknown extension $extension for file $pathImg");
+        if($backgroundColor !== null && in_array($extension, ['png', 'gif', 'webp'])) {
+            // ---- add background color for image with transparency
+            $width  = imagesx($im);
+            $height = imagesy($im);
+            $im2 = imagecreatetruecolor($width, $height);
+            imagefilledrectangle($im2, 0, 0, $width, $height, $backgroundColor);
+            imagecopy($im2, $im, 0, 0, 0, 0, $width, $height);
+            imagedestroy($im);
+            return $im2;
+        } else {
+            return $im;
+        }
     }
 
 
@@ -92,7 +106,7 @@ class UtilImage
      */
     public static function extendToSquare(string $pathSrc, string $pathDest, int $backgroundColor = 0xffffff)
     {
-        list($x, $y) = getimagesize($pathSrc);
+        [$x, $y] = getimagesize($pathSrc);
 
         // ---- if image is already square --> just copy (if pathSrc and pathDest are different)
         if ($x == $y) {
@@ -136,7 +150,7 @@ class UtilImage
      */
     public static function getAspectRatio($pathImage)
     {
-        list($w, $h) = getimagesize($pathImage);
+        [$w, $h] = getimagesize($pathImage);
         $min = min($w, $h);
         for ($teiler = $min; $teiler > 0; $teiler--) {
             if (($w % $teiler == 0) && ($h % $teiler == 0)) {
@@ -188,7 +202,7 @@ class UtilImage
      */
     public static function getImageSize(string $fullPathImage)
     {
-        list($w, $h) = getimagesize($fullPathImage);
+        [$w, $h] = getimagesize($fullPathImage);
 
         return [
             'w' => $w,
@@ -214,13 +228,13 @@ class UtilImage
     /**
      * private helper
      *
-     * @param \Eventviva\ImageResize $image
+     * @param \Gumlet\ImageResize $image
      * @param array $dimensions
      * @param string $resizeMode
      * @param bool $bAllowUpscale
      * @throws \Exception
      */
-    private static function _resize(\Eventviva\ImageResize $image, int $width, int $height, string $resizeMode, bool $bAllowUpscale)
+    private static function _resize(\Gumlet\ImageResize $image, int $width, int $height, string $resizeMode, bool $bAllowUpscale)
     {
         if ($resizeMode == self::RESIZE_MODE_STRETCH) {
             $image->resize($width, $height, $bAllowUpscale);
@@ -281,10 +295,10 @@ class UtilImage
 
 
     /**
-     * TODO: remove EventViva\ImageResize dependency
+     * TODO: remove Gumlet\ImageResize dependency
      *
      * 07/2017 used by schlegel for stretching pdf-background to cover whole page
-     * 08/2017 used by ebaygen
+     * 08/2017 used by mcxlister
      * 03/2018 does NOT WORK for animated gifs
      *
      * resizes image to $dimension .. doesn't take care of aspect ratio - image is "stretched"
@@ -303,12 +317,12 @@ class UtilImage
             return;
         }
 
-        list($width, $height) = self::sizeStringToIntArray($size);
+        [$width, $height] = self::sizeStringToIntArray($size);
 //        if ($resizeMode === self::RESIZE_MODE_FILL) {
 //            $im = self::loadImage($pathSrc);
 //            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
 //        } else {
-            $image = @(new \Eventviva\ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+            $image = @(new \Gumlet\ImageResize($pathSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
             self::_resize($image, $width, $height, $resizeMode, $bAllowUpscale);
             $image->save($pathDest);
 //        }
@@ -331,12 +345,12 @@ class UtilImage
             return;
         }
 
-        list($width, $height) = self::sizeStringToIntArray($size);
+        [$width, $height] = self::sizeStringToIntArray($size);
 //        if ($resizeMode === self::RESIZE_MODE_FILL) {
 //            $im = imagecreatefromstring($bytesSrc);
 //            self::saveImage(self::resizeWithFilling($im, $width, $height), $pathDest);
 //        } else {
-            $image = @(\Eventviva\ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
+            $image = @(\Gumlet\ImageResize::createFromString($bytesSrc)); // WE SUPPRESS ERRORS HERE because we had problem with illegal exif data
             self::_resize($image, $width, $height, $resizeMode, $bAllowUpscale);
             $image->save($pathDest);
 //        }
