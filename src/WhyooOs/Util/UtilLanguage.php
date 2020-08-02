@@ -3,8 +3,7 @@
 
 namespace WhyooOs\Util;
 
-use Stichoza\GoogleTranslate\TranslateClient;
-use WhyooOs\Util\UtilCurl;
+use Stichoza\GoogleTranslate\GoogleTranslate;
 
 
 /**
@@ -27,6 +26,8 @@ class UtilLanguage
     private static function translateNonFree(string $sourceLanguage, string $targetLanguage, string $phrase, string $googleTranslateKey)
     {
         $url = "https://www.googleapis.com/language/translate/v2?key=' . $googleTranslateKey . '&source=$sourceLanguage&target=$targetLanguage&q=" . urlencode($phrase);
+
+        // UtilCurl::setCachePath(__DIR__ . '/translateNonFree_cache');
         $response = UtilCurl::curlGetJsonCached($url, 3600 * 24 * 365 * 10);
 
         if (!empty($response['data']['translations'][0]['translatedText'])) {
@@ -38,23 +39,32 @@ class UtilLanguage
 
 
     /**
-     * free by reverse engineered token generation
+     * 08/2020 switched from version 3.4 to 4.1
+     * used by mcx language immersion
      *
+     * free by reverse engineered token generation
      * uses https://github.com/Stichoza/google-translate-php
      *
      * @param $sourceLanguage
      * @param $targetLanguage
      * @param $phrase
-     * @return mixed
+     * @return string|false;
      */
     public static function translateFree(string $sourceLanguage, string $targetLanguage, string $phrase)
     {
-        $tr = new TranslateClient($sourceLanguage, $targetLanguage);
+        // $translateClient = new TranslateClient($sourceLanguage, $targetLanguage);
+
+        $translateClient = new GoogleTranslate(); // Translates to 'en' from auto-detected language by default
+        $translateClient->setSource($sourceLanguage); // Translate from English
+        // $tr->setSource(); // Detect language automatically
+        $translateClient->setTarget($targetLanguage); // Translate to Georgian
+
 
         try {
-            return $tr->translate($phrase);
+            return $translateClient->translate($phrase);
         } catch(\Exception $exception) {
-            // could be eg. that ip is blocked
+            // return $exception->getMessage();
+            // could be eg. that ip is blocked (too many requests, 429)
 //            var_dump($phrase);
 //            var_dump($exception->getMessage());
 //            UtilDebug::dd($exception->getMessage());
