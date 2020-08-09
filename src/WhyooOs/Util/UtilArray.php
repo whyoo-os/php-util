@@ -337,45 +337,6 @@ class UtilArray
         return $oneDim;
     }
 
-    /**
-     * todo: belongs to UtilRandom
-     *
-     * @param $array
-     * @param $count
-     * @return array
-     */
-    public static function getRandomElements($array, $count)
-    {
-        if ($count == 0) {
-            return [];
-        }
-        if ($count > count($array)) {
-            $count = count($array);
-        }
-        $indexes = array_rand($array, $count);
-
-        if ($count == 1) { // force array
-            $indexes = [$indexes];
-        }
-        $randomArray = [];
-        foreach ($indexes as $index) {
-            $randomArray[] = $array[$index];
-        }
-
-        return $randomArray;
-    }
-
-    /**
-     * todo: belongs to UtilRandom
-     *
-     * @param $array
-     * @return mixed
-     */
-    public static function getRandomElement($array)
-    {
-        return $array[array_rand($array)];
-    }
-
 
     /**
      * aka numeric2assoc

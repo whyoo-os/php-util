@@ -2,8 +2,10 @@
 
 namespace WhyooOs\Util;
 
-use SlidesMailer\Constants;
 
+/**
+ * used by SlidesMailer
+ */
 class UtilRandom
 {
     /**
@@ -113,6 +115,48 @@ class UtilRandom
 
         return $ret;
     }
+
+
+    /**
+     * 08/2020 moved from UtilArray to UtilRandom
+     *
+     * @param array $array
+     * @param int $count
+     * @return array randomly chosen elements
+     */
+    public static function getRandomElements($array, $count)
+    {
+        if ($count == 0) {
+            return [];
+        }
+        if ($count > count($array)) {
+            $count = count($array);
+        }
+        $indexes = array_rand($array, $count);
+
+        if ($count == 1) { // force array
+            $indexes = [$indexes];
+        }
+        $randomArray = [];
+        foreach ($indexes as $index) {
+            $randomArray[] = $array[$index];
+        }
+
+        return $randomArray;
+    }
+
+    /**
+     * 08/2020 moved from UtilArray to UtilRandom
+     *
+     * @param array $array
+     * @return mixed single random element
+     */
+    public static function getRandomElement($array)
+    {
+        return $array[array_rand($array)];
+    }
+
+
 
 
 }
