@@ -267,13 +267,14 @@ class UtilFilesystem
     /**
      * 05/2020
      * used by push4
+     * 08/2020 used by webpack migrator
      *
-     * @param $pathDirectory
-     * @param $extensionsLowerCase
-     * @param $bRecursive
+     * @param string $pathDirectory
+     * @param array $extensionsLowerCase
+     * @param bool $bRecursive
      * @return array
      */
-    public static function findByExtensions($pathDirectory, array $extensionsLowerCase, $bRecursive)
+    public static function findByExtensions(string $pathDirectory, array $extensionsLowerCase, bool $bRecursive=true)
     {
         if ($bRecursive) {
             $files = self::scanDirForFilesRecursive($pathDirectory);
