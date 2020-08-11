@@ -274,5 +274,29 @@ class UtilString
     }
 
 
+    /**
+     * 08/2020 created
+     * used in webpack migrator
+     *
+     * @param string $search
+     * @param string $replace
+     * @param string $subject
+     * @param bool $bForce if TRUE an AssertionError is thrown if nothing could be replaced
+     * @return string
+     */
+    public static function replaceLast(string $search, string $replace, string $subject, bool $bForce=false)
+    {
+        $pos = strrpos($subject, $search);
+        if ($pos !== false) {
+            return substr_replace($subject, $replace, $pos, strlen($search));
+        }
+
+        if($bForce) {
+            throw new \AssertionError();
+        }
+
+        return $subject;
+    }
+
 }
 
