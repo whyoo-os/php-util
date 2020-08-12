@@ -656,7 +656,7 @@ class UtilArray
      * @param array $items
      * @return array
      */
-    public static function arrayColumnByGetter($getterName, $items)
+    public static function arrayColumnByGetter(array $items, string $getterName)
     {
         return array_map(function ($f) use ($getterName) {
             return $f->$getterName();
