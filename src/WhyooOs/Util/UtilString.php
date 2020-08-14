@@ -38,19 +38,59 @@ class UtilString
 
     /**
      * indents multiline string
-     *
+     * 08
      * @param string $string
-     * @param int $numSpaces
+     * @param int $numSpaces positive for indention, negative for unindention .. ACHTUNG: cuts also non-whitespace
      * @return string indented string
      */
-    public static function indent($string, $numSpaces)
+    public static function indent(string $string, int $numSpaces)
     {
         $lines = explode("\n", $string);
-        foreach ($lines as &$line) {
-            $line = str_repeat(" ", $numSpaces) . $line;
+
+        if ($numSpaces > 0) {
+            $space = str_repeat(" ", $numSpaces);
+            foreach ($lines as &$line) {
+                $line = $space . $line;
+            }
+        } elseif ($numSpaces < 0) {
+            // "unindent"
+            foreach ($lines as &$line) {
+                $line = substr($line, -$numSpaces);
+            }
         }
 
         return implode("\n", $lines);
+    }
+
+
+    /**
+     * 08/2020 created for webpack migrator .. to unindent extracted scss
+     * tabs are NOT taken care of here..
+     *
+     * @param string $string
+     * @return string unindented string
+     */
+    public static function unindent(string $string)
+    {
+        // ---- find min indentation
+        $lines = explode("\n", $string);
+        $minIndent = 99999;
+        foreach ($lines as &$line) {
+            if (trim($line) === '') {
+                // -- ignore empty lines
+                continue;
+            }
+            if (!preg_match('#^( +)#', $line, $matches)) {
+                return $string;
+            }
+            $minIndent = min($minIndent, strlen($matches[1]));
+        }
+
+        if ($minIndent < 99999) {
+            return self::indent($string, -$minIndent);
+        }
+
+        return $string;
     }
 
 
@@ -273,6 +313,30 @@ class UtilString
         return $engine->render($template, $replacements);
     }
 
+
+    /**
+     * 08/2020 created
+     * used in webpack migrator
+     *
+     * @param string $search
+     * @param string $replace
+     * @param string $subject
+     * @param bool $bForce if TRUE an AssertionError is thrown if nothing could be replaced
+     * @return string
+     */
+    public static function replaceLast(string $search, string $replace, string $subject, bool $bForce = false)
+    {
+        $pos = strrpos($subject, $search);
+        if ($pos !== false) {
+            return substr_replace($subject, $replace, $pos, strlen($search));
+        }
+
+        if ($bForce) {
+            throw new \AssertionError();
+        }
+
+        return $subject;
+    }
 
 }
 
