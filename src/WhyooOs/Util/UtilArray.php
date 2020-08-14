@@ -651,12 +651,13 @@ class UtilArray
 
     /**
      * 02/2018 unused
+     * 08/2020 used by tldr-to-anki
      *
-     * @param string $getterName eg "getId"
      * @param array $items
+     * @param string $getterName eg "getId"
      * @return array
      */
-    public static function arrayColumnByGetter($getterName, $items)
+    public static function arrayColumnByGetter(array $items, string $getterName)
     {
         return array_map(function ($f) use ($getterName) {
             return $f->$getterName();
