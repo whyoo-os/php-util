@@ -75,5 +75,38 @@ class UtilDict
     }
 
 
+    /**
+     * 08/2020
+     *
+     * @param array $arr
+     * @param string $prefix
+     * @return array|false
+     */
+    public static function prependToKeys(array $arr, string $prefix)
+    {
+        $keys = array_map(function($key) use ($prefix){
+            return $prefix . $key;
+        }, array_keys($arr));
+
+        return array_combine($keys, array_values($arr));
+    }
+
+
+    /**
+     * 08/2020
+     *
+     * @param array $arr
+     * @param string $prefix
+     * @return array|false
+     */
+    public static function appendToKeys(array $arr, string $suffix)
+    {
+        $keys = array_map(function($key) use ($suffix){
+            return $key . $suffix;
+        }, array_keys($arr));
+
+        return array_combine($keys, array_values($arr));
+    }
+
 
 }
