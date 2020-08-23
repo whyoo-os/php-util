@@ -230,13 +230,15 @@ class UtilFilesystem
     }
 
     /**
-     * @param $pathDirectory
-     * @param $extensionsLowerCase
-     * @param $allowedMimeTypes
-     * @param $bRecursive
-     * @return array
+     * @param string $pathDirectory
+     * @param array $extensionsLowerCase
+     * @param array $allowedMimeTypes
+     * @param bool $bRecursive
+     * @param bool $bReturnFullPath
+     * @return array|false
      */
-    public static function findByExtensionsOrMimeTypes($pathDirectory, $extensionsLowerCase, $allowedMimeTypes, $bRecursive)
+    public static function findByExtensionsOrMimeTypes(string $pathDirectory, array $extensionsLowerCase,
+                                                       array $allowedMimeTypes = null, bool $bRecursive = true, bool $bReturnFullPath = false)
     {
         if ($bRecursive) {
             $files = self::scanDirForFilesRecursive($pathDirectory);
@@ -260,7 +262,13 @@ class UtilFilesystem
 
         asort($ret);
 
-        return array_values($ret);
+        if ($bReturnFullPath) {
+            return array_values(array_map(function ($x) use ($pathDirectory) {
+                return self::joinPaths($pathDirectory, $x);
+            }, $ret));
+        } else {
+            return array_values($ret);
+        }
     }
 
 
@@ -274,7 +282,7 @@ class UtilFilesystem
      * @param bool $bRecursive
      * @return array
      */
-    public static function findByExtensions(string $pathDirectory, array $extensionsLowerCase, bool $bRecursive=true)
+    public static function findByExtensions(string $pathDirectory, array $extensionsLowerCase, bool $bRecursive = true)
     {
         if ($bRecursive) {
             $files = self::scanDirForFilesRecursive($pathDirectory);
