@@ -160,31 +160,41 @@ class Util
     }
 
 
+
     /**
-     * removes namespace from FQCN of obj
+     * returns the classname without namespace of obj
+     *
      * @param $obj
+     * @param int $numBack
      * @return string class name without namespace
      */
-    public static function getClassNameShort($obj, $numBack = 1)
+    public static function getClassNameShort($obj, int $numBack = 1): ?string
     {
         if ($obj == null) {
             return null;
         }
+
         return self::removeNamespace(get_class($obj), $numBack);
     }
 
 
     /**
-     * @param string $class
+     * 08/2020 parameters $delimiter added
+     *
+     * @param string $classname
      * @param int $numBack
+     * @param string $delimiter
      * @return string
      */
-    public static function removeNamespace(string $class, int $numBack = 1): string
+    public static function removeNamespace(string $classname, int $numBack = 1, string $delimiter = '\\'): string
     {
-        $tmp = explode('\\', $class);
-
-        return implode(".", array_slice($tmp, count($tmp) - $numBack, $numBack));
+        $exploded = explode($delimiter, $classname);
+        if(count($exploded) < $numBack) {
+            return $classname;
+        }
+        return implode($delimiter, array_slice($exploded, count($exploded) - $numBack, $numBack));
     }
+
 
 
     /**
