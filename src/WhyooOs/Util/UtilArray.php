@@ -470,16 +470,23 @@ class UtilArray
      * acts as circular buffer
      * used in fixtures
      *
-     * @param $arr
+     * @param $array
      * @return mixed
+     * @throws AssertException
      */
-    public static function getNext(&$arr)
+    public static function getNext(array &$array)
     {
-        $el = current($arr);
-        if (key($arr) == self::getLastKey($arr)) {
-            reset($arr);
+        UtilAssert::assertNotEmpty($array);
+
+        if(key($array) === null) {
+            // If the internal pointer points beyond the end of the elements list or the array is empty, key() returns NULL.
+            reset($array);
+        }
+        $el = current($array);
+        if (key($array) == self::getLastKey($array)) {
+            reset($array);
         } else {
-            next($arr);
+            next($array);
         }
 
         return $el;
