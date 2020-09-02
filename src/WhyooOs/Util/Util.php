@@ -39,7 +39,7 @@ class Util
      */
     public static function createMongoId()
     {
-        if(class_exists(\MongoDB\BSON\ObjectId::class)) {
+        if (class_exists(\MongoDB\BSON\ObjectId::class)) {
             return new \MongoDB\BSON\ObjectId();
         }
         return new \MongoId(); // deprecated
@@ -123,12 +123,25 @@ class Util
      * TODO: move to UtilFormatter
      *
      * @param $size
+     * @param string|null $sizeUnit
+     * @param int $numDecimals
      * @return string
+     * @throws AssertException
      */
-    public static function humanReadableSize($size)
+    public static function humanReadableSize($size, string $sizeUnit = null, int $numDecimals = 2)
     {
-        $filesizename = [" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
-        return $size ? round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . $filesizename[$i] : '0 Bytes';
+        $sizeUnits = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+        if ($sizeUnit !== null) {
+            UtilAssert::assertInArray($sizeUnit, $sizeUnits);
+            $unitIdx = array_search($sizeUnit, $sizeUnits);
+        } else {
+            $unitIdx = floor(log($size, 1024));
+        }
+
+        $divider = pow(1024, $unitIdx);
+
+        return $size ? round($size / $divider, $numDecimals) . ' ' . $sizeUnits[$unitIdx] : '0 Bytes';
     }
 
 
@@ -160,7 +173,6 @@ class Util
     }
 
 
-
     /**
      * returns the classname without namespace of obj
      *
@@ -189,12 +201,11 @@ class Util
     public static function removeNamespace(string $classname, int $numBack = 1, string $delimiter = '\\'): string
     {
         $exploded = explode($delimiter, $classname);
-        if(count($exploded) < $numBack) {
+        if (count($exploded) < $numBack) {
             return $classname;
         }
         return implode($delimiter, array_slice($exploded, count($exploded) - $numBack, $numBack));
     }
-
 
 
     /**

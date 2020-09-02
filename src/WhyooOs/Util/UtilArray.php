@@ -250,15 +250,17 @@ class UtilArray
      *
      * @param array &$array
      * @param $keyName
+     * @param int $sortOrder
+     * @param int $sortFlags
      * @return array
      */
-    public static function sortArrayOfArrays(&$array, $keyName, $sortOrder = SORT_ASC)
+    public static function sortArrayOfArrays(&$array, $keyName, $sortOrder = SORT_ASC, $sortFlags = SORT_REGULAR)
     {
         $sortArray = [];
         foreach ($array as $idx => $row) {
             $sortArray[$idx] = $row[$keyName];
         }
-        array_multisort($sortArray, $sortOrder, $array);
+        array_multisort($sortArray, $sortOrder, $sortFlags, $array);
 
         return $array;
     }
@@ -275,12 +277,13 @@ class UtilArray
      * @param array &$array
      * @param string $attributeName eg "conversationRole", "userProfile.birthday"
      * @param int $sortOrder
+     * @param int $sortFlags
      * @return array
      */
-    public static function sortArrayOfObjects(&$array, $attributeName, $sortOrder = SORT_ASC)
+    public static function sortArrayOfObjects(&$array, $attributeName, $sortOrder = SORT_ASC, $sortFlags = SORT_REGULAR)
     {
         $sortArray = self::getObjectProperty($array, $attributeName);
-        array_multisort($sortArray, $sortOrder, $array);
+        array_multisort($sortArray, $sortOrder, $sortFlags, $array);
 
         return $array;
     }
@@ -336,7 +339,6 @@ class UtilArray
 
         return $oneDim;
     }
-
 
 
     /**
@@ -566,9 +568,6 @@ class UtilArray
     }
 
 
-
-
-
     // from marketer v1
     public static function arrayToObject(array $arr)
     {
@@ -610,7 +609,7 @@ class UtilArray
     public static function removeElement(&$arr, $needle)
     {
         $key = array_search($needle, $arr, true);
-        if($key !== false) {
+        if ($key !== false) {
             unset($arr[$key]);
         }
     }
@@ -763,7 +762,7 @@ class UtilArray
      */
     public static function swapElements(array &$array, $idx1, $idx2)
     {
-        list($array[$idx1], $array[$idx2]) = [$array[$idx2], $array[$idx1]];
+        [$array[$idx1], $array[$idx2]] = [$array[$idx2], $array[$idx1]];
     }
 
 
@@ -839,10 +838,6 @@ class UtilArray
     {
         return array_fill(0, $m, array_fill(0, $n, $value));
     }
-
-
-
-
 
 
 }
