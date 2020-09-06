@@ -60,7 +60,7 @@ class UtilException
 
 
     /**
-     * used by mcxlister
+     * used by cloudlister
      *
      * installs exception handler which writes Timestamp + jTraceEx to STDERR
      * useful to see in error logs of supervisor when the error happens

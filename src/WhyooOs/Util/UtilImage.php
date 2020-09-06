@@ -17,7 +17,7 @@ class UtilImage
     const RESIZE_MODE_CROP = 'CROP'; //
     const RESIZE_MODE_ORIGINAL = 'ORIGINAL'; // NO RESIZING is done
 
-    
+
     private static $defaultJpegQuality = 95;
 
 
@@ -298,7 +298,7 @@ class UtilImage
      * TODO: remove Gumlet\ImageResize dependency
      *
      * 07/2017 used by schlegel for stretching pdf-background to cover whole page
-     * 08/2017 used by mcxlister
+     * 08/2017 used by cloudlister
      * 03/2018 does NOT WORK for animated gifs
      *
      * resizes image to $dimension .. doesn't take care of aspect ratio - image is "stretched"

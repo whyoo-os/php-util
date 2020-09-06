@@ -12,15 +12,15 @@ class UtilDocument
 
 
     /**
-     * used by mcxlister, schlegel
-     *
+     * used by cloudlister, schlegel
      * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
+     * 09/2020 renamed copyDataFromArrayToDocument --> copyDataFromArrayToDocumentWithWhitelist
      *
      * @param $srcArray
      * @param \stdClass (AbstractDocument) $destDocument the document with getters and setters
      * @param $whiteList
      */
-    public static function copyDataFromArrayToDocument(array $srcArray, $destDocument, array $whiteList)
+    public static function copyDataFromArrayToDocumentWithWhitelist(array $srcArray, $destDocument, array $whiteList)
     {
         foreach ($whiteList as $attributeName) {
             $myDoc = $destDocument;
@@ -34,11 +34,41 @@ class UtilDocument
                 $getterName = 'get' . ucfirst($subfield);
                 $myDoc = $myDoc->$getterName();
 
-                $myArr = @$myArr[$subfield];
+                $myArr = $myArr[$subfield] ?? null;
             }
-            $myDoc->$setterName(@$myArr[$lastSubfield]);
+            $myDoc->$setterName($myArr[$lastSubfield] ?? null);
         }
     }
+
+
+    /**
+     * 07/2018
+     *
+     * @param $srcArray
+     * @param $destObject
+     * @param string[] $blacklist
+     */
+    public static function copyDataFromArrayToDocumentWithBlacklist($srcArray, $destObject, array $blacklist)
+    {
+        $whiteList = array_diff(array_keys($srcArray), $blacklist);
+        self::copyDataFromArrayToDocumentWithWhitelist($srcArray, $destObject, $whiteList);
+    }
+
+
+    /**
+     * 09/2020 created
+     * used by cloudlister
+     *
+     * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
+     *
+     * @param $srcArray
+     * @param \stdClass (AbstractDocument) $destDocument the document with getters and setters
+     */
+    public static function copyDataFromArrayToDocument(array $srcArray, $destDocument)
+    {
+        self::copyDataFromArrayToDocumentWithWhitelist($srcArray, $destDocument, array_keys($srcArray));
+    }
+
 
     /**
      * copies properties from one document to another
@@ -59,33 +89,11 @@ class UtilDocument
     }
 
 
-    /**
-     * 07/2018
-     * checks if setter exists
-     *
-     * TODO? subfields?
-     *
-     * @param $formatterArr
-     * @param $object
-     * @param string[] $blacklist
-     */
-    public static function copyDataFromArrayToDocumentWithBlacklist($formatterArr, $object, array $blacklist)
-    {
-        foreach ($formatterArr as $key => $value) {
-            if (in_array($key, $blacklist)) {
-                continue;
-            }
-            $setterName = 'set' . ucfirst($key);
-            if( method_exists($object, $setterName)) {
-                $object->$setterName($value);
-            }
-        }
-    }
 
 
 
 //    /**
-//     * not used by mcxlister
+//     * not used by cloudlister
 //     *
 //     * @param array $src
 //     * @param AbstractDocument $dest the document with getters and setters
@@ -102,7 +110,7 @@ class UtilDocument
 
 
     /**
-     * 04/2019 used by mcxlister for sorting products by reorderStatus
+     * 04/2019 used by cloudlister for sorting products by reorderStatus
      * 12/2019 moved to UtilDocument from UtilArray
      *
      * @param array $array

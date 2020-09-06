@@ -490,7 +490,7 @@ class UtilFilesystem
 
     /**
      * FIXME: currently it onlt works for images
-     * used by mcxlister
+     * used by cloudlister
      *
      * @param $fullPathFile
      * @return string
@@ -565,7 +565,7 @@ class UtilFilesystem
 
 
     /**
-     * 10/2017 used by mcxlister
+     * 10/2017 used by cloudlister
      * source https://stackoverflow.com/a/21409562/2848530
      *
      * @param $pathDir

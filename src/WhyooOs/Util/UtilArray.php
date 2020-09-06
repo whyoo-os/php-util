@@ -556,7 +556,7 @@ class UtilArray
      * todo: merge with filterByKey ?
      *
      * filters assoc array
-     * used by mcxlister
+     * used by cloudlister
      *
      * @param array $arr
      * @param array $allowedKeys
@@ -657,7 +657,7 @@ class UtilArray
 
     /**
      * 02/2018 unused
-     * 08/2020 used by mcxlister
+     * 08/2020 used by cloudlister
      * 08/2020 used by tldr-to-anki
      *
      * @param array $items
@@ -673,7 +673,7 @@ class UtilArray
 
 
     /**
-     * 03/2018 used by mcxlister
+     * 03/2018 used by cloudlister
      *
      * @param $arr
      * @return bool
@@ -691,7 +691,7 @@ class UtilArray
 
     /**
      * 05/2018
-     * used in mcxlister
+     * used in cloudlister
      * @param $key
      */
     public static function pull(array &$arr, $key, bool $bThrowException = false)
@@ -813,7 +813,7 @@ class UtilArray
 
     /**
      * filters array of strings by searchterm
-     * 10/2018 used by mcxlister
+     * 10/2018 used by cloudlister
      *
      * @param array $arr
      * @param string $searchterm

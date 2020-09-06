@@ -217,15 +217,16 @@ class UtilString
 
     /**
      * 07/2020 created (tldr2anki)
+     * 09/2020 used by cloudlister
      *
      * @param string $str
-     * @param string $ch
+     * @param string $needle
      * @return false|string
      */
-    public static function removeFromBeginning(string $str, string $ch)
+    public static function removeFromBeginning(string $str, string $needle)
     {
-        if (self::startsWith($str, $ch)) {
-            return substr($str, strlen($ch));
+        if (self::startsWith($str, $needle)) {
+            return substr($str, strlen($needle));
         }
         return $str;
     }
@@ -234,13 +235,13 @@ class UtilString
      * 07/2020 created (tldr2anki)
      *
      * @param string $str
-     * @param string $ch
+     * @param string $needle
      * @return false|string
      */
-    public static function removeFromEnd(string $str, string $ch)
+    public static function removeFromEnd(string $str, string $needle)
     {
-        if (self::endsWith($str, $ch)) {
-            return substr($str, 0, strlen($str) - strlen($ch));
+        if (self::endsWith($str, $needle)) {
+            return substr($str, 0, strlen($str) - strlen($needle));
         }
         return $str;
     }

@@ -85,7 +85,7 @@ class UtilDate
 
 
     /**
-     * from mcxlister used for monthly reports
+     * from cloudlister used for monthly reports
      * 05/2020 bugfixed
      *
      * @param int $numMonths
@@ -118,7 +118,7 @@ class UtilDate
 
 
     /**
-     * fom mcxlister
+     * fom cloudlister
      *
      * used for statistics
      *
