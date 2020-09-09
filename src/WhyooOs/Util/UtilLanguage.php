@@ -45,6 +45,8 @@ class UtilLanguage
      * free by reverse engineered token generation
      * uses https://github.com/Stichoza/google-translate-php
      *
+     * $ composer require stichoza/google-translate-php
+     *
      * @param $sourceLanguage
      * @param $targetLanguage
      * @param $phrase
@@ -74,6 +76,8 @@ class UtilLanguage
 
 
     /**
+     * $ composer require patrickschur/language-detection
+     *
      * @param string $text
      * @return int|null|string
      */
