@@ -79,7 +79,7 @@ class UtilLanguage
      * $ composer require patrickschur/language-detection
      *
      * @param string $text
-     * @return int|null|string
+     * @return string
      */
     public static function detectLanguage(string $text)
     {

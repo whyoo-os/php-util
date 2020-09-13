@@ -659,6 +659,7 @@ class UtilArray
      * 02/2018 unused
      * 08/2020 used by cloudlister
      * 08/2020 used by tldr-to-anki
+     * 09/2020 used by language immerser
      *
      * @param array $items
      * @param string $getterName eg "getId"

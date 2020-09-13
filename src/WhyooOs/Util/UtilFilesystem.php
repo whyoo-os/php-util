@@ -446,7 +446,7 @@ class UtilFilesystem
 
 
     /**
-     * returns full pathes to all files (no directories, recursive)
+     * returns FULL PATHES to all files (no directories, recursive)
      */
     public static function getFiles($path)
     {

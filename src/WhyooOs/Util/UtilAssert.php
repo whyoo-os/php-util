@@ -291,14 +291,14 @@ class UtilAssert
     public static function assertArrayLengthEquals($array, int $length, string $errorMessage = '')
     {
         // ---- array
-        if(is_array($array)){
+        if (is_array($array)) {
             if (count($array) != $length) {
                 throw new AssertException(__METHOD__ . " failed: Array length " . count($array) . " != $length. " . $errorMessage);
             }
         }
 
         // ---- \Traversable
-        if($array instanceof \Traversable){
+        if ($array instanceof \Traversable) {
             $ic = iterator_count($array);
             if ($ic != $length) {
                 throw new AssertException(__METHOD__ . " failed: Traversable length $ic != $length. " . $errorMessage);
@@ -319,14 +319,14 @@ class UtilAssert
     public static function assertArrayLengthLessOrEquals($array, int $maxLength, string $errorMessage = '')
     {
         // ---- array
-        if(is_array($array)){
+        if (is_array($array)) {
             if (count($array) > $maxLength) {
                 throw new AssertException(__METHOD__ . " failed: Array length " . count($array) . " > $maxLength. " . $errorMessage);
             }
         }
 
         // ---- \Traversable
-        if($array instanceof \Traversable){
+        if ($array instanceof \Traversable) {
             $ic = iterator_count($array);
             if ($ic > $maxLength) {
                 throw new AssertException(__METHOD__ . " failed: Traversable length $ic > $maxLength. " . $errorMessage);
@@ -376,6 +376,20 @@ class UtilAssert
     {
         if (!UtilString::startsWith($haystack, $needle)) {
             throw new AssertException(__METHOD__ . " failed: string `$haystack` does not start with `$needle`. " . $errorMessage);
+        }
+    }
+
+    /**
+     * 09/2020 created
+     * used by language immerser
+     *
+     * @param array $arr1
+     * @param array $arr2
+     */
+    public static function assertArraysSameLength(array $arr1, array $arr2, string $errorMessage = '')
+    {
+        if (count($arr1) !== count($arr2)) {
+            throw new AssertException(__METHOD__ . " failed: Array length " . count($arr1) . " != " . count($arr2) . $errorMessage);
         }
     }
 
