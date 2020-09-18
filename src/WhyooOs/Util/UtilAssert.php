@@ -2,13 +2,6 @@
 
 namespace WhyooOs\Util;
 
-/**
- * 04/2018
- * AssertException
- */
-class AssertException extends \Exception
-{
-}
 
 
 /**
@@ -20,48 +13,48 @@ class UtilAssert
     /**
      * @param $bAssertion
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertTrue($bAssertion, $errorMessage = "")
     {
         if ($bAssertion != true) {
-            throw new AssertException(__METHOD__ . " failed. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed. " . $errorMessage);
         }
     }
 
     /**
      * @param $subject
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertGreaterZero($number, $errorMessage = "")
     {
         if (!($number > 0)) {
-            throw new AssertException(__METHOD__ . " failed ($number <= 0). " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed ($number <= 0). " . $errorMessage);
         }
     }
 
     /**
      * @param $subject
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertZero($number, $errorMessage = "")
     {
         if (($number != 0)) {
-            throw new AssertException(__METHOD__ . " failed ($number != 0). " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed ($number != 0). " . $errorMessage);
         }
     }
 
     /**
      * @param $subject
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertNull($subject, $errorMessage = "")
     {
         if (is_null($subject)) {
-            throw new AssertException(__METHOD__ . " failed (got " . (string)$subject . "). " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed (got " . (string)$subject . "). " . $errorMessage);
         }
     }
 
@@ -69,12 +62,12 @@ class UtilAssert
     /**
      * @param $subject
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertNotNull($subject, $errorMessage = "")
     {
         if (is_null($subject)) {
-            throw new AssertException(__METHOD__ . " failed. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed. " . $errorMessage);
         }
     }
 
@@ -82,12 +75,12 @@ class UtilAssert
     /**
      * @param $subject
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertNotEmpty($subject, $errorMessage = "")
     {
         if (empty($subject)) {
-            throw new AssertException(__METHOD__ . " failed " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed " . $errorMessage);
         }
     }
 
@@ -95,12 +88,12 @@ class UtilAssert
      * @param $v1
      * @param $v2
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertEqual($v1, $v2, $errorMessage = "")
     {
         if ($v1 != $v2) {
-            throw new AssertException(__METHOD__ . " failed ($v1 != $v2). " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed ($v1 != $v2). " . $errorMessage);
         }
     }
 
@@ -110,12 +103,12 @@ class UtilAssert
      * @param $v1
      * @param $v2
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertNotEqual($v1, $v2, $errorMessage = "")
     {
         if ($v1 == $v2) {
-            throw new AssertException(__METHOD__ . " failed ($v1 == $v2) " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed ($v1 == $v2) " . $errorMessage);
         }
     }
 
@@ -124,13 +117,13 @@ class UtilAssert
      * 08/2018
      * @param $bAssertion
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertMaxAbsDelta($v1, $v2, $maxAbsDelta, $errorMessage = "")
     {
         if (abs($v1 - $v2) > $maxAbsDelta) {
             $absDelta = abs($v1 - $v2);
-            throw new AssertException(__METHOD__ . " failed (abs($v1 - $v2) = $absDelta > $maxAbsDelta) " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed (abs($v1 - $v2) = $absDelta > $maxAbsDelta) " . $errorMessage);
         }
     }
 
@@ -138,12 +131,12 @@ class UtilAssert
     /**
      * @param $bAssertion
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertFalse($bAssertion, $errorMessage = "")
     {
         if ($bAssertion != false) {
-            throw new AssertException(__METHOD__ . " failed: " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: " . $errorMessage);
         }
     }
 
@@ -152,13 +145,13 @@ class UtilAssert
      * @param mixed $needle
      * @param array $haystack
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertInArray($needle, array $haystack, string $errorMessage = '')
     {
         if (!in_array($needle, $haystack)) {
             $strAvailable = implode(', ', $haystack);
-            throw new AssertException(__METHOD__ . " failed - '$needle' not in array'. available values: $strAvailable." . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed - '$needle' not in array'. available values: $strAvailable." . $errorMessage);
         }
     }
 
@@ -167,13 +160,13 @@ class UtilAssert
      * @param $key
      * @param array $haystack
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertArrayKeyExists($key, array $haystack, string $errorMessage = '')
     {
         if (!array_key_exists($key, $haystack)) {
             $strAvailable = implode(', ', array_keys($haystack));
-            throw new AssertException(__METHOD__ . " failed - no '$key' in array keys. available keys: $strAvailable." . "\n" . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed - no '$key' in array keys. available keys: $strAvailable." . "\n" . $errorMessage);
         }
     }
 
@@ -181,14 +174,14 @@ class UtilAssert
     {
         $actualClass = is_object($object) ? get_class($object) : gettype($object);
         if ($actualClass != $neededClass) {
-            throw new AssertException(__METHOD__ . " failed: $actualClass != $neededClass. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: $actualClass != $neededClass. " . $errorMessage);
         }
     }
 
     public static function assertIsObject($object, string $errorMessage = '')
     {
         if (!is_object($object)) {
-            throw new AssertException(__METHOD__ . " failed: " . gettype($object) . ". " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: " . gettype($object) . ". " . $errorMessage);
         }
     }
 
@@ -197,7 +190,7 @@ class UtilAssert
     public static function assertIsArray($array, string $errorMessage = '')
     {
         if (!is_array($array)) {
-            throw new AssertException(__METHOD__ . " failed: " . gettype($array) . ". " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: " . gettype($array) . ". " . $errorMessage);
         }
     }
 
@@ -205,7 +198,7 @@ class UtilAssert
     {
         if ($object instanceof $forbiddenClass) {
             $actualClass = get_class($object);
-            throw new AssertException(__METHOD__ . " failed: $actualClass is instance of $forbiddenClass. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: $actualClass is instance of $forbiddenClass. " . $errorMessage);
         }
     }
 
@@ -216,21 +209,21 @@ class UtilAssert
     {
         if (!($object instanceof $class)) {
             $actualClass = get_class($object);
-            throw new AssertException(__METHOD__ . " failed: $actualClass is not instance of $class. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: $actualClass is not instance of $class. " . $errorMessage);
         }
     }
 
     public static function assertFileExists($pathFile, string $errorMessage = '')
     {
         if (!file_exists($pathFile)) {
-            throw new AssertException(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
         }
     }
 
     public static function assertIsFile($pathFile, string $errorMessage = '')
     {
         if (!is_file($pathFile)) {
-            throw new AssertException(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
         }
     }
 
@@ -239,12 +232,12 @@ class UtilAssert
      *
      * @param $pathFile
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertFileDoesNotExists($pathFile, string $errorMessage = '')
     {
         if (file_exists($pathFile)) {
-            throw new AssertException(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
         }
     }
 
@@ -253,12 +246,12 @@ class UtilAssert
      * 01/2020
      *
      * @param string $pathFile
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertIsWriteable(string $pathFile, string $errorMessage = '')
     {
         if (!is_writeable($pathFile)) {
-            throw new AssertException(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
         }
     }
 
@@ -266,14 +259,14 @@ class UtilAssert
     public static function assertIsInt($x, string $errorMessage = '')
     {
         if (!is_int($x)) {
-            throw new AssertException(__METHOD__ . " failed for path $x. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed for path $x. " . $errorMessage);
         }
     }
 
     public static function assertIsDir($pathDir, string $errorMessage = '')
     {
         if (!is_dir($pathDir)) {
-            throw new AssertException(__METHOD__ . " failed for path $pathDir. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed for path $pathDir. " . $errorMessage);
         }
     }
 
@@ -286,14 +279,14 @@ class UtilAssert
      * @param array|\Traversable $array
      * @param int $length
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertArrayLengthEquals($array, int $length, string $errorMessage = '')
     {
         // ---- array
         if (is_array($array)) {
             if (count($array) != $length) {
-                throw new AssertException(__METHOD__ . " failed: Array length " . count($array) . " != $length. " . $errorMessage);
+                throw new \AssertionError(__METHOD__ . " failed: Array length " . count($array) . " != $length. " . $errorMessage);
             }
         }
 
@@ -301,7 +294,7 @@ class UtilAssert
         if ($array instanceof \Traversable) {
             $ic = iterator_count($array);
             if ($ic != $length) {
-                throw new AssertException(__METHOD__ . " failed: Traversable length $ic != $length. " . $errorMessage);
+                throw new \AssertionError(__METHOD__ . " failed: Traversable length $ic != $length. " . $errorMessage);
             }
         }
     }
@@ -314,14 +307,14 @@ class UtilAssert
      * @param array|\Traversable $array
      * @param int $maxLength
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertArrayLengthLessOrEquals($array, int $maxLength, string $errorMessage = '')
     {
         // ---- array
         if (is_array($array)) {
             if (count($array) > $maxLength) {
-                throw new AssertException(__METHOD__ . " failed: Array length " . count($array) . " > $maxLength. " . $errorMessage);
+                throw new \AssertionError(__METHOD__ . " failed: Array length " . count($array) . " > $maxLength. " . $errorMessage);
             }
         }
 
@@ -329,7 +322,7 @@ class UtilAssert
         if ($array instanceof \Traversable) {
             $ic = iterator_count($array);
             if ($ic > $maxLength) {
-                throw new AssertException(__METHOD__ . " failed: Traversable length $ic > $maxLength. " . $errorMessage);
+                throw new \AssertionError(__METHOD__ . " failed: Traversable length $ic > $maxLength. " . $errorMessage);
             }
         }
     }
@@ -341,12 +334,12 @@ class UtilAssert
      * @param string $haystack
      * @param string $needle
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertStringIncludes(string $haystack, string $needle, string $errorMessage = '')
     {
         if (strpos($haystack, $needle) === false) {
-            throw new AssertException(__METHOD__ . " failed: string `$needle` not included in string `$haystack`. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: string `$needle` not included in string `$haystack`. " . $errorMessage);
         }
     }
 
@@ -356,13 +349,13 @@ class UtilAssert
      *
      * @param array $array
      * @param string $errorMessage
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertArrayHasNoDuplicates(array $array, string $errorMessage = '')
     {
         if (UtilArray::hasDuplicates($array)) {
             $duplicates = json_encode(UtilArray::getDuplicates($array));
-            throw new AssertException(__METHOD__ . " failed: array has duplicate/s: $duplicates " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: array has duplicate/s: $duplicates " . $errorMessage);
         }
     }
 
@@ -370,12 +363,12 @@ class UtilAssert
     /**
      * @param string $haystack
      * @param string $needle
-     * @throws AssertException
+     * @throws \AssertionError
      */
     public static function assertStringStartsWith(string $haystack, string $needle, string $errorMessage = '')
     {
         if (!UtilString::startsWith($haystack, $needle)) {
-            throw new AssertException(__METHOD__ . " failed: string `$haystack` does not start with `$needle`. " . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: string `$haystack` does not start with `$needle`. " . $errorMessage);
         }
     }
 
@@ -385,11 +378,12 @@ class UtilAssert
      *
      * @param array $arr1
      * @param array $arr2
+     * @throws \AssertionError
      */
     public static function assertArraysSameLength(array $arr1, array $arr2, string $errorMessage = '')
     {
         if (count($arr1) !== count($arr2)) {
-            throw new AssertException(__METHOD__ . " failed: Array length " . count($arr1) . " != " . count($arr2) . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: Array length " . count($arr1) . " != " . count($arr2) . $errorMessage);
         }
     }
 
