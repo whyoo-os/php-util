@@ -3,7 +3,6 @@
 namespace WhyooOs\Util;
 
 
-
 /**
  *
  */
@@ -383,7 +382,21 @@ class UtilAssert
     public static function assertArraysSameLength(array $arr1, array $arr2, string $errorMessage = '')
     {
         if (count($arr1) !== count($arr2)) {
-            throw new \AssertionError(__METHOD__ . " failed: Array length " . count($arr1) . " != " . count($arr2) . $errorMessage);
+            throw new \AssertionError(__METHOD__ . " failed: Array length " . count($arr1) . " != " . count($arr2) . " " . $errorMessage);
+        }
+    }
+
+    /**
+     * 09/2020 created
+     * used by cloudlister
+     *
+     * @param $var
+     * @param string $errorMessage
+     */
+    public static function assertIsNonEmptyString($var, string $errorMessage = '')
+    {
+        if (!is_string($var) || empty($var)) {
+            throw new \AssertionError(__METHOD__ . " failed for value " . $var . " " . $errorMessage);
         }
     }
 

@@ -342,13 +342,15 @@ class UtilArray
 
 
     /**
+     * TOOD: rename something with "Map" inside
+     *
      * aka numeric2assoc
      *
-     * @param $array
-     * @param $keyName
+     * @param array $array
+     * @param string $keyName
      * @return array
      */
-    public static function arrayOfArraysToAssoc($array, $keyName)
+    public static function arrayOfArraysToAssoc(array $array, string $keyName)
     {
         $values = array_values($array);
         $keys = array_column($values, $keyName);
@@ -358,11 +360,13 @@ class UtilArray
 
 
     /**
-     * @param $array
-     * @param $keyName
+     * TOOD: rename something with "Map" inside
+     *
+     * @param array $array
+     * @param string $keyName eg 'id'
      * @return array
      */
-    public static function arrayOfDocumentsToAssoc($array, $keyName = 'id')
+    public static function arrayOfDocumentsToAssoc(array $array, string $keyName)
     {
         $values = array_values($array);
         $keys = [];
