@@ -263,37 +263,6 @@ class UtilString
 
 
     /**
-     * Split text into words
-     *
-     * 08/2018 used by language immerser
-     *
-     * @param string $text
-     *
-     * @return string[] Words
-     */
-    public static function splitIntoWords(string $text)
-    {
-        return preg_split('/[\s.,!?]+/u', $text);
-    }
-
-
-    /**
-     * splits into sentences
-     * https://stackoverflow.com/a/16377765/2848530
-     *
-     * 08/2018 used by language immerser
-     *
-     *
-     * @param string $text
-     * @return string[]
-     */
-    public static function splitIntoSentences(string $text)
-    {
-        return preg_split('/(?<=[.?!])\s+(?=[a-z])/i', $text);
-    }
-
-
-    /**
      * 01/2019
      * 06/2020 parameters $left and $right added
      *
