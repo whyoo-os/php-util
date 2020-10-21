@@ -439,6 +439,25 @@ class UtilArray
 
 
     /**
+     * 10/2020
+     * used by CloudLister
+     *
+     * @param array $arr
+     * @param string $key
+     * @return array
+     */
+    public static function groupByGetter(array $arr, string $getterName)
+    {
+        $ret = [];
+        foreach ($arr as &$item) {
+            $ret[$item->$getterName()][] = $item;
+        }
+
+        return $ret;
+    }
+
+
+    /**
      * @param array $arr
      * @param $key
      * @param $value

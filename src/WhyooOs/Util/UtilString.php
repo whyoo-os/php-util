@@ -23,7 +23,6 @@ class UtilString
         return implode($glue, $ret);
     }
 
-
     public static function toCamelCase($string, $capitalizeFirstCharacter = true, $separator = '_')
     {
         $str = str_replace(' ', '', ucwords(str_replace($separator, ' ', $string)));
