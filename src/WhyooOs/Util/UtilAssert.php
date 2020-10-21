@@ -83,6 +83,21 @@ class UtilAssert
         }
     }
 
+
+    /**
+     * 09/2020 created (slides-mailer)
+     *
+     * @param $subject
+     * @param string $errorMessage
+     * @throws \AssertionError
+     */
+    public static function assertEmpty($subject, $errorMessage = "")
+    {
+        if (!empty($subject)) {
+            throw new \AssertionError(__METHOD__ . " failed " . $errorMessage);
+        }
+    }
+
     /**
      * @param $v1
      * @param $v2
