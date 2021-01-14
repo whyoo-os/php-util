@@ -125,7 +125,7 @@ class UtilCsv
      * @return bool true on success false otherwise
      * @internal param string $format
      */
-    public static function csvToExcel(string $pathCsv, string $format = 'xls')
+    public static function csvToExcel(string $pathCsv, string $format = 'xls'): bool
     {
         // ---- 1st try with libreoffice's unoconv
         exec("unoconv -i FilterOptions=44,34,76 -f $format $pathCsv", $output, $return);
@@ -136,11 +136,40 @@ class UtilCsv
         // ---- 2nd try: use gnumeric's ssconvert
         $pathXls = UtilFilesystem::replaceExtension($pathCsv, $format);
         exec("ssconvert  $pathCsv $pathXls", $output, $return);
+        if ($return === 0) {
+            return true;
+        }
 
-        return $return == 0;
+        return false;
     }
 
 
+    /**
+     * 01/2021 created
+     *
+     * @param string $pathXls
+     * @return bool
+     */
+    public static function excelToCsv(string $pathXls): bool
+    {
+        $pathCsv = UtilFilesystem::replaceExtension($pathXls, 'csv');
+
+        // ---- 1st try with libreoffice's unoconv
+        $cmd = "unoconv -f csv -o  $pathCsv $pathXls";
+        exec($cmd, $output, $return);
+        if ($return == 0) {
+            return true;
+        }
+
+        // ---- 2nd try: use gnumeric's ssconvert
+        $cmd = "ssconvert $pathXls $pathCsv";
+        exec($cmd, $output, $return);
+        if ($return === 0) {
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Filters dict ("assoc array") by its keys and convert it to a list ("numeric array")
@@ -172,7 +201,6 @@ class UtilCsv
 //        }
 //        return $ret;
     }
-
 
 
 }
