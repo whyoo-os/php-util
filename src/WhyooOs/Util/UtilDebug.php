@@ -17,6 +17,7 @@ class UtilDebug
 
     /**
      * uses jdorn/sql-formatter
+     *
      * @param string $sql
      * @return String formatted query (html or ansi)
      */
@@ -85,6 +86,20 @@ class UtilDebug
         foreach (func_get_args() as $arg) {
             dump(UtilSymfony::toArray($arg));
         }
+    }
+
+    /**
+     * 01/2021 created
+     *
+     * used by algotrend
+     * 
+     * @param string $sql some sql query
+     */
+    public static function dumpSql(string $sql)
+    {
+        $ddSource = debug_backtrace()[0];
+        echo $ddSource['file'] . ':' . $ddSource['line'] . Util::getNewline();
+        echo self::getSqlFormatted($sql);
     }
 
 
