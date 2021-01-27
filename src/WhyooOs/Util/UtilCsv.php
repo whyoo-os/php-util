@@ -12,14 +12,21 @@ class UtilCsv
      *
      * @param $pathCsv
      * @param bool $bAssoc
+     * @param bool $bTrim
+     * @param string $separator 01/2021 added
+     * @param int $skip 01/2021 added needed if first N lines are used for comments
      * @return array array of objects or assocArrays
      * @throws \Exception
      */
-    public static function parseCsvFile($pathCsv, bool $bAssoc = false, $bTrim = true)
+    public static function parseCsvFile($pathCsv, bool $bAssoc = false, $bTrim = true, $separator = ',', $skip = 0)
     {
         $fileHandle = fopen($pathCsv, 'r');
         $arr = [];
-        while (($row = fgetcsv($fileHandle)) !== FALSE) {
+        $rowIdx = 0;
+        while (($row = fgetcsv($fileHandle, 0, $separator)) !== FALSE) {
+            if ($rowIdx++ < $skip) {
+                continue;
+            }
             $arr[] = $bTrim ? UtilArray::trimArray($row) : $row;
         }
         fclose($fileHandle);
