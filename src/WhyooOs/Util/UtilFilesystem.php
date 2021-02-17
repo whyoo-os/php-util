@@ -77,6 +77,7 @@ class UtilFilesystem
 
     /**
      * not recursive .. returns files and directories ... relative to $path
+     * 02/2021 TODO: where is this used?
      */
     public static function scanDir($path)
     {
@@ -96,27 +97,81 @@ class UtilFilesystem
     }
 
 
+//    /**
+//     * returns RELATIVE paths (relative to $pathDir)
+//     *
+//     * recursive .. returns files only
+//     * 02/2021 UNUSED - removed
+//     */
+//    public static function scanDirForFilesRecursive($pathDir)
+//    {
+//        $filenames = [];
+//        if ($handle = opendir($pathDir)) {
+//            while (false !== ($entry = readdir($handle))) {
+//                if ($entry != "." && $entry != "..") {
+//                    $fullPath = self::joinPaths($pathDir, $entry);
+//                    if (is_dir($fullPath)) {
+//                        $filenames = array_merge($filenames, self::scanDirForFilesRecursive($fullPath, self::joinPaths($prefix, $entry)));
+//                    } else {
+//                        $filenames[] = $entry;
+//                    }
+//                }
+//            }
+//            closedir($handle);
+//        }
+//
+//        return $filenames;
+//    }
+
+
+
     /**
-     * recursive .. returns files only
+     * private recursive helper
+     *
+     * @return string[]
      */
-    public static function scanDirForFilesRecursive($path, $prefix = '')
+    private static function _findFilesRecursive(string $pathDir, ?string $pattern, bool $bReturnRelativePaths, string $prefix)
     {
         $ret = [];
-        if ($handle = opendir($path)) {
-            while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != "..") {
-                    $fullPath = self::joinPaths($path, $entry);
-                    if (is_dir($fullPath)) {
-                        $ret = array_merge($ret, self::scanDirForFilesRecursive($fullPath, self::joinPaths($prefix, $entry)));
-                    } else {
-                        $ret[] = self::joinPaths($prefix, $entry);
-                    }
-                }
+        $dir = dir($pathDir);
+        while (false !== ($file = $dir->read())) {
+            if ($file === '.' || $file === '..') {
+                continue;
             }
-            closedir($handle);
+            $fullPath = self::joinPaths($pathDir, $file);
+            if (is_dir($fullPath)) {
+                $ret = array_merge($ret, self::_findFilesRecursive($fullPath, $pattern, $bReturnRelativePaths, self::joinPaths($prefix, $file)));
+            }
+            if (is_file($fullPath) && ($pattern===null || preg_match($pattern, $fullPath))) {
+                $ret[] = $bReturnRelativePaths ? self::joinPaths($prefix, $file) : $fullPath;
+            }
         }
-        //dump($ret);
+
         return $ret;
+    }
+
+
+    /**
+     * scans $pathDir for files recursively
+     *
+     * returns full or relative paths of found files
+     *
+     * from smartdonation
+     * buggy? not working correctly?
+     * similar to python's os.walk
+     *
+     * 04/2018 fixed .. does only return files, no directories
+     * 02/2021 renamed findFilesRecursive --> findFiles
+     * 02/2021 parameter $bReturnRelativePaths added
+     *
+     * @param string $pathDir
+     * @param string $pattern a regex pattern, eg '~\.png$~'
+     * @param bool $bReturnRelativePaths - if true it returns the relative paths (ie the filenames if not in a subdirectory)
+     * @return string[] full or relative paths of found files
+     */
+    public static function findFiles(string $pathDir, string $pattern = null, bool $bReturnRelativePaths = false)
+    {
+        return self::_findFilesRecursive($pathDir, $pattern, $bReturnRelativePaths, '');
     }
 
 
@@ -152,36 +207,6 @@ class UtilFilesystem
     public static function replaceExtension(string $pathCsv, string $newExtension)
     {
         return self::getWithoutExtension($pathCsv) . ".$newExtension";
-    }
-
-
-    /**
-     * from smartdonation
-     * buggy? not working correctly?
-     * similar to python's os.walk
-     * 04/2018 fixed .. does only return files, no directories
-     *
-     * @param string $strDir
-     * @param string $pattern
-     * @return array FULL paths of found files
-     */
-    public static function findFilesRecursive(string $strDir = '.', string $pattern = '~.*~')
-    {
-        $ret = [];
-        $dir = dir($strDir);
-        while (false !== ($file = $dir->read())) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-            $fullPath = self::joinPaths($strDir, $file);
-            if (is_dir($fullPath)) {
-                $ret = array_merge($ret, self::findFilesRecursive($fullPath, $pattern));
-            }
-            if (is_file($fullPath) && preg_match($pattern, $fullPath)) {
-                $ret[] = $fullPath;
-            }
-        }
-        return $ret;
     }
 
 
@@ -241,7 +266,7 @@ class UtilFilesystem
                                                        array $allowedMimeTypes = null, bool $bRecursive = true, bool $bReturnFullPath = false)
     {
         if ($bRecursive) {
-            $files = self::scanDirForFilesRecursive($pathDirectory);
+            $files = self::findFiles($pathDirectory, null, true);
         } else {
             $files = self::scanDir($pathDirectory);
         }
@@ -285,7 +310,7 @@ class UtilFilesystem
     public static function findByExtensions(string $pathDirectory, array $extensionsLowerCase, bool $bRecursive = true)
     {
         if ($bRecursive) {
-            $files = self::scanDirForFilesRecursive($pathDirectory);
+            $files = self::findFiles($pathDirectory, null, true);
         } else {
             $files = self::scanDir($pathDirectory);
         }
