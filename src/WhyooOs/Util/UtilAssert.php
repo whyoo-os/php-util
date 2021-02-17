@@ -242,6 +242,22 @@ class UtilAssert
     }
 
     /**
+     * 12/2020 created
+     * used by cloudlister/AppMailer
+     *
+     * @param $pathsFiles
+     * @param string $errorMessage
+     */
+    public static function assertAreFiles($pathsFiles, string $errorMessage = '')
+    {
+        foreach($pathsFiles as $pathFile) {
+            if (!is_file($pathFile)) {
+                throw new \AssertionError(__METHOD__ . " failed for path $pathFile. " . $errorMessage);
+            }
+        }
+    }
+
+    /**
      * 01/2020
      *
      * @param $pathFile

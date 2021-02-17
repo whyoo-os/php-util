@@ -20,7 +20,7 @@ class UtilCsv
         $fileHandle = fopen($pathCsv, 'r');
         $arr = [];
         while (($row = fgetcsv($fileHandle)) !== FALSE) {
-            $arr[] = $bTrim ? UtilArray::trimArray($row) : $row;
+            $arr[] = $bTrim ? UtilStringArray::trimEach($row) : $row;
         }
         fclose($fileHandle);
 
