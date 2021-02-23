@@ -65,14 +65,21 @@ class UtilStringArray
      * "a, b, c, ,d" returns [a,b,c,d]
      *
      * 02/2021 moved from UtilArray::trimExplode() to UtilStringArray::trimExplode()
+     * 02/2021 added parameter $limit
      *
-     * @param $delimiter
-     * @param $string
+     * @param string $delimiter
+     * @param string $string
+     * @param int|null $limit
      * @return array
      */
-    static public function trimExplode($delimiter, $string)
+    static public function trimExplode(string $delimiter, string $string, $limit = null)
     {
-        $chunksArr = explode($delimiter, $string);
+        if(is_null($limit)) {
+            $chunksArr = explode($delimiter, $string);
+        } else {
+            $chunksArr = explode($delimiter, $string, $limit);
+        }
+
         $newChunksArr = [];
         foreach ($chunksArr as $value) {
             if (strcmp('', trim($value))) {
@@ -83,7 +90,6 @@ class UtilStringArray
 
         return $newChunksArr;
     }
-
 
 
     /**
@@ -120,10 +126,6 @@ class UtilStringArray
 
         return self::trimExplode($delimiters[0], $ready);
     }
-
-
-
-
 
 
     /**
