@@ -72,7 +72,7 @@ class UtilStringArray
      * @param int|null $limit
      * @return array
      */
-    static public function trimExplode(string $delimiter, string $string, $limit = null)
+    static public function trimExplode(string $delimiter, string $string, $limit = null, $bKeepEmpty = false)
     {
         if(is_null($limit)) {
             $chunksArr = explode($delimiter, $string);
@@ -82,7 +82,7 @@ class UtilStringArray
 
         $newChunksArr = [];
         foreach ($chunksArr as $value) {
-            if (strcmp('', trim($value))) {
+            if (strcmp('', trim($value)) || $bKeepEmpty) {
                 $newChunksArr[] = trim($value);
             }
         }

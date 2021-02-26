@@ -2,13 +2,15 @@
 
 namespace WhyooOs\Util;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 use TitasGailius\Terminal\Terminal;
 use WhyooOs\Util\UtilStringArray;
 
 /**
- * composer require titasgailius/terminal
+ * composer require symfony/process
  * apt install poppler-utils
-
+ *
  * 02/2021 created (for slidesmailer)
  *
  */
@@ -16,19 +18,7 @@ class UtilPdf
 {
 
     /**
-     * composer require titasgailius/terminal
-     * 02/2021 created
-     *
-     * @param string $cmd
-     * @return \TitasGailius\Terminal\Response
-     */
-    public static function run(string $cmd): \TitasGailius\Terminal\Response
-    {
-        return Terminal::run($cmd);
-    }
-
-    /**
-     * composer require titasgailius/terminal
+     * composer require symfony/process
      * apt install poppler-utils
      *
      * 02/2021 created
@@ -55,6 +45,7 @@ class UtilPdf
     }
 
     /**
+     * composer require symfony/process
      * apt install poppler-utils
      *
      * 02/2021 created
@@ -64,13 +55,16 @@ class UtilPdf
      */
     public static function pdfInfo(string $pathPdfFile): array
     {
-        $cmd = "pdfinfo $pathPdfFile";
+        $cmd = ["pdfinfo", $pathPdfFile];
 
-        $lines = UtilStringArray::trimExplode("\n", self::run($cmd)->output());
+        $output = UtilProcess::run($cmd);
+        $lines = explode("\n", trim($output));
 
         $info = array_map(function($line){
-            return UtilStringArray::trimExplode(':', $line, 2);
+            return UtilStringArray::trimExplode(':', $line, 2, true);
         }, $lines);
+
+        // UtilDebug::dd($lines, $info);
 
         $map = array_combine(array_column($info, 0), array_column($info, 1));
 
