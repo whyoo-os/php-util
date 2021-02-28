@@ -65,24 +65,17 @@ class UtilStringArray
      * "a, b, c, ,d" returns [a,b,c,d]
      *
      * 02/2021 moved from UtilArray::trimExplode() to UtilStringArray::trimExplode()
-     * 02/2021 added parameter $limit
      *
-     * @param string $delimiter
-     * @param string $string
-     * @param int|null $limit
+     * @param $delimiter
+     * @param $string
      * @return array
      */
-    static public function trimExplode(string $delimiter, string $string, $limit = null, $bKeepEmpty = false)
+    static public function trimExplode($delimiter, $string)
     {
-        if(is_null($limit)) {
-            $chunksArr = explode($delimiter, $string);
-        } else {
-            $chunksArr = explode($delimiter, $string, $limit);
-        }
-
+        $chunksArr = explode($delimiter, $string);
         $newChunksArr = [];
         foreach ($chunksArr as $value) {
-            if (strcmp('', trim($value)) || $bKeepEmpty) {
+            if (strcmp('', trim($value))) {
                 $newChunksArr[] = trim($value);
             }
         }
@@ -169,6 +162,44 @@ class UtilStringArray
         return array_map(function ($x) use ($beginning, $end) {
             return UtilString::removeFromBeginningAndEnd($x, $beginning, $end);
         }, $arr);
+    }
+
+
+    /**
+     * 07/2019 created
+     * 02/2021 moved from cloudlister's UtilSku to UtilStringArray
+     *
+     * source: https://stackoverflow.com/a/1336357/2848530
+     *
+     * @param string[]
+     * @param string $sep single character
+     * @return bool|string
+     */
+    public static function getCommonPrefix(array $arrStrings, string $sep = '-')
+    {
+        if (empty($arrStrings)) {
+            return '';
+        }
+
+        $pl = 0; // common prefix length
+        $pl2 = 0;
+        $n = count($arrStrings);
+        $l = strlen($arrStrings[0]);
+        while ($pl < $l) {
+            $c = $arrStrings[0][$pl];
+            for ($i = 1; $i < $n; $i++) {
+                if ($arrStrings[$i][$pl] !== $c) {
+                    break 2;
+                }
+            }
+            $pl++;
+            if ($c == $sep) {
+                $pl2 = $pl;
+            }
+        }
+        $prefix = substr($arrStrings[0], 0, $pl2);
+
+        return $prefix;
     }
 
 

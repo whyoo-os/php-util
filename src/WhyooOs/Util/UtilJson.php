@@ -14,8 +14,6 @@ class UtilJson
     /**
      * json_decode with error handling
      *
-     * 02/2021 changed bAssoc default value from false to true
-     *
      * @param $json
      * @param bool $bAssoc
      * @return mixed
@@ -33,14 +31,12 @@ class UtilJson
 
 
     /**
-     * 02/2021 changed bAssoc default value from false to true
-     *
      * @param string $pathJsonFile
      * @param bool $bAssoc
      * @return mixed
      * @throws \Exception
      */
-    public static function loadJsonFile(string $pathJsonFile, $bAssoc = true)
+    public static function loadJsonFile(string $pathJsonFile, $bAssoc = false)
     {
         return self::jsonDecode(file_get_contents($pathJsonFile), $bAssoc);
     }
@@ -49,7 +45,6 @@ class UtilJson
 
     /**
      * 04/2020 used by scraper.service
-     * 02/2021 changed bAssoc default value from false to true
      *
      * composer require colinodell/json5
      *
@@ -58,7 +53,7 @@ class UtilJson
      * @return mixed
      * @throws \Exception
      */
-    public static function loadJson5File(string $pathJson5File, $bAssoc = true)
+    public static function loadJson5File(string $pathJson5File, $bAssoc = false)
     {
         return json5_decode(file_get_contents($pathJson5File), $bAssoc);
     }
