@@ -1,6 +1,6 @@
 <?php
 
-namespace WhyooOs\Util;
+namespace WhyooOs\Util\Array;
 
 
 /**

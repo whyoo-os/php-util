@@ -1,6 +1,6 @@
 <?php
 
-namespace WhyooOs\Util;
+namespace WhyooOs\Util\Array;
 
 /**
  *
@@ -170,49 +170,6 @@ class UtilArray
         return $newArray;
     }
 
-
-    /**
-     * sorts an array of assoc arrays (= a table) by a column $keyName
-     *
-     * @param array &$array
-     * @param $keyName
-     * @param int $sortOrder
-     * @param int $sortFlags
-     * @return array
-     */
-    public static function sortArrayOfArrays(&$array, $keyName, $sortOrder = SORT_ASC, $sortFlags = SORT_REGULAR)
-    {
-        $sortArray = [];
-        foreach ($array as $idx => $row) {
-            $sortArray[$idx] = $row[$keyName];
-        }
-        array_multisort($sortArray, $sortOrder, $sortFlags, $array);
-
-        return $array;
-    }
-
-
-    /**
-     * sorts an array of objects
-     * used by marketer (for sorting list of participants by conversationRole)
-     * TODO: maybe there is faster version with a callback
-     *
-     * 03/2018
-     * 08/2018 also sorts by sub-documents like 'userProfile.birthday'
-     *
-     * @param array &$array
-     * @param string $attributeName eg "conversationRole", "userProfile.birthday"
-     * @param int $sortOrder
-     * @param int $sortFlags
-     * @return array
-     */
-    public static function sortArrayOfObjects(&$array, $attributeName, $sortOrder = SORT_ASC, $sortFlags = SORT_REGULAR)
-    {
-        $sortArray = self::getObjectProperty($array, $attributeName);
-        array_multisort($sortArray, $sortOrder, $sortFlags, $array);
-
-        return $array;
-    }
 
 
     /**

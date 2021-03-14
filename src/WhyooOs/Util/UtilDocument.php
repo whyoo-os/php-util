@@ -9,8 +9,6 @@ namespace WhyooOs\Util;
  */
 class UtilDocument
 {
-
-
     /**
      * used by cloudlister, schlegel
      * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
