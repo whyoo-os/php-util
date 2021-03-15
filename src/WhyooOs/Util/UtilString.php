@@ -284,6 +284,20 @@ class UtilString
 
 
     /**
+     * 03/2021 created
+     *
+     * composer require mustache/mustache
+     *
+     * @param string $tpl
+     * @param array $replacements
+     * @return string
+     */
+    public static function mustache(string $tpl, array $replacements)
+    {
+        return (new \Mustache_Engine(['entity_flags' => ENT_QUOTES]))->render($tpl, $replacements);
+    }
+
+    /**
      * 08/2020 created
      * used in webpack migrator
      *
