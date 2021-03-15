@@ -49,8 +49,39 @@ class UtilArraySort
     public static function sortDocuments(array &$documents, string $attributeName, int $sortOrder = SORT_ASC, int $sortFlags = SORT_REGULAR)
     {
         $sortArray = UtilArray::getObjectProperty($documents, $attributeName);
-        array_multisort($sortArray, $sortOrder, $sortFlags, $documents);
+        if (array_multisort($sortArray, $sortOrder, $sortFlags, $documents) === FALSE) {
+            throw new \Exception("multisort failed");
+        }
 
         return $documents;
     }
+
+
+    /**
+     * 03/2021 created
+     *
+     * @param array $documents
+     * @param array $sortBy, eg: ['width' => SORT_DESC, 'depth' => SORT_DESC]
+     * @return array|mixed
+     * @throws \Exception
+     */
+    public static function multisortDocuments(array &$documents, array $sortBy)
+    {
+        $funArgs = [];
+        foreach ($sortBy as $columnName => $sortOrder) {
+            $funArgs[] = UtilArray::getObjectProperty($documents, $columnName);
+            $funArgs[] = $sortOrder;
+        }
+        $funArgs[] = &$documents;
+
+        if (call_user_func_array('array_multisort', $funArgs) === FALSE) {
+            throw new \Exception("multisort failed");
+        }
+
+        return $documents;
+    }
+
+
+
+
 }
