@@ -88,4 +88,18 @@ class UtilDebug
     }
 
 
+    /**
+     * 01/2021 created
+     *
+     * used by algotrend
+     *
+     * @param string $sql some sql query
+     */
+    public static function dumpSql(string $sql)
+    {
+        $ddSource = debug_backtrace()[0];
+        echo $ddSource['file'] . ':' . $ddSource['line'] . Util::getNewline();
+        echo SqlFormatter::format($sql);
+    }
+
 }
