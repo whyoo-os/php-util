@@ -3,23 +3,32 @@
 namespace WhyooOs\Util;
 
 
+use WhyooOs\Util\Array\UtilStringArray;
+
 class UtilCsv
 {
 
     /**
      * used by FixturesUtil
-     * TODO: add parameter bTrim
+     * 03/2021 used by algotrend
      *
-     * @param $pathCsv
+     * @param string $pathCsv
      * @param bool $bAssoc
+     * @param bool $bTrim
+     * @param string $separator
+     * @param int $skip
      * @return array array of objects or assocArrays
      * @throws \Exception
      */
-    public static function parseCsvFile($pathCsv, bool $bAssoc = false, $bTrim = true)
+    public static function parseCsvFile(string $pathCsv, bool $bAssoc = false, $bTrim = true, string $separator = ',', int $skip = 0)
     {
         $fileHandle = fopen($pathCsv, 'r');
         $arr = [];
-        while (($row = fgetcsv($fileHandle)) !== FALSE) {
+        $rowIdx = 0;
+        while (($row = fgetcsv($fileHandle, 0, $separator)) !== FALSE) {
+            if ($rowIdx++ < $skip) {
+                continue;
+            }
             $arr[] = $bTrim ? UtilStringArray::trimEach($row) : $row;
         }
         fclose($fileHandle);
@@ -141,7 +150,6 @@ class UtilCsv
     }
 
 
-
     /**
      * Filters dict ("assoc array") by its keys and convert it to a list ("numeric array")
      *
@@ -172,7 +180,6 @@ class UtilCsv
 //        }
 //        return $ret;
     }
-
 
 
 }
