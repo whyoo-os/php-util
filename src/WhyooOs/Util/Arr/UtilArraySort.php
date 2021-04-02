@@ -1,6 +1,6 @@
 <?php
 
-namespace WhyooOs\Util\List;
+namespace WhyooOs\Util\Arr;
 
 /**
  * 03/2021 created

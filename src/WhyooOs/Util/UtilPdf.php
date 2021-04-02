@@ -5,7 +5,7 @@ namespace WhyooOs\Util;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TitasGailius\Terminal\Terminal;
-use WhyooOs\Util\List\UtilStringArray;
+use WhyooOs\Util\Arr\UtilStringArray;
 
 /**
  * composer require symfony/process

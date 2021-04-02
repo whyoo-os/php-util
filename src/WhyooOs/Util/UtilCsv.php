@@ -3,7 +3,7 @@
 namespace WhyooOs\Util;
 
 
-use WhyooOs\Util\List\UtilStringArray;
+use WhyooOs\Util\Arr\UtilStringArray;
 
 class UtilCsv
 {
