@@ -1,7 +1,9 @@
 <?php
 
-namespace WhyooOs\Util\Array;
+namespace WhyooOs\Util\List;
 
+
+use WhyooOs\Util\UtilString;
 
 /**
  * Utility functions to for arrays of strings
