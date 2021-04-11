@@ -2,6 +2,8 @@
 
 namespace WhyooOs\Util\Arr;
 
+use WhyooOs\Util\UtilAssert;
+
 /**
  *
  */
