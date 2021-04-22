@@ -14,6 +14,7 @@ class UtilArray
 
     /**
      * removes all occurrences of $toRemove from $arr
+     * 04/2021 TODO: rename withoutOne
      *
      * @param array $arr
      * @param mixed $toRemove
@@ -22,6 +23,19 @@ class UtilArray
     public static function without(array $arr, $toRemove)
     {
         return array_diff($arr, [$toRemove]);
+    }
+
+    /**
+     * removes all occurrences of elements of $toRemove from $arr
+     * 04/2021 created
+     *
+     * @param array $arr
+     * @param mixed[] $toRemove
+     * @return array $arr without $toRemove
+     */
+    public static function withoutMany(array $arr, array $toRemove)
+    {
+        return array_diff($arr, $toRemove);
     }
 
 

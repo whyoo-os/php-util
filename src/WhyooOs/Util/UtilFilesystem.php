@@ -662,4 +662,16 @@ class UtilFilesystem
         return preg_replace(array_keys($r), array_values($r), $path);
     }
 
+    /**
+     * 04/2021 created (for art-experiments/push4)
+     *
+     * @param string[] $filePaths
+     */
+    public static function deleteManyFiles(array $filePaths)
+    {
+        foreach($filePaths as $fullFilePath) {
+            unlink($fullFilePath);
+        }
+    }
+
 }
