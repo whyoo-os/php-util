@@ -184,6 +184,21 @@ class UtilAssert
         }
     }
 
+    /**
+     * 04/2021 used by art-experiments
+     *
+     * @param $key
+     * @param array $haystack
+     * @param string $errorMessage
+     * @throws \AssertionError
+     */
+    public static function assertArrayKeyDoesNotExist($key, array $haystack, string $errorMessage = '')
+    {
+        if (array_key_exists($key, $haystack)) {
+            throw new \AssertionError(__METHOD__ . " failed - '$key' does exist" . "\n" . $errorMessage);
+        }
+    }
+
     public static function assertClass($object, string $neededClass, $errorMessage = 'class mismatch')
     {
         $actualClass = is_object($object) ? get_class($object) : gettype($object);
