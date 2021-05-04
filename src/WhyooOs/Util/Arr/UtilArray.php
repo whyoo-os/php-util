@@ -84,60 +84,14 @@ class UtilArray
     }
 
 
-    /**
-     * get single property of documents in an array using getters
-     * TODO: rename to getObjectAttribute()
-     * 08/2018 also sorts by sub-documents like 'userProfile.birthday'
-     * example:
-     * $posts = {'a' => post1, 'b' => post2, 'c' => post3]
-     * getObjectProperty($posts, 'id', false) returns [1,2,3]
-     * getObjectProperty($posts, 'id', true) returns { a:1, b:2, c:3 }
-     * TODO: rename getDocumentProperty?
-     * used in marketer
-     *
-     * @param array $arr
-     * @param string $propertyName also sub-documents like 'userProfile.birthday' are possible
-     * @param bool $bKeepOriginalKeys the thing with $bKeepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
-     * @return array
-     */
-    public static function getObjectProperty(array $arr, $propertyName, $bKeepOriginalKeys = false)
-    {
-        $subfields = explode('.', $propertyName);
-
-        $getterNames = [];
-        foreach ($subfields as $subfield) {
-            $getterNames[] = 'get' . ucfirst($subfield);
-        }
-
-
-        // $methodName = "get" . ucfirst($propertyName);
-
-        if ($bKeepOriginalKeys) {
-            // keep original keys
-            array_walk($arr, function (&$item, $key) use ($getterNames) {
-                foreach ($getterNames as $getterName) {
-                    $item = $item->$getterName();
-                }
-            });
-            $newArray = $arr;
-        } else {
-            // new keys (create ordinary numeric array)
-            $newArray = array_map(function ($item) use ($getterNames) {
-                foreach ($getterNames as $getterName) {
-                    $item = $item->$getterName();
-                }
-                return $item;
-            }, $arr);
-        }
-
-        return $newArray;
-    }
 
     /**
+     * TODO: move to UtilDocumentArray
      * TODO: rename getDocumentProperties?
      * used in eqipoo
+     *
      * @param array $arr
-     * @param $propertyNames
+     * @param string[] $propertyNames
      * @return array
      */
     public static function getObjectProperties(array $arr, array $propertyNames)
@@ -247,9 +201,9 @@ class UtilArray
      *
      * @param array $array
      * @param string $keyName
-     * @return array
+     * @return array assoc array
      */
-    public static function arrayOfArraysToAssoc(array $array, string $keyName)
+    public static function arrayOfArraysToAssoc(array $array, string $keyName): array
     {
         $values = array_values($array);
         $keys = array_column($values, $keyName);
@@ -444,36 +398,6 @@ class UtilArray
 
 
 
-//
-//    /**
-//     * @param $array
-//     * @param $keyName
-////     */
-//    public static function arrayOfArraysToAssoc( $array, $keyName)
-//    {
-//        $values = array_values($array);
-//        $keys = array_column($values, $keyName);
-//
-//        return array_combine($keys, $values);
-//    }
-//
-//    /**
-//     * @param $array
-//     * @param $keyName
-////     */
-//    public static function arrayOfDocumentsToAssoc( $array, $keyName)
-//    {
-//        $values = array_values($array);
-//        $keys = [];
-//        foreach($values as $doc) {
-//            $getter = "get".ucfirst($keyName);
-//            $keys[] = $doc->$getter();
-//        }
-//
-//        return array_combine($keys, $values);
-//    }
-
-
     /**
      * todo: merge with filterByKey ?
      *
@@ -497,7 +421,13 @@ class UtilArray
     }
 
 
-    // from marketer v1
+    /**
+     * from marketer v1
+     * TODO: remove
+     *
+     * @param array $arr
+     * @return object[]
+     */
     public static function arrayToObject(array $arr)
     {
         return array_map(function ($x) {
@@ -505,7 +435,14 @@ class UtilArray
         }, $arr);
     }
 
-    // from marketer v1
+    /**
+     * from marketer v1
+     * TODO: remove
+     *
+     *
+     * @param array $arr
+     * @return array[]
+     */
     public static function objectToArray(array $arr)
     {
         return array_map(function ($x) {
@@ -575,23 +512,6 @@ class UtilArray
         }
 
         return iterator_to_array($arr, $useKeys);
-    }
-
-    /**
-     * 02/2018 unused
-     * 08/2020 used by cloudlister
-     * 08/2020 used by tldr-to-anki
-     * 09/2020 used by language immerser
-     *
-     * @param array $items
-     * @param string $getterName eg "getId"
-     * @return array
-     */
-    public static function arrayColumnByGetter(array $items, string $getterName)
-    {
-        return array_map(function ($f) use ($getterName) {
-            return $f->$getterName();
-        }, $items);
     }
 
 

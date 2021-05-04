@@ -93,6 +93,8 @@ class UtilDebug
      *
      * used by algotrend
      *
+     * composer require jdorn/sql-formatter
+     *
      * @param string $sql some sql query
      */
     public static function dumpSql(string $sql)

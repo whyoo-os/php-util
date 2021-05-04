@@ -34,11 +34,25 @@ class UtilUnit
         return $onePxInMm * $px;
     }
 
-    public static function mm2px($mm, $dpi = 96)
+    /**
+     * 04/2021 added param $bRound
+     *
+     * @param $mm
+     * @param int $dpi
+     * @param bool $bRound
+     * @return float|int
+     */
+    public static function mm2px($mm, $dpi = 96, bool $bRound = false)
     {
         $onePxInMm = self::ONE_INCH_IN_MM / $dpi;
 
-        return $mm / $onePxInMm;
+        $px = $mm / $onePxInMm;
+
+        if($bRound) {
+            return (int)round($px);
+        } else {
+            return $px;
+        }
     }
 
 
