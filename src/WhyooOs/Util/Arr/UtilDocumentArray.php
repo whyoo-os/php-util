@@ -3,6 +3,8 @@
 namespace WhyooOs\Util\Arr;
 
 /**
+ * utility functions for handling lists (aka arrays) of documents (aka objects)
+ *
  * 05/2021 created
  */
 class UtilDocumentArray
@@ -96,5 +98,107 @@ class UtilDocumentArray
 
         return $newArray;
     }
+
+    /**
+     * 05/2021 moved from UtilArray::arrayOfDocumentsToAssoc() to UtilDocumentArray::documentArrayToDict()
+     *
+     * @param array $array
+     * @param string $keyName eg 'id'
+     * @return array assoc array aka dict
+     */
+    public static function documentArrayToDict(array $array, string $keyName): array
+    {
+        $values = array_values($array);
+        $keys = [];
+        foreach ($values as &$doc) {
+            $getter = "get" . ucfirst($keyName);
+            $keys[] = $doc->$getter();
+        }
+
+        return array_combine($keys, $values);
+    }
+
+
+
+    /**
+     * search for one document by an attribute (eg id)
+     * TODO: better name (eg findOneXXX)
+     *
+     * 05/2021 moved from UtilArray::searchObjectByAttribute() to UtilDocumentArray::searchDocumentByAttribute()
+     *
+     * @param $arr
+     * @param $attributeName
+     * @param $attributeValue
+     * @return object|null
+     */
+    public static function searchDocumentByAttribute($arr, string $attributeName, $attributeValue)
+    {
+        if (empty($arr)) {
+            return null;
+        }
+
+        foreach ($arr as &$obj) {
+            $getter = "get" . ucfirst($attributeName);
+            if ($obj->$getter() == $attributeValue) {
+                return $obj;
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * TODO: find better name
+     * used by eqipoo
+     *
+     * 05/2021 moved from UtilArray::searchObjectByAttribute() to UtilDocumentArray::searchDocumentByAttribute()
+     *
+     * @param $arr
+     * @param string $attributeName
+     * @param array $attributeValues
+     */
+    public static function moveElementsToBeginning(array $arr, $attributeName, array $attributeValues)
+    {
+        $new = [];
+        foreach ($attributeValues as $val) {
+            $newElem = self::searchDocumentByAttribute($arr, $attributeName, $val);
+            if ($newElem) {
+                $new[] = $newElem;
+            }
+        }
+        $new = array_merge($new, array_diff($arr, $new));
+
+        return $new;
+    }
+
+
+
+    /**
+     * used in eqipoo
+     *
+     * 05/2021 moved from UtilArray::getObjectProperties() to UtilDocumentArray::getDocumentProperties()
+     *
+     * @param array $arr
+     * @param string[] $propertyNames
+     * @return array
+     */
+    public static function getDocumentProperties(array $arr, array $propertyNames)
+    {
+        $methodNames = [];
+        foreach ($propertyNames as $propertyName) {
+            $methodNames[$propertyName] = "get" . ucfirst($propertyName);
+        }
+        // new keys (create ordinary numeric array)
+        $newArray = array_map(function ($item) use ($methodNames) {
+            $ret = [];
+            foreach ($methodNames as $key => $getterName) {
+                $ret[$key] = $item->$getterName();
+            }
+            return $ret;
+        }, $arr);
+
+        return $newArray;
+    }
+
 
 }

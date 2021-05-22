@@ -204,5 +204,39 @@ class UtilStringArray
         return $prefix;
     }
 
+    /**
+     * whitelisting with "special behavior": if whitelist is empty, do not whitelist (return whole unmodified array)
+     *
+     * 05/2021 created
+     * 05/2021 used in push4
+     *
+     * @param string[] $arr
+     * @param string[] $whitelist
+     * @return string[]
+     */
+    public static function whitelist(array $arr, array $whitelist): array
+    {
+        if(empty($whitelist)) {
+            return $arr;
+        }
+        return array_intersect($arr, $whitelist);
+    }
+
+
+    /**
+     * blacklisting
+     *
+     * 05/2021 created
+     * 05/2021 used in push4
+     *
+     * @param string[] $arr
+     * @param string[] $blacklist
+     * @return string[]
+     */
+    public static function blacklist(array $arr, array $blacklist): array
+    {
+        return array_diff($arr, $blacklist);
+    }
+
 
 }

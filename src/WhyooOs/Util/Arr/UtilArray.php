@@ -39,78 +39,6 @@ class UtilArray
     }
 
 
-    /**
-     * TODO: belongs to UtilDocument
-     * search for object by attribute
-     *
-     * @param $arr
-     * @param $attributeName
-     * @param $attributeValue
-     * @return object|null
-     */
-    public static function searchObjectByAttribute($arr, string $attributeName, $attributeValue)
-    {
-        if (empty($arr)) {
-            return null;
-        }
-
-        foreach ($arr as &$obj) {
-            $getter = "get" . ucfirst($attributeName);
-            if ($obj->$getter() == $attributeValue) {
-                return $obj;
-            }
-        }
-        return null;
-    }
-
-
-    /**
-     * @param $arr
-     * @param string $attributeName
-     * @param array $attributeValues
-     */
-    public static function moveElementsToBeginning(array $arr, $attributeName, array $attributeValues)
-    {
-        $new = [];
-        foreach ($attributeValues as $val) {
-            $newElem = self::searchObjectByAttribute($arr, $attributeName, $val);
-            if ($newElem) {
-                $new[] = $newElem;
-            }
-        }
-        $new = array_merge($new, array_diff($arr, $new));
-
-        return $new;
-    }
-
-
-
-    /**
-     * TODO: move to UtilDocumentArray
-     * TODO: rename getDocumentProperties?
-     * used in eqipoo
-     *
-     * @param array $arr
-     * @param string[] $propertyNames
-     * @return array
-     */
-    public static function getObjectProperties(array $arr, array $propertyNames)
-    {
-        $methodNames = [];
-        foreach ($propertyNames as $propertyName) {
-            $methodNames[$propertyName] = "get" . ucfirst($propertyName);
-        }
-        // new keys (create ordinary numeric array)
-        $newArray = array_map(function ($item) use ($methodNames) {
-            $ret = [];
-            foreach ($methodNames as $key => $getterName) {
-                $ret[$key] = $item->$getterName();
-            }
-            return $ret;
-        }, $arr);
-
-        return $newArray;
-    }
 
 
     /**
@@ -194,42 +122,6 @@ class UtilArray
     }
 
 
-    /**
-     * TOOD: rename something with "Map" inside
-     *
-     * aka numeric2assoc
-     *
-     * @param array $array
-     * @param string $keyName
-     * @return array assoc array
-     */
-    public static function arrayOfArraysToAssoc(array $array, string $keyName): array
-    {
-        $values = array_values($array);
-        $keys = array_column($values, $keyName);
-
-        return array_combine($keys, $values);
-    }
-
-
-    /**
-     * TOOD: rename something with "Map" inside
-     *
-     * @param array $array
-     * @param string $keyName eg 'id'
-     * @return array
-     */
-    public static function arrayOfDocumentsToAssoc(array $array, string $keyName)
-    {
-        $values = array_values($array);
-        $keys = [];
-        foreach ($values as &$doc) {
-            $getter = "get" . ucfirst($keyName);
-            $keys[] = $doc->$getter();
-        }
-
-        return array_combine($keys, $values);
-    }
 
 
     /**
@@ -397,28 +289,6 @@ class UtilArray
 
 
 
-
-    /**
-     * todo: merge with filterByKey ?
-     *
-     * filters assoc array
-     * used by cloudlister
-     *
-     * @param array $arr
-     * @param array $allowedKeys
-     * @return array
-     */
-    public static function filterArrayByKeys(array $arr, array $allowedKeys)
-    {
-        $new = [];
-        foreach ($arr as $key => &$val) {
-            if (in_array($key, $allowedKeys, true)) {
-                $new[$key] = $val;
-            }
-        }
-
-        return $new;
-    }
 
 
     /**

@@ -3,6 +3,8 @@
 namespace WhyooOs\Util;
 
 /**
+ * utility functions for handling associative arrays (aka dicts)
+ *
  * 12/2019
  */
 class UtilDict
@@ -108,5 +110,56 @@ class UtilDict
         return array_combine($keys, array_values($arr));
     }
 
+    /**
+     * filters assoc array
+     *
+     * was used by cloudlister
+     * 05/2021 moved from UtilArray::filterArrayByKeys() to UtilDict::filterByKeys()
+     * 05/2021 unused (TODO? remove)
+     *
+     *
+     * @param array $arr
+     * @param string[] $allowedKeys
+     * @return array
+     */
+    public static function filterByKeys(array $arr, array $allowedKeys)
+    {
+        $new = [];
+        foreach ($arr as $key => &$val) {
+            if (in_array($key, $allowedKeys, true)) {
+                $new[$key] = $val;
+            }
+        }
+
+        return $new;
+    }
+
+    /**
+     * Filters dict ("assoc array") by its keys and convert it to a list ("numeric array")
+     *
+     * example:
+     *
+     * UtilDict::toList(['aaa' => 123, 'bbb' => 456], ['bbb', 'ccc']) -->
+     *
+     * array:2 [
+     *   0 => 456
+     *   1 => null
+     * ]
+     *
+     *
+     * 09/2017 from scrapers
+     * 12/2019 merged UtilArray::filterByKey and UtilArray::extractByKeys to this
+     * 05/2021 moved from UtilCsv::dictToList to UtilDict::toList()
+     *
+     * used by cloudlister(exportOrdersToExcel)
+     *
+     * @return array numeric(!) array
+     */
+    public static function toList(array $dict, array $keys)
+    {
+        return array_map(function ($key) use ($dict) {
+            return @$dict[$key];
+        }, $keys);
+    }
 
 }

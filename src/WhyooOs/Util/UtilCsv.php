@@ -118,7 +118,7 @@ class UtilCsv
         $df = fopen("php://output", 'w');
         fputcsv($df, $columns);
         foreach ($rows as &$row) {
-            fputcsv($df, self::dictToList($row, $columns));
+            fputcsv($df, UtilDict::toList($row, $columns));
         }
         fclose($df);
 
@@ -150,36 +150,6 @@ class UtilCsv
     }
 
 
-    /**
-     * Filters dict ("assoc array") by its keys and convert it to a list ("numeric array")
-     *
-     * example:
-     *
-     * UtilCsv::dictToList(['aaa' => 123, 'bbb' => 456], ['bbb', 'ccc']) -->
-     *
-     * array:2 [
-     *   0 => 456
-     *   1 => null
-     * ]
-     *
-     *
-     * 09/2017 from scrapers
-     * 12/2019 merged UtilArray::filterByKey and UtilArray::extractByKeys to this
-     * @return array numeric(!) array
-     */
-    public static function dictToList(array $dict, array $keys)
-    {
-        return array_map(function ($key) use ($dict) {
-            return @$dict[$key];
-        }, $keys);
-
-//        # alternative implementation...
-//        $ret = [];
-//        foreach ($keys as $key) {
-//            $ret[] = @$hash[$key];
-//        }
-//        return $ret;
-    }
 
 
 }
