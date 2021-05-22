@@ -205,7 +205,7 @@ class UtilStringArray
     }
 
     /**
-     * whitelisting with "special behavior": if whitelist is empty, do not whitelist (return whole unmodified array)
+     * whitelisting
      *
      * 05/2021 created
      * 05/2021 used in push4
@@ -216,9 +216,6 @@ class UtilStringArray
      */
     public static function whitelist(array $arr, array $whitelist): array
     {
-        if(empty($whitelist)) {
-            return $arr;
-        }
         return array_intersect($arr, $whitelist);
     }
 

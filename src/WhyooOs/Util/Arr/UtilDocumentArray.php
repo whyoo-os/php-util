@@ -36,7 +36,7 @@ class UtilDocumentArray
      * 05/2021 moved from UtilArray to UtilDocumentArray
      *
      * @param array $items
-     * @param string $columnName eg "id" ... the gettername is generated automatically
+     * @param string $columnName eg "id" ... the gettername (eg "getId") is generated automatically
      * @return array
      */
     public static function arrayColumn(array $items, string $columnName): array
@@ -54,27 +54,26 @@ class UtilDocumentArray
      * example:
      *
      * $posts = {'a' => post1, 'b' => post2, 'c' => post3]
-     * getObjectProperty($posts, 'id', false) returns [1,2,3]
-     * getObjectProperty($posts, 'id', true) returns { a:1, b:2, c:3 }
+     * arrayColumnDeep($posts, 'id', false) returns [1,2,3]
+     * arrayColumnDeep($posts, 'id', true) returns { a:1, b:2, c:3 }
      *
      * used in marketer
      *
      * 05/2021 moved from UtilArray::getObjectProperty() to UtilDocumentArray::arrayColumnDeep()
      *
      * @param array $arr
-     * @param string $propertyName also sub-documents like 'userProfile.birthday' are possible
+     * @param string $path also sub-documents like 'userProfile.birthday' are possible
      * @param bool $bKeepOriginalKeys the thing with $bKeepOriginalKeys` is if array is associative to keep the old keys not to cretae new numeric array
      * @return array
      */
-    public static function arrayColumnDeep(array $arr, $propertyName, $bKeepOriginalKeys = false)
+    public static function arrayColumnDeep(array $arr, string $path, bool $bKeepOriginalKeys = false)
     {
-        $subfields = explode('.', $propertyName);
+        $subfields = explode('.', $path);
 
         $getterNames = [];
         foreach ($subfields as $subfield) {
             $getterNames[] = 'get' . ucfirst($subfield);
         }
-
 
         // $methodName = "get" . ucfirst($propertyName);
 

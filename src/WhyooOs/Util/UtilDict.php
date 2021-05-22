@@ -11,14 +11,13 @@ class UtilDict
 {
 
 
-
     /**
      * 12/2019
      */
     public static function getOneFilteredByWhitelist(array $one, $whitelistedKeys)
     {
         $newDict = [];
-        foreach($whitelistedKeys as $key) {
+        foreach ($whitelistedKeys as $key) {
             $newDict[$key] = $one[$key];
         }
 
@@ -49,7 +48,7 @@ class UtilDict
     public static function getManyFilteredByWhitelist(iterable $many, array $whitelistedKeys)
     {
         $newList = [];
-        foreach($many as &$item) {
+        foreach ($many as &$item) {
             $newList[] = self::getOneFilteredByWhitelist($item, $whitelistedKeys);
         }
 
@@ -86,7 +85,7 @@ class UtilDict
      */
     public static function prependToKeys(array $arr, string $prefix)
     {
-        $keys = array_map(function($key) use ($prefix){
+        $keys = array_map(function ($key) use ($prefix) {
             return $prefix . $key;
         }, array_keys($arr));
 
@@ -103,7 +102,7 @@ class UtilDict
      */
     public static function appendToKeys(array $arr, string $suffix)
     {
-        $keys = array_map(function($key) use ($suffix){
+        $keys = array_map(function ($key) use ($suffix) {
             return $key . $suffix;
         }, array_keys($arr));
 
@@ -160,6 +159,34 @@ class UtilDict
         return array_map(function ($key) use ($dict) {
             return @$dict[$key];
         }, $keys);
+    }
+
+
+    /**
+     * 05/2021 created
+     *
+     * @param array $dict
+     * @param string $path
+     * @param bool $bExceptionOnNotFound
+     * @return array|mixed|null
+     * @throws \Exception
+     */
+    public static function deepGet(array $dict, string $path, bool $bExceptionOnNotFound = true)
+    {
+        $subfields = explode('.', $path);
+
+        foreach ($subfields as $fieldName) {
+            if (!array_key_exists($fieldName, $dict)) {
+                if ($bExceptionOnNotFound) {
+                    throw new \Exception("path '$path' does not exist");
+                } else {
+                    return null;
+                }
+            }
+            $dict = &$dict[$fieldName];
+        }
+
+        return $dict;
     }
 
 }
