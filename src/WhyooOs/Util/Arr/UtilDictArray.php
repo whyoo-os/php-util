@@ -78,8 +78,9 @@ class UtilDictArray
      * @param array $arr
      * @param string $path eg 'function', also deepPaths are possible 'xx.yy.zz'
      * @param array $whitelist eg ['LicMapScalar', 'RotateWarpMapScalar']
+     * @return array
      */
-    public static function whitelist(array $arr, string $path, array $whitelist)
+    public static function whitelist(array $arr, string $path, array $whitelist): array
     {
         return array_filter($arr, function ($item) use ($path, $whitelist) {
             try {
@@ -98,8 +99,9 @@ class UtilDictArray
      * @param array $arr
      * @param string $path eg 'function', also deepPaths are possible 'xx.yy.zz'
      * @param array $blacklist eg ['DivisionRaster', 'DrawRectangles']
+     * @return array
      */
-    public static function blacklist(array $arr, string $path, array $blacklist)
+    public static function blacklist(array $arr, string $path, array $blacklist): array
     {
         return array_filter($arr, function ($item) use ($path, $blacklist) {
             try {

@@ -163,12 +163,12 @@ class UtilDict
 
 
     /**
-     * 05/2021 created
+     * 05/2021 created push4
      *
      * @param array $dict
      * @param string $path
      * @param bool $bExceptionOnNotFound
-     * @return array|mixed|null
+     * @return mixed
      * @throws \Exception
      */
     public static function deepGet(array $dict, string $path, bool $bExceptionOnNotFound = true)
@@ -188,5 +188,4 @@ class UtilDict
 
         return $dict;
     }
-
 }

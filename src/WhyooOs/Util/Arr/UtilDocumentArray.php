@@ -2,6 +2,9 @@
 
 namespace WhyooOs\Util\Arr;
 
+use WhyooOs\Util\UtilDict;
+use WhyooOs\Util\UtilDocument;
+
 /**
  * utility functions for handling lists (aka arrays) of documents (aka objects)
  *
@@ -198,6 +201,48 @@ class UtilDocumentArray
 
         return $newArray;
     }
+
+
+    /**
+     * 05/2021 created, used by push4 graph building
+     *
+     * @param array $arr
+     * @param string $path eg 'function', also deepPaths are possible 'xx.yy.zz'
+     * @param array $whitelist eg ['LicMapScalar', 'RotateWarpMapScalar']
+     * @return array
+     */
+    public static function whitelist(array $arr, string $path, array $whitelist): array
+    {
+        return array_filter($arr, function ($item) use ($path, $whitelist) {
+            try {
+                return in_array(UtilDocument::deepGet($item, $path, True), $whitelist);
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
+
+    }
+
+
+    /**
+     * 05/2021 created, used by push4 graph building
+     *
+     * @param array $arr
+     * @param string $path eg 'function', also deepPaths are possible 'xx.yy.zz'
+     * @param array $blacklist eg ['DivisionRaster', 'DrawRectangles']
+     * @return array
+     */
+    public static function blacklist(array $arr, string $path, array $blacklist): array
+    {
+        return array_filter($arr, function ($item) use ($path, $blacklist) {
+            try {
+                return !in_array(UtilDocument::deepGet($item, $path, True), $blacklist);
+            } catch (\Exception $e) {
+                return True;
+            }
+        });
+    }
+
 
 
 }
