@@ -151,7 +151,7 @@ class UtilDocument
                     return null;
                 }
             }
-            $document = &$document->$getterName();
+            $document = $document->$getterName();
         }
 
         return $document;

@@ -2,6 +2,7 @@
 
 namespace WhyooOs\Util\Arr;
 
+use WhyooOs\Util\UtilDebug;
 use WhyooOs\Util\UtilDict;
 use WhyooOs\Util\UtilDocument;
 
@@ -236,8 +237,10 @@ class UtilDocumentArray
     {
         return array_filter($arr, function ($item) use ($path, $blacklist) {
             try {
+                # UtilDebug::dd("needle: " . UtilDocument::deepGet($item, $path, True));
                 return !in_array(UtilDocument::deepGet($item, $path, True), $blacklist);
             } catch (\Exception $e) {
+                # UtilDebug::dd("FAIL", $path, $item, $e);
                 return True;
             }
         });

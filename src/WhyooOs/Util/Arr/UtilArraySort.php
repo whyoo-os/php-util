@@ -35,20 +35,21 @@ class UtilArraySort
      * sorts an array of objects
      * used by marketer (for sorting list of participants by conversationRole)
      * TODO: maybe there is faster version with a callback
+     * TODO 05/2021 maybe move to UtilDocumentArray::sortDeep() ?
      *
      * 03/2018
      * 08/2018 also sorts by sub-documents like 'userProfile.birthday'
      * 03/2021 moved from UtilArray::sortArrayOfObjects to UtilArraySort::sortDocuments()
      *
      * @param array &$documents
-     * @param string $attributeName eg "conversationRole", "userProfile.birthday"
+     * @param string $path eg "conversationRole", "userProfile.birthday"
      * @param int $sortOrder
      * @param int $sortFlags
      * @return array
      */
-    public static function sortDocuments(array &$documents, string $attributeName, int $sortOrder = SORT_ASC, int $sortFlags = SORT_REGULAR)
+    public static function sortDocuments(array &$documents, string $path, int $sortOrder = SORT_ASC, int $sortFlags = SORT_REGULAR)
     {
-        $sortArray = UtilArray::getObjectProperty($documents, $attributeName);
+        $sortArray = UtilDocumentArray::arrayColumnDeep($documents, $path);
         if (array_multisort($sortArray, $sortOrder, $sortFlags, $documents) === FALSE) {
             throw new \Exception("multisort failed");
         }
@@ -69,7 +70,7 @@ class UtilArraySort
     {
         $funArgs = [];
         foreach ($sortBy as $columnName => $sortOrder) {
-            $funArgs[] = UtilArray::getObjectProperty($documents, $columnName);
+            $funArgs[] = UtilDocumentArray::arrayColumnDeep($documents, $columnName);
             $funArgs[] = $sortOrder;
         }
         $funArgs[] = &$documents;
