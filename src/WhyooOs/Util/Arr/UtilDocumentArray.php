@@ -103,6 +103,8 @@ class UtilDocumentArray
     }
 
     /**
+     * aka numeric2assoc, aka _.keyBy (or _.indexBy in older versions)
+     *
      * 05/2021 moved from UtilArray::arrayOfDocumentsToAssoc() to UtilDocumentArray::documentArrayToDict()
      *
      * @param array $array

@@ -13,7 +13,7 @@ use WhyooOs\Util\UtilDict;
 class UtilDictArray
 {
     /**
-     * aka numeric2assoc
+     * aka numeric2assoc, aka _.keyBy (or _.indexBy in older versions)
      *
      * 05/2021 moved from UtilArray::arrayOfArraysToAssoc() to UtilDictArray::dictArrayToDict()
      *
