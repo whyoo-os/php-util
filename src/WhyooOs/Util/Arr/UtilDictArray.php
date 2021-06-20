@@ -113,4 +113,67 @@ class UtilDictArray
     }
 
 
+    /**
+     * 06/2021 used for import coaches mb (requirement: do not import duplicate coaches with same email)
+     *
+     * @param array $arr the dictArray
+     * @param string $fieldName eg 'email'
+     * @return array dict with the fieldValue as $key and array with the found entry as values
+     *
+     * example for grouping an dict array by field 'email'
+     *
+     * in:
+     *
+     *       [
+     *           {
+     *               email: 'aaa',
+     *               id:    1
+     *           },
+     *           {
+     *               email: 'aaa',
+     *               id:    2
+     *           },
+     *           {
+     *               email: 'bbb',
+     *               id:    3
+     *           }
+     *       ]
+     *
+     * out:
+     *
+     *       {
+     *           aaa: [
+     *               {
+     *                   email: 'aaa',
+     *                   id:    1
+     *               },
+     *               {
+     *                   email: 'aaa',
+     *                   id:    2
+     *               }
+     *           ],
+     *           bbb: [
+     *               {
+     *                   email: 'bbb',
+     *                   id:    3
+     *               }
+     *           ]
+     *       }
+     *
+     *
+     */
+    public static function grouped(array $arr, string $fieldName): array
+    {
+        $groupedByFieldName = [];
+        foreach ($arr as &$v) {
+            if (!isset($groupedByFieldName[$v[$fieldName]])) {
+                $groupedByFieldName[$v[$fieldName]] = [&$v];
+            } else {
+                $groupedByFieldName[$v[$fieldName]][] = &$v;
+            }
+        }
+
+        return $groupedByFieldName;
+    }
+
 }
