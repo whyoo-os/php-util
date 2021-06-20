@@ -118,6 +118,8 @@ class UtilDictArray
      *
      * @param array $arr the dictArray
      * @param string $fieldName eg 'email'
+     * @param bool $bTrim trim the field before comparison
+     * @param bool $bCaseInsensitive strlower the field before comparison
      * @return array dict with the fieldValue as $key and array with the found entry as values
      *
      * example for grouping an dict array by field 'email'
@@ -160,16 +162,22 @@ class UtilDictArray
      *           ]
      *       }
      *
-     *
      */
-    public static function grouped(array $arr, string $fieldName): array
+    public static function grouped(array $arr, string $fieldName, bool $bTrim=true, bool $bCaseInsensitive=true): array
     {
         $groupedByFieldName = [];
         foreach ($arr as &$v) {
-            if (!isset($groupedByFieldName[$v[$fieldName]])) {
-                $groupedByFieldName[$v[$fieldName]] = [&$v];
+            $key = $v[$fieldName];
+            if($bTrim) {
+                $key = trim($key);
+            }
+            if($bCaseInsensitive) {
+                $key = mb_strtolower($key);
+            }
+            if (!isset($groupedByFieldName[$key])) {
+                $groupedByFieldName[$key] = [&$v];
             } else {
-                $groupedByFieldName[$v[$fieldName]][] = &$v;
+                $groupedByFieldName[$key][] = &$v;
             }
         }
 
