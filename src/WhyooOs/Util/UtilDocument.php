@@ -5,6 +5,7 @@ namespace WhyooOs\Util;
 
 
 /**
+ * TODO: rename whitelist / blacklist to allowlist/denylist
  * 07/2017
  */
 class UtilDocument
@@ -52,7 +53,6 @@ class UtilDocument
         self::copyDataFromArrayToDocumentWithWhitelist($srcArray, $destObject, $whiteList);
     }
 
-
     /**
      * 09/2020 created
      * used by cloudlister
@@ -62,9 +62,29 @@ class UtilDocument
      * @param $srcArray
      * @param \stdClass (AbstractDocument) $destDocument the document with getters and setters
      */
-    public static function copyDataFromArrayToDocument(array $srcArray, $destDocument)
+    public static function copyDataFromArrayToDocument(array $srcArray, $destDocument): void
     {
         self::copyDataFromArrayToDocumentWithWhitelist($srcArray, $destDocument, array_keys($srcArray));
+    }
+
+
+    /**
+     * 07/2021 created
+     *
+     * no deepfields allowed with this version
+     *
+     * used by gitlogs-for-invoice
+     *
+     * @param array $srcArray
+     * @param \stdClass (AbstractDocument) $destDocument the document with getters and setters
+     * @param array $namesMap dict {name_in_array => nameInDocument}
+     */
+    public static function copyDataFromArrayToDocumentWithNamesMap(array $srcArray, $destDocument, array $namesMap): void
+    {
+        foreach ($namesMap as $nameInArray => $nameInDocument) {
+            $setterName = 'set' . ucfirst($nameInDocument);
+            $destDocument->$setterName($srcArray[$nameInArray]);
+        }
     }
 
 
