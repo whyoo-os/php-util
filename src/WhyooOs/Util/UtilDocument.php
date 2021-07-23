@@ -129,6 +129,33 @@ class UtilDocument
     }
 
 
+    /**
+     * 05/2021 created push4
+     *
+     * @param $document
+     * @param string $path
+     * @param bool $bExceptionOnNotFound
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function deepGet($document, string $path, bool $bExceptionOnNotFound = true)
+    {
+        $subfields = explode('.', $path);
+
+        foreach ($subfields as $fieldName) {
+            $getterName = 'get' . ucfirst($fieldName);
+            if (!method_exists($document, $getterName)) {
+                if ($bExceptionOnNotFound) {
+                    throw new \Exception("path '$path' does not exist");
+                } else {
+                    return null;
+                }
+            }
+            $document = $document->$getterName();
+        }
+
+        return $document;
+    }
 
 
 }

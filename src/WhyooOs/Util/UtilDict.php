@@ -163,12 +163,12 @@ class UtilDict
 
 
     /**
-     * 05/2021 created
+     * 05/2021 created push4
      *
      * @param array $dict
      * @param string $path
      * @param bool $bExceptionOnNotFound
-     * @return array|mixed|null
+     * @return mixed
      * @throws \Exception
      */
     public static function deepGet(array $dict, string $path, bool $bExceptionOnNotFound = true)
@@ -187,6 +187,20 @@ class UtilDict
         }
 
         return $dict;
+    }
+
+
+    /**
+     * 07/2021 created, used by ct
+     *
+     * @param array $dict the dict aka assoc array
+     * @param string[] $keysToDelete
+     */
+    public static function unsetMany(array &$dict, array &$keysToDelete)
+    {
+        foreach($keysToDelete as $key) {
+            unset($dict[$key]);
+        }
     }
 
 }

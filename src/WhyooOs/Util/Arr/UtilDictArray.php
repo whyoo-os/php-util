@@ -13,7 +13,7 @@ use WhyooOs\Util\UtilDict;
 class UtilDictArray
 {
     /**
-     * aka numeric2assoc
+     * aka numeric2assoc, aka _.keyBy (or _.indexBy in older versions)
      *
      * 05/2021 moved from UtilArray::arrayOfArraysToAssoc() to UtilDictArray::dictArrayToDict()
      *
@@ -78,8 +78,9 @@ class UtilDictArray
      * @param array $arr
      * @param string $path eg 'function', also deepPaths are possible 'xx.yy.zz'
      * @param array $whitelist eg ['LicMapScalar', 'RotateWarpMapScalar']
+     * @return array
      */
-    public static function whitelist(array $arr, string $path, array $whitelist)
+    public static function whitelist(array $arr, string $path, array $whitelist): array
     {
         return array_filter($arr, function ($item) use ($path, $whitelist) {
             try {
@@ -98,8 +99,9 @@ class UtilDictArray
      * @param array $arr
      * @param string $path eg 'function', also deepPaths are possible 'xx.yy.zz'
      * @param array $blacklist eg ['DivisionRaster', 'DrawRectangles']
+     * @return array
      */
-    public static function blacklist(array $arr, string $path, array $blacklist)
+    public static function blacklist(array $arr, string $path, array $blacklist): array
     {
         return array_filter($arr, function ($item) use ($path, $blacklist) {
             try {
@@ -110,5 +112,76 @@ class UtilDictArray
         });
     }
 
+
+    /**
+     * 06/2021 used for import coaches mb (requirement: do not import duplicate coaches with same email)
+     *
+     * @param array $arr the dictArray
+     * @param string $fieldName eg 'email'
+     * @param bool $bTrim trim the field before comparison
+     * @param bool $bCaseInsensitive strlower the field before comparison
+     * @return array dict with the fieldValue as $key and array with the found entry as values
+     *
+     * example for grouping an dict array by field 'email'
+     *
+     * in:
+     *
+     *       [
+     *           {
+     *               email: 'aaa',
+     *               id:    1
+     *           },
+     *           {
+     *               email: 'aaa',
+     *               id:    2
+     *           },
+     *           {
+     *               email: 'bbb',
+     *               id:    3
+     *           }
+     *       ]
+     *
+     * out:
+     *
+     *       {
+     *           aaa: [
+     *               {
+     *                   email: 'aaa',
+     *                   id:    1
+     *               },
+     *               {
+     *                   email: 'aaa',
+     *                   id:    2
+     *               }
+     *           ],
+     *           bbb: [
+     *               {
+     *                   email: 'bbb',
+     *                   id:    3
+     *               }
+     *           ]
+     *       }
+     *
+     */
+    public static function grouped(array $arr, string $fieldName, bool $bTrim=true, bool $bCaseInsensitive=true): array
+    {
+        $groupedByFieldName = [];
+        foreach ($arr as &$v) {
+            $key = $v[$fieldName];
+            if($bTrim) {
+                $key = trim($key);
+            }
+            if($bCaseInsensitive) {
+                $key = mb_strtolower($key);
+            }
+            if (!isset($groupedByFieldName[$key])) {
+                $groupedByFieldName[$key] = [&$v];
+            } else {
+                $groupedByFieldName[$key][] = &$v;
+            }
+        }
+
+        return $groupedByFieldName;
+    }
 
 }
