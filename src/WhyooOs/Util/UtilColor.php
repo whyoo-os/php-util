@@ -52,7 +52,7 @@ class UtilColor
     public static function hex2int(string $strHex)
     {
         $strHex = str_replace('#', '', $strHex);
-        list($r, $g, $b) = sscanf($strHex, "%02x%02x%02x");
+        [$r, $g, $b] = sscanf($strHex, "%02x%02x%02x");
 
         return $r * 0x10000 + $g * 0x100 + $b;
     }
@@ -117,11 +117,11 @@ class UtilColor
     public static function getContrastColor($hexColor)
     {
         //////////// hexColor RGB
-        list($R1, $G1, $B1) = self::hex2rgb($hexColor);
+        [$R1, $G1, $B1] = self::hex2rgb($hexColor);
 
         //////////// Black RGB
         $blackColor = "#000000";
-        list($R2BlackColor, $G2BlackColor, $B2BlackColor) = self::hex2rgb($blackColor);
+        [$R2BlackColor, $G2BlackColor, $B2BlackColor] = self::hex2rgb($blackColor);
 
 
         //////////// Calc contrast ratio
@@ -146,6 +146,30 @@ class UtilColor
         } else { //////////// if not, return white color.
             return '#ffffff';
         }
+    }
+
+
+    /**
+     * for coloring avatars with name initials
+     * HSL stands for hue, saturation, and lightness
+     *
+     * 08/2021 created, used for MB
+     *
+     *
+     * @param string $str some string, eg. a name
+     * @param int $s saturation in % 0..100
+     * @param int $l lightness in % 0..100
+     * @return string
+     */
+    public static function stringToHslColor(string $str, int $s, int $l): string
+    {
+        $hash = 0;
+        foreach (mb_str_split($str) as $ch) {
+            $hash = mb_ord($ch) + (($hash << 5) - $hash);
+        }
+        $h = abs($hash % 360);
+
+        return "hsl({$h}, {$s}%, {$l}%)";
     }
 
 
