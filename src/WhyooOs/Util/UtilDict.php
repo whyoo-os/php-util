@@ -191,12 +191,12 @@ class UtilDict
 
 
     /**
-     * 07/2021 created, used by ct
+     * 07/2021 created, used by ct, mb
      *
      * @param array $dict the dict aka assoc array
      * @param string[] $keysToDelete
      */
-    public static function unsetMany(array &$dict, array &$keysToDelete)
+    public static function unsetMany(array &$dict, array $keysToDelete)
     {
         foreach($keysToDelete as $key) {
             unset($dict[$key]);
