@@ -10,15 +10,19 @@ namespace WhyooOs\Util;
 class UtilDocument
 {
     /**
-     * used by cloudlister, schlegel
-     * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
-     * 09/2020 renamed copyDataFromArrayToDocument --> copyDataFromArrayToDocumentWithWhitelist
+     * used by cloudlister, schlegel, mb
      *
-     * @param $srcArray
+     * can also handle field names like inventoryItem.currentStockLevel for embedded stuff
+     *
+     * 09/2020 renamed copyDataFromArrayToDocument --> copyDataFromArrayToDocumentWithWhitelist
+     * 11/2021 parameter $bSkipNonExisting added (true for PATCH, false for PUT/POST)
+     *
+     * @param array $srcArray
      * @param \stdClass (AbstractDocument) $destDocument the document with getters and setters
-     * @param $whiteList
+     * @param string[] $whiteList
+     * @param bool $bSkipNonExisting skip if a field from whitelist does not exist in srcArray if true, set it to NULL if false
      */
-    public static function copyDataFromArrayToDocumentWithWhitelist(array $srcArray, $destDocument, array $whiteList)
+    public static function copyDataFromArrayToDocumentWithWhitelist(array $srcArray, $destDocument, array $whiteList, bool $bSkipNonExisting = false)
     {
         foreach ($whiteList as $attributeName) {
             $myDoc = $destDocument;
@@ -32,9 +36,21 @@ class UtilDocument
                 $getterName = 'get' . ucfirst($subfield);
                 $myDoc = $myDoc->$getterName();
 
-                $myArr = $myArr[$subfield] ?? null;
+                if (array_key_exists($subfield, $myArr)) {
+                    $myArr = $myArr[$subfield];
+                } else {
+                    // not found in srcArray ..
+                    $myArr = [];
+                }
             }
-            $myDoc->$setterName($myArr[$lastSubfield] ?? null);
+
+            if (array_key_exists($lastSubfield, $myArr)) {
+                $myDoc->$setterName($myArr[$lastSubfield]);
+            } else {
+                if (!$bSkipNonExisting) {
+                    $myDoc->$setterName(null);
+                }
+            }
         }
     }
 
@@ -104,7 +120,6 @@ class UtilDocument
 //            $dest->$setterName( @$src[$fieldName]);
 //        }
 //    }
-
 
 
     /**
