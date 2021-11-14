@@ -12,13 +12,29 @@ class UtilDict
 
 
     /**
-     * 12/2019
+     * used by mb
+     * TODO: add support for dots in paths
+     *
+     * 12/2019 created
+     * 11/2021 parameter $bSkipNonExisting added (true for PATCH, false for PUT/POST)
+     *
+     * @param array $src
+     * @param string[] $whitelistedKeys list of paths, dots are supported
+     * @param bool $bSkipNonExisting skip if a field from whitelist does not exist in srcArray if true, set it to NULL if false
+     * @return array the newly created assoc array (aka dict)
      */
-    public static function getOneFilteredByWhitelist(array $one, $whitelistedKeys)
+    public static function getOneFilteredByWhitelist(array $src, array $whitelistedKeys, bool $bSkipNonExisting=false)
     {
         $newDict = [];
         foreach ($whitelistedKeys as $key) {
-            $newDict[$key] = $one[$key];
+            if(array_key_exists($key, $src)) {
+                $newDict[$key] = $src[$key];
+            } else {
+                if(!$bSkipNonExisting) {
+                    // set explicitly to null
+                    $newDict[$key] = null;
+                }
+            }
         }
 
         return $newDict;

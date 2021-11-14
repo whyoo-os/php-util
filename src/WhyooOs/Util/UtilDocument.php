@@ -19,7 +19,7 @@ class UtilDocument
      *
      * @param array $srcArray
      * @param \stdClass (AbstractDocument) $destDocument the document with getters and setters
-     * @param string[] $whiteList
+     * @param string[] $whiteList list of paths, dots are supported
      * @param bool $bSkipNonExisting skip if a field from whitelist does not exist in srcArray if true, set it to NULL if false
      */
     public static function copyDataFromArrayToDocumentWithWhitelist(array $srcArray, $destDocument, array $whiteList, bool $bSkipNonExisting = false)
@@ -48,6 +48,7 @@ class UtilDocument
                 $myDoc->$setterName($myArr[$lastSubfield]);
             } else {
                 if (!$bSkipNonExisting) {
+                    // set explicitly to null
                     $myDoc->$setterName(null);
                 }
             }
