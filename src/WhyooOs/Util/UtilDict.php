@@ -43,6 +43,7 @@ class UtilDict
 
     /**
      * 12/2019 unimplemented
+     * 11/2021 TODO: move to UtilDictArray
      *
      * @param array $arr
      * @param array $blacklistedKeys
@@ -56,6 +57,7 @@ class UtilDict
 
     /**
      * 12/2019
+     * 11/2021 TODO: move to UtilDictArray
      *
      * @param array[] $many
      * @param array $whitelistedKeys
@@ -74,6 +76,7 @@ class UtilDict
 
     /**
      * 12/2019 moved from UtilArray to here .. because list of dicts is sorted
+     * 11/2021 TODO?: move to UtilDictArray?
      *
      * @param array $array
      * @param string $key
@@ -125,29 +128,29 @@ class UtilDict
         return array_combine($keys, array_values($arr));
     }
 
-    /**
-     * filters assoc array
-     *
-     * was used by cloudlister
-     * 05/2021 moved from UtilArray::filterArrayByKeys() to UtilDict::filterByKeys()
-     * 05/2021 unused (TODO? remove)
-     *
-     *
-     * @param array $arr
-     * @param string[] $allowedKeys
-     * @return array
-     */
-    public static function filterByKeys(array $arr, array $allowedKeys)
-    {
-        $new = [];
-        foreach ($arr as $key => &$val) {
-            if (in_array($key, $allowedKeys, true)) {
-                $new[$key] = $val;
-            }
-        }
-
-        return $new;
-    }
+//    /**
+//     * filters assoc array
+//     *
+//     * was used by cloudlister
+//     * 05/2021 moved from UtilArray::filterArrayByKeys() to UtilDict::filterByKeys()
+//     * 05/2021 unused (TODO? remove)
+//     * 11/2021 commented out (same as self::getOneFilteredByWhitelist)
+//     *
+//     * @param array $arr
+//     * @param string[] $allowedKeys
+//     * @return array
+//     */
+//    public static function filterByKeys(array $arr, array $allowedKeys)
+//    {
+//        $new = [];
+//        foreach ($arr as $key => &$val) {
+//            if (in_array($key, $allowedKeys, true)) {
+//                $new[$key] = $val;
+//            }
+//        }
+//
+//        return $new;
+//    }
 
     /**
      * Filters dict ("assoc array") by its keys and convert it to a list ("numeric array")
