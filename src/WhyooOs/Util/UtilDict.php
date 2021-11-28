@@ -23,14 +23,14 @@ class UtilDict
      * @param bool $bSkipNonExisting skip if a field from whitelist does not exist in srcArray if true, set it to NULL if false
      * @return array the newly created assoc array (aka dict)
      */
-    public static function getOneFilteredByWhitelist(array $src, array $whitelistedKeys, bool $bSkipNonExisting=false)
+    public static function getOneFilteredByWhitelist(array $src, array $whitelistedKeys, bool $bSkipNonExisting = false)
     {
         $newDict = [];
         foreach ($whitelistedKeys as $key) {
-            if(array_key_exists($key, $src)) {
+            if (array_key_exists($key, $src)) {
                 $newDict[$key] = $src[$key];
             } else {
-                if(!$bSkipNonExisting) {
+                if (!$bSkipNonExisting) {
                     // set explicitly to null
                     $newDict[$key] = null;
                 }
@@ -208,14 +208,35 @@ class UtilDict
 
     /**
      * 07/2021 created, used by ct, mb
+     * 11/2021 support for dot-notation paths added
+     * 11/2021 parameter bExceptionOnNotFound added
      *
      * @param array $dict the dict aka assoc array
      * @param string[] $keysToDelete
      */
-    public static function unsetMany(array &$dict, array $keysToDelete)
+    public static function unsetMany(array &$dict, array $keysToDelete, bool $bExceptionOnNotFound = false)
     {
-        foreach($keysToDelete as $key) {
-            unset($dict[$key]);
+        foreach ($keysToDelete as $key) {
+            $dict2 = &$dict;
+            $subfields = explode('.', $key);
+            foreach ($subfields as $idx => $fieldName) {
+                if (!array_key_exists($fieldName, $dict2)) {
+                    if ($bExceptionOnNotFound) {
+                        throw new \Exception("path '$key' does not exist");
+                    } else {
+                        return null;
+                    }
+                }
+                // UtilDebug::d($key, $fieldName);
+                if($idx === count($subfields) -1) {
+                    // UtilDebug::d($dict2[$key]);
+                    unset($dict2[$fieldName]);
+                } else {
+                    $dict2 = &$dict2[$fieldName];
+                }
+            }
+
+            // UtilDebug::d($dict2, $key);
         }
     }
 
