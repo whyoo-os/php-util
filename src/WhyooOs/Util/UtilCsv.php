@@ -3,6 +3,7 @@
 namespace WhyooOs\Util;
 
 
+use WhyooOs\Util\Arr\UtilArray;
 use WhyooOs\Util\Arr\UtilStringArray;
 
 class UtilCsv
@@ -84,12 +85,15 @@ class UtilCsv
 
 
     /**
+     * used by ct
+     *
      * flattens array of rows and exports to .csv
      * 09/2017 for scrapers
      * 12/2019 updated
+     * 11/2021 added functionality to have custom header names if $columns is assoc array
      *
      * @param array $rows
-     * @param array|null $columns
+     * @param array|null $columns numeric array or assoc array
      * @return string csv
      */
     public static function arrayToCsv(array $rows, array $columns = null)
@@ -113,17 +117,29 @@ class UtilCsv
             asort($columns);
         }
 
-        // 3) write header + rows
+        // ---- optional header names if $columns is an assoc array
+        if(UtilArray::isAssocArray($columns)) {
+            $headerNames = array_values($columns);
+            $columnNames = array_keys($columns);
+        } else {
+            $headerNames = $columns;
+            $columnNames = $columns;
+        }
+
+        // ---- write header
         ob_start();
         $df = fopen("php://output", 'w');
-        fputcsv($df, $columns);
+        fputcsv($df, $headerNames);
+
+        // ---- write rows
         foreach ($rows as &$row) {
-            fputcsv($df, UtilDict::toList($row, $columns));
+            fputcsv($df, UtilDict::toList($row, $columnNames));
         }
         fclose($df);
 
         return ob_get_clean();
     }
+
 
 
     /**
