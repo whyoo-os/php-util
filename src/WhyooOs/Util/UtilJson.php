@@ -7,6 +7,7 @@ namespace WhyooOs\Util;
 
 
 use Pygmentize\Pygmentize;
+use WhyooOs\Util\Arr\UtilStringArray;
 
 class UtilJson
 {
@@ -76,6 +77,36 @@ class UtilJson
         $json = json_encode($data, $options);
         if (json_last_error() != JSON_ERROR_NONE) {
             throw new \Exception("JSON ENCODE ERROR: " . json_last_error_msg() . "!");
+        }
+
+        return file_put_contents($pathJsonFile, $json);
+    }
+
+
+
+    /**
+     * save json with possibility to add a comment at the top
+     *
+     * 01/2022 created
+     *
+     * @param string $pathJsonFile
+     * @param $data
+     * @param string|null $comment
+     * @param int|string $options
+     * @return false|int
+     * @throws \Exception
+     */
+    public static function saveJson5File(string $pathJsonFile, $data, string $comment = null, $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+    {
+        $json = json_encode($data, $options);
+        if (json_last_error() != JSON_ERROR_NONE) {
+            throw new \Exception("JSON ENCODE ERROR: " . json_last_error_msg() . "!");
+        }
+
+        if($comment) {
+            $commentLines = explode("\n", $comment);
+            $commentWithAsterisks = implode("\n", UtilStringArray::prependToEach($commentLines, ' * '));
+            $json = "/*\n{$commentWithAsterisks}\n */\n{$json}";
         }
 
         return file_put_contents($pathJsonFile, $json);
