@@ -91,6 +91,7 @@ class UtilCsv
      * 09/2017 for scrapers
      * 12/2019 updated
      * 11/2021 added functionality to have custom header names if $columns is assoc array
+     * 01/2022 bugfixed and sorting of extracted header column
      *
      * @param array $rows
      * @param array|null $columns numeric array or assoc array
@@ -114,8 +115,12 @@ class UtilCsv
                 $union += $row;
             }
             $columns = array_keys($union);
-            asort($columns);
+            // asort($columns);
         }
+
+//        if(!UtilArray::isAssocArray($columns)) {
+//            $columns = array_combine($columns, $columns);
+//        }
 
         // ---- optional header names if $columns is an assoc array
         if(UtilArray::isAssocArray($columns)) {
