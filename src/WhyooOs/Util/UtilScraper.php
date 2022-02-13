@@ -79,6 +79,7 @@ class UtilScraper
             return $text;
         }
         $text = html_entity_decode($text, ENT_QUOTES);
+        $text = preg_replace('#\xc2\xa0+#', ' ', $text); // nbsp;
         $text = preg_replace('#\s+#', ' ', $text);
         $text = self::br2nl($text);
         $text = strip_tags($text);
