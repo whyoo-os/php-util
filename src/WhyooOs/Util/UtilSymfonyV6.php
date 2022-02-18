@@ -24,7 +24,7 @@ class UtilSymfonyV6
      */
     public static function getContainer()
     {
-        return $GLOBALS['app']->getKernel()->getContainer();
+        return $GLOBALS['app']->getContainer();
     }
 
     /**
