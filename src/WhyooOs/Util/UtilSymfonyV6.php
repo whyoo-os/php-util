@@ -24,7 +24,11 @@ class UtilSymfonyV6
      */
     public static function getContainer()
     {
-        return $GLOBALS['app']->getContainer();
+        if($GLOBALS['app'] instanceof \Symfony\Bundle\FrameworkBundle\Console\Application) {
+            return $GLOBALS['app']->getKernel()->getContainer();
+        } else {
+            return $GLOBALS['app']->getContainer(); // does this work?
+        }
     }
 
     /**
