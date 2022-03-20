@@ -255,9 +255,11 @@ class UtilFilesystem
     }
 
     /**
+     * used by art-experiments
+     *
      * @param string $pathDirectory
-     * @param array $extensionsLowerCase
-     * @param array $allowedMimeTypes
+     * @param string[] $extensionsLowerCase
+     * @param string[] $allowedMimeTypes
      * @param bool $bRecursive
      * @param bool $bReturnFullPath
      * @return array|false
@@ -271,6 +273,7 @@ class UtilFilesystem
             $files = self::scanDir($pathDirectory);
         }
 
+        // ---- filter
         $ret = array_filter($files, function ($filename) use ($extensionsLowerCase, $allowedMimeTypes, $pathDirectory) {
             //echo "#".self::getExtension( $filename);
             $ext = self::getExtension($filename);
@@ -282,9 +285,19 @@ class UtilFilesystem
                 $mime = mime_content_type($pathDirectory . '/' . $filename);
                 return in_array($mime, $allowedMimeTypes);
             }
-            return in_array($ext, $extensionsLowerCase);
+
+            // ---- instead of using in_array() we iterate manually to circumvent problem with extensions like "palette.json"
+            foreach($extensionsLowerCase as $extension) {
+                if(UtilString::endsWithCaseInsensitive($filename, $extension)) {
+                    return true;
+                }
+            }
+
+            return false;
         });
 
+
+        // ---- sort
         asort($ret);
 
         if ($bReturnFullPath) {

@@ -194,12 +194,24 @@ class UtilString
      * @param string $needle
      * @return bool
      */
-    public static function startsWith(string $haystack, string $needle)
+    public static function startsWith(string $haystack, string $needle): bool
     {
         // return strpos($haystack, $needle) === 0;
         return substr($haystack, 0, strlen($needle)) === $needle;
     }
 
+    /**
+     * 03/2022 created
+     * used by art-experiments
+     * 
+     * @param string $haystack
+     * @param string $needle
+     * @return bool
+     */
+    public static function startsWithCaseInsensitive(string $haystack, string $needle): bool
+    {
+        return self::startsWith(strtolower($haystack), strtolower($needle));
+    }
 
     /**
      * 07/2020 created (tldr2anki)
@@ -208,10 +220,24 @@ class UtilString
      * @param string $needle
      * @return bool
      */
-    public static function endsWith(string $haystack, string $needle)
+    public static function endsWith(string $haystack, string $needle): bool
     {
         return substr($haystack, strlen($haystack) - strlen($needle)) === $needle;
     }
+
+    /**
+     * 03/2022 created
+     * used by art-experiments
+     *
+     * @param string $haystack
+     * @param string $needle
+     * @return bool
+     */
+    public static function endsWithCaseInsensitive(string $haystack, string $needle): bool
+    {
+        return self::endsWith(strtolower($haystack), strtolower($needle));
+    }
+
 
 
     /**
