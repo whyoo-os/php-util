@@ -14,7 +14,7 @@ class UtilFormatter
      * @param $array
      * @return string
      */
-    public static function formatDictText($array)
+    public static function formatDictText($array): string
     {
         $maxLengthKey = 0;
         $maxLengthVal = 0;
@@ -43,7 +43,7 @@ class UtilFormatter
      * @param $keys
      * @return string
      */
-    public static function formatDictHtml($array, $keys, array $translations = [])
+    public static function formatDictHtml($array, $keys, array $translations = []): string
     {
         $out = "<table>\n";
         foreach ($keys as $key) {
@@ -63,13 +63,13 @@ class UtilFormatter
     /**
      * 10/2017 from scrapers
      *
-     * @param $size
+     * @param int $sizeInBytes
      * @param int $precision
      * @return string
      */
-    public static function formatBytes($size, $precision = 2)
+    public static function formatBytes(int $sizeInBytes, int $precision = 2): string
     {
-        $base = log($size, 1024);
+        $base = log($sizeInBytes, 1024);
         $suffixes = ['B', 'KB', 'MB', 'GB', 'TB'];
 
         return round(pow(1024, $base - floor($base)), $precision) . ' ' . $suffixes[(int)floor($base)];

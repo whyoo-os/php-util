@@ -8,14 +8,14 @@ namespace WhyooOs\Util;
 
 class UtilFilesystem
 {
-
-
     /**
-     * @param $pathFile
+     * @param string $pathFile
      * @param int $idxStart
-     * @return string
+     * @return null|string null if no free filename found (after 999999999 tries)
+     *
+     * 03/2022 where is this used?
      */
-    public static function getNextFreeFilename($pathFile, $idxStart = 1)
+    public static function getNextFreeFilename(string $pathFile, int $idxStart = 1): string|null
     {
         if (!file_exists($pathFile)) {
             return $pathFile;
@@ -29,6 +29,8 @@ class UtilFilesystem
                 return $newFilePath;
             }
         }
+
+        return null; // FAILED
     }
 
 
@@ -52,25 +54,26 @@ class UtilFilesystem
      * alias
      *
      * @param $filename
-     * @return bool|string
+     * @return string
      */
-    public static function stripExtension($filename)
+    public static function stripExtension(string $filename): string
     {
         return self::getWithoutExtension($filename);
     }
 
 
     /**
-     * @param $filePath
-     * @return string file path without extension eg "/tmp/somefile"
+     * 03/2022 TODO: add param for number of dots (default 1) .. to eg remove extension from file like "001.palette.json"
+     * @param string $pathFile
+     * @return string file path without extension eg "/tmp/somefile.txt"
      */
-    public static function getWithoutExtension($filePath)
+    public static function getWithoutExtension(string $pathFile): string
     {
-        $pos = strrpos($filePath, '.');
+        $pos = strrpos($pathFile, '.');
         if ($pos !== false) {
-            return substr($filePath, 0, $pos);
+            return substr($pathFile, 0, $pos);
         } else { // no extension
-            return $filePath;
+            return $pathFile;
         }
     }
 
@@ -78,8 +81,10 @@ class UtilFilesystem
     /**
      * not recursive .. returns files and directories ... relative to $path
      * 02/2021 TODO: where is this used?
+     * @param string $path
+     * @return string[]
      */
-    public static function scanDir($path)
+    public static function scanDir(string $path): array
     {
         $ret = [];
         if ($handle = opendir($path)) {
@@ -343,7 +348,12 @@ class UtilFilesystem
     }
 
 
-    public static function joinPaths()
+    /**
+     * 03/2022 created
+     *
+     * @return string
+     */
+    public static function joinPaths(): string
     {
         $paths = [];
 
@@ -625,7 +635,7 @@ class UtilFilesystem
     /**
      * 07/2018 some hack
      * @param $binData
-     * @return mixed
+     * @return string
      */
     public static function guessExtensionOfRawData($binData)
     {
@@ -655,6 +665,22 @@ class UtilFilesystem
 
         return $base . $suffix . '.' . $ext;
     }
+
+    /**
+     * prepends a prefix to a filename of a path
+     *
+     * 03/2022 created
+     * (not) used in art-experiments
+     *
+     * @param string $pathFile
+     * @param string $suffix
+     * @return string
+     */
+    public static function prependPrefix(string $pathFile, string $suffix): string
+    {
+        return self::joinPaths(dirname($pathFile), $suffix.basename($pathFile));
+    }
+
 
 
     /**
@@ -686,5 +712,6 @@ class UtilFilesystem
             unlink($fullFilePath);
         }
     }
+
 
 }
