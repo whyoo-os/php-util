@@ -157,6 +157,8 @@ class UtilFilesystem
 
 
     /**
+     * 03/2022 TODO rename to findFilesByPattern
+     *
      * scans $pathDir for files recursively
      *
      * returns full or relative paths of found files
@@ -170,11 +172,11 @@ class UtilFilesystem
      * 02/2021 parameter $bReturnRelativePaths added
      *
      * @param string $pathDir
-     * @param string $pattern a regex pattern, eg '~\.png$~'
+     * @param string|null $pattern a regex pattern, eg '~\.png$~'
      * @param bool $bReturnRelativePaths - if true it returns the relative paths (ie the filenames if not in a subdirectory)
      * @return string[] full or relative paths of found files
      */
-    public static function findFiles(string $pathDir, string $pattern = null, bool $bReturnRelativePaths = false)
+    public static function findFiles(string $pathDir, ?string $pattern = null, bool $bReturnRelativePaths = false)
     {
         return self::_findFilesRecursive($pathDir, $pattern, $bReturnRelativePaths, '');
     }
@@ -261,6 +263,7 @@ class UtilFilesystem
 
     /**
      * used by art-experiments
+     * 04/2022 TODO: remove this one (not used anymore, except by findImages)
      *
      * @param string $pathDirectory
      * @param string[] $extensionsLowerCase
@@ -301,7 +304,6 @@ class UtilFilesystem
             return false;
         });
 
-
         // ---- sort
         asort($ret);
 
@@ -316,16 +318,19 @@ class UtilFilesystem
 
 
     /**
-     * 05/2020
+     * 05/2020 created
      * used by push4
      * 08/2020 used by webpack migrator
+     * 04/2022 added param $bReturnFullPath
+     * 04/2022 used by artgen instead of self::findByExtensionsOrMimeTypes()
      *
      * @param string $pathDirectory
      * @param array $extensionsLowerCase
      * @param bool $bRecursive
+     * @param bool $bReturnFullPath
      * @return array
      */
-    public static function findByExtensions(string $pathDirectory, array $extensionsLowerCase, bool $bRecursive = true)
+    public static function findByExtensions(string $pathDirectory, array $extensionsLowerCase, bool $bRecursive = true, $bReturnFullPath = false)
     {
         if ($bRecursive) {
             $files = self::findFiles($pathDirectory, null, true);
@@ -334,17 +339,24 @@ class UtilFilesystem
         }
 
         $ret = array_filter($files, function ($filename) use ($extensionsLowerCase) {
-            //echo "#".self::getExtension( $filename);
-            $ext = self::getExtension($filename);
-            if (empty($ext)) {
-                return false;
+            // ---- instead of using in_array() we iterate manually to circumvent problem with extensions like "palette.json"
+            foreach($extensionsLowerCase as $extension) {
+                if(UtilString::endsWithCaseInsensitive($filename, $extension)) {
+                    return true;
+                }
             }
-            return in_array($ext, $extensionsLowerCase);
+            return false;
         });
 
         asort($ret);
 
-        return array_values($ret);
+        if ($bReturnFullPath) {
+            return array_values(array_map(function ($x) use ($pathDirectory) {
+                return self::joinPaths($pathDirectory, $x);
+            }, $ret));
+        } else {
+            return array_values($ret);
+        }
     }
 
 

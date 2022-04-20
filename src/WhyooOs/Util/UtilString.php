@@ -8,11 +8,15 @@ class UtilString
 {
 
     /**
+     * 03/2022 FIXME: this fails for input "3d"
+     *
      * source http://stackoverflow.com/questions/1993721/how-to-convert-camelcase-to-camel-case
+     *
      * @param string $input
+     * @param string $glue
      * @return string
      */
-    public static function to_snake_case($input, $glue = '_')
+    public static function to_snake_case(string $input, string $glue = '_'): string
     {
         preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
         $ret = $matches[0];
@@ -23,9 +27,15 @@ class UtilString
         return implode($glue, $ret);
     }
 
-    public static function toCamelCase($string, $capitalizeFirstCharacter = true, $separator = '_')
+    /**
+     * @param string $input
+     * @param bool $capitalizeFirstCharacter
+     * @param string $separator
+     * @return string
+     */
+    public static function toCamelCase(string $input, bool $capitalizeFirstCharacter = true, string $separator = '_'): string
     {
-        $str = str_replace(' ', '', ucwords(str_replace($separator, ' ', $string)));
+        $str = str_replace(' ', '', ucwords(str_replace($separator, ' ', $input)));
 
         if (!$capitalizeFirstCharacter) {
             $str[0] = strtolower($str[0]);
