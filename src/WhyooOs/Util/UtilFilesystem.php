@@ -323,15 +323,20 @@ class UtilFilesystem
      * 08/2020 used by webpack migrator
      * 04/2022 added param $bReturnFullPath
      * 04/2022 used by artgen instead of self::findByExtensionsOrMimeTypes()
+     * 04/2022 braking change: $bReturnFullPath set default to true
      *
      * @param string $pathDirectory
-     * @param array $extensionsLowerCase
+     * @param array|string $extensionsLowerCase
      * @param bool $bRecursive
      * @param bool $bReturnFullPath
      * @return array
      */
-    public static function findByExtensions(string $pathDirectory, array $extensionsLowerCase, bool $bRecursive = true, $bReturnFullPath = false)
+    public static function findByExtensions(string $pathDirectory, array|string $extensionsLowerCase, bool $bRecursive = true, $bReturnFullPath = true)
     {
+        if(is_string($extensionsLowerCase)) {
+            $extensionsLowerCase = [$extensionsLowerCase];
+        }
+
         if ($bRecursive) {
             $files = self::findFiles($pathDirectory, null, true);
         } else {
