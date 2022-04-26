@@ -150,9 +150,30 @@ class UtilRandom
      * @param array $array
      * @return mixed
      */
-    public static function getRandomElement($array)
+    public static function getRandomElement(array $array)
     {
         return $array[array_rand($array)];
+    }
+
+    /**
+     * returns a random element and removes it from the array
+     * 04/2022 created
+     *
+     * @param array &$array reference to the input array - gets modified by the function
+     * @param bool $bReindexArray
+     * @return mixed
+     */
+    public static function pullRandomElement(array &$array, bool $bReindexArray = false)
+    {
+        $idx = array_rand($array);
+        $el = $array[$idx];
+        if($bReindexArray) {
+            array_splice($array, $idx, 1); // remove element, re-index array
+        } else {
+            unset($array[$idx]); // remove element, do not re-index array
+        }
+
+        return $el;
     }
 
 }
