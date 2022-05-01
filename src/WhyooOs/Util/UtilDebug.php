@@ -56,7 +56,7 @@ class UtilDebug
     /**
      * @param string $id
      */
-    public static function startTimeProfiling($id = 'default')
+    public static function startTimeProfiling(string $id = 'default'): void
     {
         self::$timeProfilers[$id] = microtime(true);
     }
@@ -65,7 +65,7 @@ class UtilDebug
      * @param string $id
      * @return float seconds
      */
-    public static function stopTimeProfiling($id = 'default')
+    public static function stopTimeProfiling(string $id = 'default'): float
     {
         $length = microtime(true) - self::$timeProfilers[$id];
         self::$timeProfilers[$id] = null;

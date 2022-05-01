@@ -47,7 +47,6 @@ class UtilJson
     }
 
 
-
     /**
      * 04/2020 used by scraper.service
      * 04/2021 $bAssoc - changed default value from false to true
@@ -66,13 +65,32 @@ class UtilJson
 
 
     /**
+     * parses whole .jsonl log file into a list-array
+     * see https://jsonlines.org/
+     * 05/2022 created, used by push4
+     *
+     * @param string $pathJsonlFile
+     * @param bool $bAssoc
+     * @return array
+     */
+    public static function loadJsonlFile(string $pathJsonlFile, $bAssoc = true): array
+    {
+        $lines = file($pathJsonlFile);
+        // TODO? filter empty lines?
+
+        return array_map(fn($line) => json_decode($line, $bAssoc), $lines);
+    }
+
+
+
+    /**
      * @param string $pathJsonFile
      * @param $data
      * @param int $options
      * @return bool|int
      * @throws \Exception
      */
-    public static function saveJsonFile(string $pathJsonFile, $data, $options=JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)
+    public static function saveJsonFile(string $pathJsonFile, $data, $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
     {
         $json = json_encode($data, $options);
         if (json_last_error() != JSON_ERROR_NONE) {
@@ -103,7 +121,7 @@ class UtilJson
             throw new \Exception("JSON ENCODE ERROR: " . json_last_error_msg() . "!");
         }
 
-        if($comment) {
+        if ($comment) {
             $commentLines = explode("\n", $comment);
             $commentWithAsterisks = implode("\n", UtilStringArray::prependToEach($commentLines, ' * '));
             $json = "/*\n{$commentWithAsterisks}\n */\n{$json}";
