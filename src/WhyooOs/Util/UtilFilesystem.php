@@ -15,7 +15,7 @@ class UtilFilesystem
      *
      * 03/2022 where is this used?
      */
-    public static function getNextFreeFilename(string $pathFile, int $idxStart = 1): string|null
+    public static function getNextFreeFilename(string $pathFile, int $idxStart = 1): ?string
     {
         if (!file_exists($pathFile)) {
             return $pathFile;
