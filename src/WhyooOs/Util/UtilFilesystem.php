@@ -331,7 +331,7 @@ class UtilFilesystem
      * @param bool $bReturnFullPath
      * @return array
      */
-    public static function findByExtensions(string $pathDirectory, array|string $extensionsLowerCase, bool $bRecursive = true, $bReturnFullPath = true)
+    public static function findByExtensions(string $pathDirectory, $extensionsLowerCase, bool $bRecursive = true, $bReturnFullPath = true)
     {
         if(is_string($extensionsLowerCase)) {
             $extensionsLowerCase = [$extensionsLowerCase];
