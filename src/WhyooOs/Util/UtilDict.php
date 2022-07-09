@@ -165,17 +165,41 @@ class UtilDict
      * 09/2017 from scrapers
      * 12/2019 merged UtilArray::filterByKey and UtilArray::extractByKeys to this
      * 05/2021 moved from UtilCsv::dictToList to UtilDict::toList()
+     * 07/2022 renamed from toList() to extractValues()
      *
      * used by cloudlister(exportOrdersToExcel)
      *
      * @return array numeric(!) array
      */
-    public static function toList(array $dict, array $keys)
+    public static function extractValues(array $dict, array $keys): array
     {
         return array_map(function ($key) use ($dict) {
             return @$dict[$key];
         }, $keys);
     }
+
+    /**
+     * 07/2022 created, used by MB
+     * converts a dict to list of assoc arrays , eg:
+     *      IN: {a:1, b:2}
+     *      OUT: [{key:"a", value:1}, {key:"b", value:2}]
+     *
+     * @param array $dict
+     * @return array list of assoc arrays
+     */
+    public static function toDictArray(array $dict, string $keyName = 'key', string $valueName = 'value'): array
+    {
+        $ret = [];
+        foreach ($dict as $k => $v) {
+            $ret[] = [
+                $keyName   => $k,
+                $valueName => $v,
+            ];
+        }
+
+        return $ret;
+    }
+
 
 
     /**
