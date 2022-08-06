@@ -184,4 +184,71 @@ class UtilDictArray
         return $groupedByFieldName;
     }
 
+
+
+
+    /**
+     * 07/2018
+     * 08/2022 moved to from UtilArray::_matchCriteria() --> UtilDictArray::_matchCriteria()
+     *
+     * @param $item
+     * @param $criteria
+     * @return bool
+     */
+    private static function _matchCriteria($item, array $criteria): bool
+    {
+        foreach ($criteria as $key => $val) {
+            if ($item[$key] != $val) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+
+
+    /**
+     * 07/2018 signature changed: replaced $key, $value with $criteria
+     * 08/2022 moved to from UtilArray::findOne() --> UtilDictArray::findOne()
+     *
+     * @param array|\Iterator $arr
+     * @param array $criteria
+     * @return mixed|null
+     */
+    public static function findOne($arr, array $criteria)
+    {
+        foreach ($arr as $item) {
+            if (self::_matchCriteria($item, $criteria)) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
+     * 07/2018
+     * 08/2022 moved to from UtilArray::findMany() --> UtilDictArray::findMany()
+     *
+     * @param array|\Iterator $arr
+     * @param array $criteria
+     * @return array
+     */
+    public static function findMany($arr, array $criteria): array
+    {
+        $ret = [];
+        foreach ($arr as &$item) {
+            if (self::_matchCriteria($item, $criteria)) {
+                $ret[] = $item;
+            }
+        }
+
+        return $ret;
+    }
+
+
+
 }

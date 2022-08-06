@@ -251,5 +251,68 @@ class UtilDocumentArray
     }
 
 
+    /**
+     * 08/2022 private helper for UtilDocumentArray::findOne()/findMany()
+     *
+     * @param $item
+     * @param $criteria
+     * @return bool
+     */
+    private static function _matchCriteria($item, array $criteria): bool
+    {
+        $bMatch = true;
+
+        foreach ($criteria as $key => $val) {
+            $getterName = 'get' . ucfirst($key);
+            if (is_object($item) && $item->$getterName() != $val) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * 08/2022 created (used by cloudlister)
+     *
+     * @param array|\Iterator $arr
+     * @param array $criteria
+     * @return mixed|null
+     */
+    public static function findOne($arr, array $criteria)
+    {
+        foreach ($arr as $item) {
+            if (self::_matchCriteria($item, $criteria)) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
+     * 07/2018
+     * 08/2022 TODO: move to UtilDictArray::findMany()
+     * used by Schlegel, untested
+     *
+     * @param array $arr
+     * @param array $criteria
+     * @return array
+     */
+    public static function findMany(array $arr, array $criteria): array
+    {
+        $ret = [];
+        foreach ($arr as &$item) {
+            if (self::_matchCriteria($item, $criteria)) {
+                $ret[] = $item;
+            }
+        }
+
+        return $ret;
+    }
+
+
 
 }
