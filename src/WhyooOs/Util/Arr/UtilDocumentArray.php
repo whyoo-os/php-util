@@ -19,16 +19,17 @@ class UtilDocumentArray
      * 08/2020 used by tldr-to-anki
      * 09/2020 used by language immerser
      * 05/2021 moved from UtilArray to UtilDocumentArray
+     * 08/2022 using UtilArray::iteratorToArray() so that also iterator can get passed
      *
      * @param array $items
      * @param string $getterName eg "getId"
      * @return array
      */
-    public static function arrayColumnByGetter(array $items, string $getterName): array
+    public static function arrayColumnByGetter($items, string $getterName): array
     {
         return array_map(function ($f) use ($getterName) {
             return $f->$getterName();
-        }, $items);
+        }, UtilArray::iteratorToArray($items));
     }
 
 
@@ -38,17 +39,18 @@ class UtilDocumentArray
      * 08/2020 used by tldr-to-anki
      * 09/2020 used by language immerser
      * 05/2021 moved from UtilArray to UtilDocumentArray
+     * 08/2022 using UtilArray::iteratorToArray() so that also iterator can get passed
      *
-     * @param array $items
+     * @param array|\Iterator $items
      * @param string $columnName eg "id" ... the gettername (eg "getId") is generated automatically
      * @return array
      */
-    public static function arrayColumn(array $items, string $columnName): array
+    public static function arrayColumn($items, string $columnName): array
     {
         $getterName = 'get' . ucfirst($columnName);
         return array_map(function ($f) use ($getterName) {
             return $f->$getterName();
-        }, $items);
+        }, UtilArray::iteratorToArray($items));
     }
 
     /**
