@@ -92,6 +92,31 @@ class UtilObjectArray
 
         return $ret;
     }
-    
-    
+
+
+
+
+    /**
+     * check if all $subject is an array and if all items of the array are instance of $class
+     * if $subject is an empty array the function returns false
+     * 08/2022 created (for voters in MB)
+     *
+     * @param mixed $subject
+     * @param string $class
+     * @return bool
+     */
+    public static function isArrayOf($subject, string $class): bool
+    {
+        if(!is_array($subject) || empty($subject)) {
+            return false;
+        }
+        foreach ($subject as $item) {
+            if(!is_a($item, $class, true)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }
