@@ -24,10 +24,14 @@ class UtilSymfonyV6
      */
     public static function getContainer()
     {
-        if($GLOBALS['app'] instanceof \Symfony\Bundle\FrameworkBundle\Console\Application) {
+        if (isset($GLOBALS['app']) && $GLOBALS['app'] instanceof \Symfony\Bundle\FrameworkBundle\Console\Application) {
+            // old sf
             return $GLOBALS['app']->getKernel()->getContainer();
+        } elseif (isset($GLOBALS['kernel']) && $GLOBALS['kernel'] instanceof \App\Kernel) {
+            // new sf
+            return $GLOBALS['kernel']->getContainer();
         } else {
-            return $GLOBALS['app']->getContainer(); // does this work?
+            throw new \Exception("FAIL...");
         }
     }
 
@@ -59,10 +63,10 @@ class UtilSymfonyV6
 
     /**
      * when using this be sure that there is no way to get some file like /etc/passwd ..
-     * @see UtilFilesystem::sanitizeFilename()
-     *
      * @param string $pathFile
      * @return Response
+     * @see UtilFilesystem::sanitizeFilename()
+     *
      */
     public static function createImageResponse(string $pathFile)
     {
@@ -128,17 +132,15 @@ class UtilSymfonyV6
     }
 
 
-
-
     /**
      * alternative / faster version of self::createImageResponse ..
      *
      * when using this be sure that there is no way to get some file like /etc/passwd ..
+     * @param string $pathFile
+     * @return BinaryFileResponse
      * @see UtilFilesystem::sanitizeFilename()
      *
      *
-     * @param string $pathFile
-     * @return BinaryFileResponse
      */
     public static function createFileResponse(string $pathFile)
     {
@@ -157,7 +159,7 @@ class UtilSymfonyV6
      */
     public static function toArray($data, $groups = null)
     {
-        if( !is_array($data) && !is_object($data)) {
+        if (!is_array($data) && !is_object($data)) {
             return $data;
         }
         $serializationContext = self::getSerializationContext($groups);
