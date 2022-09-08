@@ -234,6 +234,7 @@ class UtilDict
      * 07/2021 created, used by ct, mb
      * 11/2021 support for dot-notation paths added
      * 11/2021 parameter bExceptionOnNotFound added
+     * 09/2022 bugfixed
      *
      * @param array $dict the dict aka assoc array
      * @param string[] $keysToDelete
@@ -242,13 +243,14 @@ class UtilDict
     {
         foreach ($keysToDelete as $key) {
             $dict2 = &$dict;
+            // UtilDebug::d($dict2);
             $subfields = explode('.', $key);
             foreach ($subfields as $idx => $fieldName) {
                 if (!array_key_exists($fieldName, $dict2)) {
                     if ($bExceptionOnNotFound) {
                         throw new \Exception("path '$key' does not exist");
                     } else {
-                        return null;
+                        break;
                     }
                 }
                 // UtilDebug::d($key, $fieldName);
@@ -259,9 +261,28 @@ class UtilDict
                     $dict2 = &$dict2[$fieldName];
                 }
             }
-
             // UtilDebug::d($dict2, $key);
         }
     }
+
+    /**
+     * renames keys of a dict
+     *
+     * 09/2022 created (MB)
+     *
+     * @param array $dict assoc array
+     * @param array $renames assoc array
+     * @param bool $bExceptionOnNotFound
+     */
+    public static function renameKeys(array &$dict, array $renames, bool $bExceptionOnNotFound = false) {
+        foreach($renames as $oldKey => $newKey) {
+            if(!array_key_exists($oldKey, $dict) && $bExceptionOnNotFound) {
+                throw new \Exception("key fail: $oldKey");
+            }
+            $dict[$newKey] = $dict[$oldKey] ?? null;
+            unset($dict[$oldKey]);
+        }
+    }
+
 
 }

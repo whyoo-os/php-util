@@ -201,18 +201,20 @@ class UtilSymfonyV6
     }
 
 
-    /**
-     * returns currently logged in user (if any) or null (if no user logged in)
-     * @return UserInterface
-     */
-    public static function getUser()
-    {
-        if ($token = self::getContainer()->get('security.token_storage')->getToken()) {
-            return $token->getUser();
-        } else {
-            return null;
-        }
-    }
+//    /**
+//     * returns currently logged in user (if any) or null (if no user logged in)
+//     * @return UserInterface
+//     */
+//    public static function getUser()
+//    {
+//        #if ($token = self::getContainer()->get('Symfony\Component\Security\Core\Authentication\Token\Storage\UsageTrackingTokenStorage')->getToken()) {
+//        if ($token = self::getContainer()->get('security.token_storage')->getToken()) {
+//            return $token->getUser();
+//        } else {
+//            return null;
+//        }
+//    }
+
 
     /**
      * orig: https://ourcodeworld.com/articles/read/459/how-to-authenticate-login-manually-an-user-in-a-controller-with-or-without-fosuserbundle-on-symfony-3
@@ -222,7 +224,6 @@ class UtilSymfonyV6
     {
         $token = new UsernamePasswordToken(
             $user,
-            null,
             $firewallName,
             $user->getRoles());
 
