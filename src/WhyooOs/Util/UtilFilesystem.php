@@ -401,24 +401,25 @@ class UtilFilesystem
         return array_values($dirs);
     }
 
-
     /**
-     * @param $path
+     * @param string $path
+     * @param int $perm
      */
-    public static function mkdirIfNotExists(string $path)
+    public static function mkdirIfNotExists(string $path, int $perm = 0777)
     {
-        if (!is_dir($path)) {
-            self::mkdir($path);
+        if (is_dir($path)) {
+            self::mkdir($path, $perm);
         }
     }
 
     /**
      * creates directory recursively with the right permissions
+     *
      * @param string $path
-     * @param string $perm
+     * @param int $perm
      * @throws \Exception
      */
-    public static function mkdir($path, $perm = 0777 /*, $maxLevelsDown=3*/)
+    public static function mkdir(string $path, int $perm = 0777 /*, $maxLevelsDown=3*/)
     {
         $parts = explode('/', $path);
 //		$offset = count($parts) - $maxLevelsDown;
