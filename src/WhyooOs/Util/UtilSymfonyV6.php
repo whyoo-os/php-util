@@ -133,20 +133,20 @@ class UtilSymfonyV6
 
 
     /**
-     * alternative / faster version of self::createImageResponse ..
+     * alternative / faster version of self::createImageResponse
      *
      * when using this be sure that there is no way to get some file like /etc/passwd ..
+     *
      * @param string $pathFile
+     * @param array $headers eg ['content-type' => 'image/jpeg']
      * @return BinaryFileResponse
      * @see UtilFilesystem::sanitizeFilename()
-     *
-     *
      */
-    public static function createFileResponse(string $pathFile)
+    public static function createFileResponse(string $pathFile, array $headers = [])
     {
         BinaryFileResponse::trustXSendfileTypeHeader(); // "the X-Sendfile-Type header should be trusted" (?)
 
-        return new BinaryFileResponse($pathFile);
+        return new BinaryFileResponse($pathFile, Response::HTTP_OK, $headers);
     }
 
 
