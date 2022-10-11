@@ -202,7 +202,7 @@ class UtilSymfonyV6
 
 
 //    /**
-//     * returns currently logged in user (if any) or null (if no user logged in)
+//     * returns currently logged-in user (if any) or null (if no user logged in)
 //     * @return UserInterface
 //     */
 //    public static function getUser()

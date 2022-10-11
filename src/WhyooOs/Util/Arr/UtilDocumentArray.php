@@ -116,11 +116,7 @@ class UtilDocumentArray
     public static function documentArrayToDict(array $array, string $keyName): array
     {
         $values = array_values($array);
-        $keys = [];
-        foreach ($values as &$doc) {
-            $getter = "get" . ucfirst($keyName);
-            $keys[] = $doc->$getter();
-        }
+        $keys = self::arrayColumn($array, $keyName);
 
         return array_combine($keys, $values);
     }

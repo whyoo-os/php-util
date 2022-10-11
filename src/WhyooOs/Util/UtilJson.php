@@ -1,7 +1,4 @@
 <?php
-/**
- * 09/2017
- */
 
 namespace WhyooOs\Util;
 
@@ -9,6 +6,9 @@ namespace WhyooOs\Util;
 use Pygmentize\Pygmentize;
 use WhyooOs\Util\Arr\UtilStringArray;
 
+/**
+ * 09/2017 created
+ */
 class UtilJson
 {
 
@@ -68,18 +68,45 @@ class UtilJson
      * parses whole .jsonl log file into a list-array
      * see https://jsonlines.org/
      * 05/2022 created, used by push4
+     * 10/2022 TODO: add a (memory efficient) version with a generator / yield() ... maybe a parameter?
      *
      * @param string $pathJsonlFile
      * @param bool $bAssoc
      * @return array
      */
-    public static function loadJsonlFile(string $pathJsonlFile, $bAssoc = true): array
+    public static function loadJsonlFile(string $pathJsonlFile, bool $bAssoc = true): array
     {
         $lines = file($pathJsonlFile);
         // TODO? filter empty lines?
 
         return array_map(fn($line) => json_decode($line, $bAssoc), $lines);
     }
+
+    /**
+     * parses whole .jsonl log file using generator/yield
+     * see https://jsonlines.org/
+     * 10/2022 created, used by MB
+     *
+     * usage
+     * =====
+     * $generator = UtilJson::loadJsonlFileWithGenerator('data.jsonl');
+     * foreach($generator as $line) {
+     *     // do something
+     * }
+     *
+     * @param string $pathJsonlFile
+     * @param bool $bAssoc
+     * @return \Generator
+     */
+    public static function loadJsonlFileWithGenerator(string $pathJsonlFile, bool $bAssoc = true): \Generator
+    {
+        $fp = fopen($pathJsonlFile, 'r');
+        while (($line = fgets($fp)) !== false) {
+            yield json_decode($line, $bAssoc);
+        }
+        fclose($fp);
+    }
+
 
 
 
@@ -98,6 +125,38 @@ class UtilJson
         }
 
         return file_put_contents($pathJsonFile, $json);
+    }
+
+
+    /**
+     * writes an array to a .jsonl file
+     *
+     * 10/2022 created
+     *
+     * @param string $pathJsonlFile
+     * @param array $lines
+     * @param int $jsonEncodeFlags
+     * @throws \Exception
+     */
+    public static function saveJsonlFile(string $pathJsonlFile, array $lines, $jsonEncodeFlags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+    {
+        // ---- check
+        if($jsonEncodeFlags & JSON_PRETTY_PRINT) {
+            throw new \LogicException("json_encode with flag JSON_PRETTY_PRINT not possible for jsonl.");
+        }
+        // ---- open
+        $fp = fopen($pathJsonlFile, 'w');
+        if($fp === false) {
+            throw new \Exception("error opening $pathJsonlFile for writing");
+        }
+        // ---- write line-by-line
+        foreach($lines as $line) {
+            if(fwrite($fp, json_encode($line, $jsonEncodeFlags) . "\n") === false) {
+                throw new \Exception("error writing to $pathJsonlFile. disk full?");
+            }
+        }
+        // ---- close
+        fclose($fp);
     }
 
 
