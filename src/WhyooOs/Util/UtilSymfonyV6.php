@@ -24,14 +24,20 @@ class UtilSymfonyV6
      */
     public static function getContainer()
     {
-        if (isset($GLOBALS['app']) && $GLOBALS['app'] instanceof \Symfony\Bundle\FrameworkBundle\Console\Application) {
-            // old sf
-            return $GLOBALS['app']->getKernel()->getContainer();
-        } elseif (isset($GLOBALS['kernel']) && $GLOBALS['kernel'] instanceof \App\Kernel) {
-            // new sf
-            return $GLOBALS['kernel']->getContainer();
+        if (isset($GLOBALS['app'])) {
+            if($GLOBALS['app'] instanceof \Symfony\Bundle\FrameworkBundle\Console\Application) {
+                // old sf
+                return $GLOBALS['app']->getKernel()->getContainer();
+            }
+            elseif($GLOBALS['app'] instanceof \App\Kernel) {
+                // new sf >=6
+                return $GLOBALS['app']->getContainer();
+            }
+            else {
+                throw new \Exception("getContainer FAIL 1");
+            }
         } else {
-            throw new \Exception("FAIL...");
+            throw new \Exception("getContainer FAIL 2");
         }
     }
 
