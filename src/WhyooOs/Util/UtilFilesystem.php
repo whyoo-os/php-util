@@ -407,7 +407,7 @@ class UtilFilesystem
      */
     public static function mkdirIfNotExists(string $path, int $perm = 0777)
     {
-        if (is_dir($path)) {
+        if (!is_dir($path)) {
             self::mkdir($path, $perm);
         }
     }
