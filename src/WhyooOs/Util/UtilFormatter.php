@@ -75,6 +75,14 @@ class UtilFormatter
         return round(pow(1024, $base - floor($base)), $precision) . ' ' . $suffixes[(int)floor($base)];
     }
 
+    /**
+     * 02/2023 used by calculation-manager
+     */
+    public static function formatDuration(int|float $seconds): string
+    {
+        return sprintf('%02d:%02d:%02d', ($seconds/ 3600),($seconds/ 60 % 60), $seconds% 60);
+    }
+
 
 
 }
