@@ -80,9 +80,17 @@ class UtilFormatter
      */
     public static function formatDuration(int|float $seconds): string
     {
-        return sprintf('%02d:%02d:%02d', ($seconds/ 3600),($seconds/ 60 % 60), $seconds% 60);
-    }
+        if (is_integer($seconds)) {
+            return sprintf('%02d:%02d:%02d', ($seconds / 3600), ($seconds / 60 % 60), $seconds % 60);
+        }
 
+        // float - 2 decimals for the seconds
+        $X = 100;
+        $secondsTimeX = (int)round($seconds * $X);
+        $seconds = (int)round($seconds);
+
+        return sprintf('%02d:%02d:%04.2f', intdiv($seconds, 3600), intdiv($seconds, 60) % 60, ($secondsTimeX % (60 * $X)) / $X);
+    }
 
 
 }
