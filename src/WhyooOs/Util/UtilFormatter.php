@@ -72,7 +72,7 @@ class UtilFormatter
         $base = log($sizeInBytes, 1024);
         $suffixes = ['B', 'KB', 'MB', 'GB', 'TB'];
 
-        return round(pow(1024, $base - floor($base)), $precision) . ' ' . $suffixes[(int)floor($base)];
+        return number_format(round(pow(1024, $base - floor($base)), $precision), $precision) . ' ' . $suffixes[(int)floor($base)];
     }
 
     /**
