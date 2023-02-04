@@ -211,9 +211,9 @@ class UtilFilesystem
      * @param string $newExtension
      * @return string
      */
-    public static function replaceExtension(string $pathCsv, string $newExtension)
+    public static function replaceExtension(string $pathCsv, string $newExtension): string
     {
-        return self::getWithoutExtension($pathCsv) . ".$newExtension";
+        return self::getWithoutExtension($pathCsv) . '.' . ltrim($newExtension, '.');
     }
 
 
@@ -669,17 +669,18 @@ class UtilFilesystem
 
 
     /**
-     * 07/2018
-     * used by Schlegel
+     * 07/2018 used by Schlegel
+     * 01/2023 used by CM, optional parameter $newExtension added
      *
      * @param string $pathFile
      * @param string $suffix
+     * @param string|null $newExtension
      * @return string
      */
-    public static function appendSuffix(string $pathFile, string $suffix)
+    public static function appendSuffix(string $pathFile, string $suffix, ?string $newExtension = null)
     {
         $base = self::getWithoutExtension($pathFile);
-        $ext = self::getExtension($pathFile);
+        $ext = $newExtension ? ltrim($newExtension, '.') : self::getExtension($pathFile);
 
         return $base . $suffix . '.' . $ext;
     }

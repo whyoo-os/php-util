@@ -92,12 +92,13 @@ class UtilCsv
      * 12/2019 updated
      * 11/2021 added functionality to have custom header names if $columns is assoc array
      * 01/2022 bugfixed and sorting of extracted header column
+     * 01/2023 bugfixed UtilDict::toList --> UtilDict::
      *
      * @param array $rows
      * @param array|null $columns numeric array or assoc array
      * @return string csv
      */
-    public static function arrayToCsv(array $rows, array $columns = null)
+    public static function arrayToCsv(array $rows, array $columns = null): string
     {
         if (count($rows) == 0) {
             return null;
@@ -138,7 +139,7 @@ class UtilCsv
 
         // ---- write rows
         foreach ($rows as &$row) {
-            fputcsv($df, UtilDict::toList($row, $columnNames));
+            fputcsv($df, UtilDict::extractValuesToList($row, $columnNames));
         }
         fclose($df);
 

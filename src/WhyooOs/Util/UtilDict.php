@@ -154,7 +154,7 @@ class UtilDict
      *
      * example:
      *
-     * UtilDict::toList(['aaa' => 123, 'bbb' => 456], ['bbb', 'ccc']) -->
+     * UtilDict::extractValues(['aaa' => 123, 'bbb' => 456], ['bbb', 'ccc']) -->
      *
      * array:2 [
      *   0 => 456
@@ -166,12 +166,15 @@ class UtilDict
      * 12/2019 merged UtilArray::filterByKey and UtilArray::extractByKeys to this
      * 05/2021 moved from UtilCsv::dictToList to UtilDict::toList()
      * 07/2022 renamed from toList() to extractValues()
+     * 02/2023 renamed from extractValues() to extractValuesToList()
      *
      * used by cloudlister(exportOrdersToExcel)
      *
+     * @param array $dict
+     * @param string[] $keys
      * @return array numeric(!) array
      */
-    public static function extractValues(array $dict, array $keys): array
+    public static function extractValuesToList(array $dict, array $keys): array
     {
         return array_map(function ($key) use ($dict) {
             return @$dict[$key];
