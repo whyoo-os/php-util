@@ -55,55 +55,16 @@ class UtilCsv
 
 
     /**
-     * private helper for arrayToCsv
+     * writes the data $rows to $fh
+     * internal helper
      *
-     * @param $json
-     * @param string $prefix
-     * @param array $aIgnore
-     * @param array $row
-     * @return array
-     */
-    private static function _flatten($json, $prefix = '', $aIgnore = [], $row = [])
-    {
-        foreach ($json as $key => $val) {
-            if (in_array($key, $aIgnore)) {
-                continue;
-            }
-            if (is_array($val)) {
-                if (UtilArray::isAssoc($val) || is_array($val[0])) {
-                    $row = array_merge($row, self::_flatten($val, "$prefix$key.", $aIgnore, $row));
-                } else {
-                    $row[$prefix . $key] = implode("\n", $val);
-                    // dump($prefix . $key, $val);
-                }
-            } else {
-                $row[$prefix . $key] = $val;
-            }
-        }
-        return $row;
-    }
-
-
-    /**
-     * used by ct
-     *
-     * flattens array of rows and exports to .csv
-     * 09/2017 for scrapers
-     * 12/2019 updated
-     * 11/2021 added functionality to have custom header names if $columns is assoc array
-     * 01/2022 bugfixed and sorting of extracted header column
-     * 01/2023 bugfixed UtilDict::toList --> UtilDict::
-     *
+     * @param \resource $fh file handle
      * @param array $rows
-     * @param array|null $columns numeric array or assoc array
-     * @return string csv
+     * @param array|null $columns
+     * @return bool true on success, false on error
      */
-    public static function arrayToCsv(array $rows, array $columns = null): string
+    private static function _arrayToCsv($fh, array $rows, array $columns = null): bool
     {
-        if (count($rows) == 0) {
-            return null;
-        }
-
         // 1) flatten each row
         foreach ($rows as &$row) {
             $row = self::_flatten($row);
@@ -133,20 +94,97 @@ class UtilCsv
         }
 
         // ---- write header
-        ob_start();
-        $df = fopen("php://output", 'w');
-        fputcsv($df, $headerNames);
+        $ret = fputcsv($fh, $headerNames);
+        if($ret === false) {
+            return false;
+        }
 
         // ---- write rows
         foreach ($rows as &$row) {
-            fputcsv($df, UtilDict::extractValuesToList($row, $columnNames));
+            $ret = fputcsv($fh, UtilDict::extractValuesToList($row, $columnNames));
+            if($ret === false) {
+                return false;
+            }
         }
-        fclose($df);
+
+        return true;
+    }
+
+
+    /**
+     * private helper for arrayToCsv
+     *
+     * @param $json
+     * @param string $prefix
+     * @param array $aIgnore
+     * @param array $row
+     * @return array
+     */
+    private static function _flatten($json, $prefix = '', $aIgnore = [], $row = [])
+    {
+        foreach ($json as $key => $val) {
+            if (in_array($key, $aIgnore)) {
+                continue;
+            }
+            if (is_array($val)) {
+                if (UtilArray::isAssoc($val) || is_array($val[0])) {
+                    $row = array_merge($row, self::_flatten($val, "$prefix$key.", $aIgnore, $row));
+                } else {
+                    $row[$prefix . $key] = implode("\n", $val);
+                    // dump($prefix . $key, $val);
+                }
+            } else {
+                $row[$prefix . $key] = $val;
+            }
+        }
+        return $row;
+    }
+
+    /**
+     * used by ct
+     *
+     * flattens array of rows and exports to .csv
+     * 09/2017 for scrapers
+     * 12/2019 updated
+     * 11/2021 added functionality to have custom header names if $columns is assoc array
+     * 01/2022 bugfixed and sorting of extracted header column
+     * 01/2023 bugfixed UtilDict::toList --> UtilDict::extractValuesToList
+     * 02/2023 renamed arrayToCsv --> arrayToCsvString
+     *
+     * @param array $rows
+     * @param array|null $columns numeric array or assoc array
+     * @return string csv
+     */
+    public static function arrayToCsvString(array $rows, array $columns = null): string
+    {
+        // ---- write csv to stdout and capture the output
+        ob_start();
+        $fh = fopen("php://output", 'w');
+        self::_arrayToCsv($fh, $rows, $columns);
+        fclose($fh);
 
         return ob_get_clean();
     }
 
+    /**
+     * 02/2023 created (used by t2-export-2023)
+     *
+     * @param string $pathDestCsvFile
+     * @param array $rows
+     * @param array|null $columns
+     * @return bool true on success, false on failure
+     */
+    public static function arrayToCsvFile(string $pathDestCsvFile, array $rows, array $columns = null): bool
+    {
+        $fh = fopen($pathDestCsvFile, 'wb');
+        if($fh === false) {
+            return false;
+        }
+        $bSuccess1 = self::_arrayToCsv($fh, $rows, $columns);
+        $bSuccess2 = fclose($fh);
 
+        return $bSuccess1 && $bSuccess2;
+    }
 
     /**
      * see https://github.com/dagwieers/unoconv/blob/master/doc/unoconv.1.adoc
