@@ -32,7 +32,7 @@ class UtilDebug
     public static function d()
     {
         $ddSource = debug_backtrace()[0];
-        echo $ddSource['file'] . ':' . $ddSource['line'] . Util::getNewline();
+        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
         foreach (func_get_args() as $arg) {
             dump($arg);
         }
@@ -45,7 +45,7 @@ class UtilDebug
     public static function dd()
     {
         $ddSource = debug_backtrace()[0];
-        echo $ddSource['file'] . ':' . $ddSource['line'] . Util::getNewline();
+        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
         foreach (func_get_args() as $arg) {
             dump($arg);
         }

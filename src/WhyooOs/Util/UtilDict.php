@@ -12,6 +12,53 @@ class UtilDict
 
 
     /**
+     *  Block list
+     *    Remove the values you don't want
+     *    var result = _.omit(credentials, ['age']);
+     *
+     * 02/2023 created (TopData)
+     *
+     * @param $dict
+     * @param string[] $blockList list of "blocked" dict keys (blacklist)
+     * @return array
+     */
+    public static function omit($dict, array $blockList): array
+    {
+        $ret = [];
+        foreach($dict as $key => $value) {
+            if(!in_array($key, $blockList))
+            $ret[$key] = $value;
+        }
+
+        return $ret;
+    }
+
+
+    /**
+     * Allow list
+     *   Only allow certain values
+     *   var result = _.pick(credentials, ['fname', 'lname']);
+     *
+     * 02/2023 created (TopData)
+     *
+     * @param $dict
+     * @param string[] $allowList list of allowed dict keys (whitelist)
+     * @return array
+     */
+    public static function pick($dict, array $allowList): array
+    {
+        $ret = [];
+        foreach($allowList as $key) {
+            if(array_key_exists($key, $dict))
+            $ret[$key] = $dict[$key];
+        }
+
+        return $ret;
+    }
+
+
+
+    /**
      * used by mb
      * TODO: add support for dots in paths
      *
