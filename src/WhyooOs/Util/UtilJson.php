@@ -117,11 +117,14 @@ class UtilJson
      * @return bool|int
      * @throws \Exception
      */
-    public static function saveJsonFile(string $pathJsonFile, $data, $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+    public static function saveJsonFile(string $pathJsonFile, $data, $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE, bool $bThrowException=true)
     {
         $json = json_encode($data, $options);
         if (json_last_error() != JSON_ERROR_NONE) {
-            throw new \Exception("JSON ENCODE ERROR: " . json_last_error_msg() . "!");
+            if($bThrowException) {
+                throw new \Exception("JSON ENCODE ERROR: " . json_last_error_msg() . "!");
+            }
+            return false;
         }
 
         return file_put_contents($pathJsonFile, $json);
