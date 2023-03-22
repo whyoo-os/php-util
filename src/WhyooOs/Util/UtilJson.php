@@ -108,12 +108,11 @@ class UtilJson
     }
 
 
-
-
     /**
      * @param string $pathJsonFile
      * @param $data
      * @param int $options
+     * @param bool $bThrowException
      * @return bool|int
      * @throws \Exception
      */

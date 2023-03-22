@@ -258,7 +258,7 @@ class UtilDict
      * @param array $dict
      * @param string $path
      * @param bool $bExceptionOnNotFound
-     * @return mixed
+     * @return mixed the value at give path, if found; null otherwise (or Exception is thrown if bExceptionOnNotFound)
      * @throws \Exception
      */
     public static function deepGet(array $dict, string $path, bool $bExceptionOnNotFound = true)
@@ -266,7 +266,7 @@ class UtilDict
         $subfields = explode('.', $path);
 
         foreach ($subfields as $fieldName) {
-            if (!array_key_exists($fieldName, $dict)) {
+            if ($dict === null || !array_key_exists($fieldName, $dict)) {
                 if ($bExceptionOnNotFound) {
                     throw new \Exception("path '$path' does not exist");
                 } else {
