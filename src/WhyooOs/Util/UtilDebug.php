@@ -54,6 +54,23 @@ class UtilDebug
 
 
     /**
+     * alias for DumpSql
+     */
+    public static function ds(string $sql)
+    {
+        self::dumpSql($sql);
+    }
+
+    /**
+     * alias for DumpSqlDie
+     */
+    public static function dsd(string $sql)
+    {
+        self::dumpSqlDie($sql);
+    }
+
+
+    /**
      * @param string $id
      */
     public static function startTimeProfiling(string $id = 'default'): void
@@ -102,6 +119,18 @@ class UtilDebug
         $ddSource = debug_backtrace()[0];
         echo $ddSource['file'] . ':' . $ddSource['line'] . Util::getNewline();
         echo SqlFormatter::format($sql);
+    }
+
+    /**
+     * 03/2023 created
+     *
+     * @param string $sql
+     * @return void
+     */
+    private static function dumpSqlDie(string $sql)
+    {
+        self::dumpSql($sql);
+        die();
     }
 
 }
