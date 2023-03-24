@@ -54,19 +54,24 @@ class UtilDebug
 
 
     /**
-     * alias for DumpSql
+     * former DumpSql()
      */
     public static function ds(string $sql)
     {
-        self::dumpSql($sql);
+        $ddSource = debug_backtrace()[0];
+        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+        echo SqlFormatter::format($sql);
     }
 
     /**
-     * alias for DumpSqlDie
+     * former DumpSqlDie()
      */
     public static function dsd(string $sql)
     {
-        self::dumpSqlDie($sql);
+        $ddSource = debug_backtrace()[0];
+        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+        echo SqlFormatter::format($sql);
+        die();
     }
 
 
@@ -104,33 +109,5 @@ class UtilDebug
         }
     }
 
-
-    /**
-     * 01/2021 created
-     *
-     * used by algotrend
-     *
-     * composer require jdorn/sql-formatter
-     *
-     * @param string $sql some sql query
-     */
-    public static function dumpSql(string $sql)
-    {
-        $ddSource = debug_backtrace()[0];
-        echo $ddSource['file'] . ':' . $ddSource['line'] . Util::getNewline();
-        echo SqlFormatter::format($sql);
-    }
-
-    /**
-     * 03/2023 created
-     *
-     * @param string $sql
-     * @return void
-     */
-    private static function dumpSqlDie(string $sql)
-    {
-        self::dumpSql($sql);
-        die();
-    }
 
 }
