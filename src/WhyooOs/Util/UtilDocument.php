@@ -173,5 +173,37 @@ class UtilDocument
         return $document;
     }
 
+    /**
+     * 03/2023 created
+     *
+     * @param $document
+     * @param mixed $path
+     * @param mixed $val
+     * @param bool $bExceptionOnNotFound
+     * @return void
+     * @throws \Exception
+     */
+    public static function setDeep($document, string $path, mixed $val, bool $bExceptionOnNotFound = true)
+    {
+        $subfields = explode('.', $path);
+        $subfieldsExceptLast = array_slice($subfields, 0, count($subfields) - 1 );
+        $lastSubfield = $subfields[count($subfields) - 1];
+
+        foreach ($subfieldsExceptLast as $fieldName) {
+            $getterName = 'get' . ucfirst($fieldName);
+            if (!method_exists($document, $getterName)) {
+                if ($bExceptionOnNotFound) {
+                    throw new \Exception("path '$path' does not exist");
+                } else {
+                    return null;
+                }
+            }
+            $document = $document->$getterName();
+        }
+
+        $setterName = 'set' . ucfirst($lastSubfield);
+        $document->$setterName($val);
+    }
+
 
 }
