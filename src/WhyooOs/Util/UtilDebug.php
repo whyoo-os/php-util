@@ -109,5 +109,19 @@ class UtilDebug
         }
     }
 
+    /**
+     * dumpMemory
+     * 04/2023 created
+     *
+     */
+    public static function dm(): void
+    {
+        $ddSource = debug_backtrace()[0];
+        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+        echo UtilFormatter::formatBytes(memory_get_usage(true)) . ' / ' .
+            UtilFormatter::formatBytes(memory_get_peak_usage(true)) . ' / ' .
+            ini_get('memory_limit')  . Util::getNewline();
+    }
+
 
 }
