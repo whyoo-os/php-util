@@ -21,16 +21,22 @@ class UtilCsv
      * @return array array of objects or assocArrays
      * @throws \Exception
      */
-    public static function parseCsvFile(string $pathCsv, bool $bAssoc = false, $bTrim = true, string $separator = ',', int $skip = 0)
+    public static function parseCsvFile(string $pathCsv, bool $bAssoc = false, $bTrim = true, string $separator = ',', ?int $limit=null, int $skip = 0)
     {
         $fileHandle = fopen($pathCsv, 'r');
         $arr = [];
         $rowIdx = 0;
         while (($row = fgetcsv($fileHandle, 0, $separator)) !== FALSE) {
-            if ($rowIdx++ < $skip) {
+            // ---- skip
+            if ($rowIdx < $skip) {
                 continue;
             }
+            // ---- limit
+            if(!is_null($limit) && $rowIdx > $limit) {
+                break;
+            }
             $arr[] = $bTrim ? UtilStringArray::trimEach($row) : $row;
+            $rowIdx++;
         }
         fclose($fileHandle);
 
