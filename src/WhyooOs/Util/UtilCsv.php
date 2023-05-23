@@ -10,53 +10,54 @@ class UtilCsv
 {
 
     /**
+     * parses a .csv file into an array of dicts
+     *
      * used by FixturesUtil
      * 03/2021 used by algotrend
+     * 05/2023 used by CM, parameters bTrim, bAssoc removed (breaking change)
      *
      * @param string $pathCsv
-     * @param bool $bAssoc
-     * @param bool $bTrim
      * @param string $separator
+     * @param int|null $limit
      * @param int $skip
-     * @return array array of objects or assocArrays
+     * @return array array of dicts
      * @throws \Exception
      */
-    public static function parseCsvFile(string $pathCsv, bool $bAssoc = false, $bTrim = true, string $separator = ',', ?int $limit=null, int $skip = 0)
+    public static function parseCsvFile(string $pathCsv, string $separator = ',', ?int $limit=null, int $skip = 0)
     {
         $fileHandle = fopen($pathCsv, 'r');
         $arr = [];
         $rowIdx = 0;
-        while (($row = fgetcsv($fileHandle, 0, $separator)) !== FALSE) {
+        $headers = fgetcsv($fileHandle, 0, $separator);
+        if(!$headers) {
+            throw new \Exception('invalid csv file');
+        }
+
+        while (($row = fgetcsv($fileHandle, 0, $separator)) !== false) {
             // ---- skip
             if ($rowIdx < $skip) {
+                $rowIdx++;
                 continue;
             }
             // ---- limit
             if(!is_null($limit) && $rowIdx > $limit) {
                 break;
             }
-            $arr[] = $bTrim ? UtilStringArray::trimEach($row) : $row;
+            $arr[] = UtilStringArray::trimEach($row);
             $rowIdx++;
         }
         fclose($fileHandle);
 
-        $headers = array_shift($arr); // remove header row
-        $aObjects = [];
+        $ret = [];
         foreach ($arr as $row) {
-            if (count($row) == count($headers)) { // valid row
-                if ($bAssoc) {
-                    // assoc array
-                    $aObjects[] = array_combine($headers, $row);
-                } else {
-                    // object
-                    $aObjects[] = (object)array_combine($headers, $row);
-                }
-            } else {
+            if (count($row) != count($headers)) { // valid row
                 throw new \Exception('invalid row');
             }
+
+            $ret[] = array_combine($headers, $row);
         }
 
-        return $aObjects;
+        return $ret;
     }
 
 
