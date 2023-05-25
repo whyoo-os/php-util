@@ -40,17 +40,21 @@ class UtilDocumentArray
      * 09/2020 used by language immerser
      * 05/2021 moved from UtilArray to UtilDocumentArray
      * 08/2022 using UtilArray::iteratorToArray() so that also iterator can get passed
+     * 05/2023 not using UtilArray::iteratorToArray() and array_map anymore, to always return numeric array
      *
      * @param array|\Iterator $items
      * @param string $columnName eg "id" ... the gettername (eg "getId") is generated automatically
-     * @return array
+     * @return array numeric array with the extracted values (even if the input array was associative)
      */
     public static function arrayColumn($items, string $columnName): array
     {
+        $ret = [];
         $getterName = 'get' . ucfirst($columnName);
-        return array_map(function ($f) use ($getterName) {
-            return $f->$getterName();
-        }, UtilArray::iteratorToArray($items));
+        foreach($items as $item) {
+            $ret[] = $item->$getterName();
+        }
+
+        return $ret;
     }
 
     /**
