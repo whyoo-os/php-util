@@ -31,8 +31,7 @@ class UtilDebug
      */
     public static function d()
     {
-        $ddSource = debug_backtrace()[0];
-        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+        self::_echoCaller();
         foreach (func_get_args() as $arg) {
             dump($arg);
         }
@@ -42,13 +41,46 @@ class UtilDebug
     /**
      * dump + die
      */
-    public static function dd()
+    public static function dd()/*: never*/
     {
-        $ddSource = debug_backtrace()[0];
-        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+        self::_echoCaller();
         foreach (func_get_args() as $arg) {
             dump($arg);
         }
+        die();
+    }
+
+    /**
+     * dc is alias for dumpClass
+     *
+     * 05/2023 created
+     *
+     * @param $object1 , object2, ...
+     * @return void
+     */
+    public static function dc(): void
+    {
+        self::_echoCaller();
+        foreach (func_get_args() as $arg) {
+            dump(self::_getClassInheritance($arg));
+        }
+    }
+
+    /**
+     * dcd is alias for dumpClass + die
+     *
+     * 05/2023 created
+     *
+     * @param $object1 , object2, ...
+     * @return never-return
+     */
+    public static function dcd()/*: never*/
+    {
+        self::_echoCaller();
+        foreach (func_get_args() as $arg) {
+            dump(self::_getClassInheritance($arg));
+        }
+
         die();
     }
 
@@ -58,8 +90,7 @@ class UtilDebug
      */
     public static function ds(string $sql)
     {
-        $ddSource = debug_backtrace()[0];
-        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+        self::_echoCaller();
         echo SqlFormatter::format($sql);
     }
 
@@ -68,8 +99,7 @@ class UtilDebug
      */
     public static function dsd(string $sql)
     {
-        $ddSource = debug_backtrace()[0];
-        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+        self::_echoCaller();
         echo SqlFormatter::format($sql);
         die();
     }
@@ -117,11 +147,52 @@ class UtilDebug
      */
     public static function dm(): void
     {
-        $ddSource = debug_backtrace()[0];
-        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+        self::_echoCaller();
         echo UtilFormatter::formatBytes(memory_get_usage(true)) . ' / ' .
             UtilFormatter::formatBytes(memory_get_peak_usage(true)) . ' / ' .
-            ini_get('memory_limit')  . Util::getNewline();
+            ini_get('memory_limit') . Util::getNewline();
+    }
+
+
+    /**
+     * private helper for self::dc()
+     *
+     * 05/2023 created
+     *
+     * @param mixed $object
+     * @return array|string
+     */
+    private static function _getClassInheritance(mixed $object)
+    {
+        $classes = [];
+        if (!is_object($object)) {
+            return /*"not an object, but " . */ gettype($object);
+        } else {
+            $classes[] = get_class($object);
+        }
+        // ---- parent classes
+        $class = $object;
+        while (true) {
+            $class = get_parent_class($class);
+            if ($class) {
+                $classes[] = $class;
+            } else {
+                break;
+            }
+        }
+
+        return $classes;
+    }
+
+    /**
+     * 05/2023 created to avoid code duplication
+     *
+     * @return void
+     */
+    private static function _echoCaller()
+    {
+        $ddSource = debug_backtrace()[1];
+        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
     }
 
 
