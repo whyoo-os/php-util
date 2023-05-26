@@ -10,7 +10,12 @@ use SqlFormatter;
  */
 class UtilDebug
 {
-    const EMOTICON_DIE = '🙄';
+//     const EMOTICON_DIE = '🙄';
+    const EMOTICON_DIE = '💥🙄';
+//    const EMOTICON_DIE = '💥🙄🔥';
+
+
+
 
     private static $timeProfilers = [];
 
