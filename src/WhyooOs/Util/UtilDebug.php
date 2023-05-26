@@ -10,7 +10,7 @@ use SqlFormatter;
  */
 class UtilDebug
 {
-
+    const EMOTICON_DIE = '🙄';
 
     private static $timeProfilers = [];
 
@@ -43,11 +43,11 @@ class UtilDebug
      */
     public static function dd()/*: never*/
     {
-        self::_echoCaller();
+        // self::_echoCaller();
         foreach (func_get_args() as $arg) {
             dump($arg);
         }
-        die();
+        die(self::EMOTICON_DIE . ' ' .  self::_getCaller() . "\n");
     }
 
     /**
@@ -81,7 +81,7 @@ class UtilDebug
             dump(self::_getClassInheritance($arg));
         }
 
-        die();
+        die(self::EMOTICON_DIE . ' ' .  self::_getCaller() . "\n");
     }
 
 
@@ -101,7 +101,7 @@ class UtilDebug
     {
         self::_echoCaller();
         echo SqlFormatter::format($sql);
-        die();
+        die(self::EMOTICON_DIE . ' ' .  self::_getCaller() . "\n");
     }
 
 
@@ -193,6 +193,17 @@ class UtilDebug
     {
         $ddSource = debug_backtrace()[1];
         echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+    }
+
+    /**
+     * 05/2023 created to avoid code duplication
+     *
+     * @return void
+     */
+    private static function _getCaller()
+    {
+        $ddSource = debug_backtrace()[1];
+        return basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
     }
 
 
