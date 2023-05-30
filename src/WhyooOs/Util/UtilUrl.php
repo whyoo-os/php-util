@@ -11,17 +11,14 @@ class UtilUrl
 {
 
     /**
-     * TODO: use parse_url()
+     * 05/2023 using now use parse_url() instead of regex
      *
      * @param $url
-     * @return null
+     * @return string
      */
-    public static function getDomainFromUrl($url)
+    public static function getDomainFromUrl(string $url)
     {
-        if (preg_match('#https?://([^/]+)$#i', $url, $matches)) {
-            return $matches[1];
-        }
-        return null; // should NEVER happen
+        return parse_url($url, PHP_URL_HOST);
     }
 
 
