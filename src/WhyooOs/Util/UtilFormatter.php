@@ -64,7 +64,6 @@ class UtilFormatter
     }
 
 
-
     /**
      * 10/2017 from scrapers
      *
@@ -83,16 +82,24 @@ class UtilFormatter
 
     /**
      * 02/2023 used by calculation-manager
+     *
+     * @param int|float $seconds
+     * @param int $thresholdNoDecimals if seconds are passed as float, then values > thresholdNoDecimals will be rounded to int
+     * @return string
      */
-    public static function formatDuration(int|float $seconds): string
+    public static function formatDuration(int|float $seconds, int $thresholdNoDecimals = 60): string
     {
-        if (is_integer($seconds) || $seconds > 60) {
+        // ---- to integer if $seconds > $thresholdNoDecimals
+        if (is_float($seconds) && $seconds > $thresholdNoDecimals) {
             $seconds = (int)round($seconds);
-
-            return sprintf('%02d:%02d:%02d', ($seconds / 3600), ($seconds / 60 % 60), $seconds % 60);
         }
 
-        // float - 2 decimals for the seconds
+        // ---- format integer seconds
+        if (is_integer($seconds)) {
+            return sprintf('%02d:%02d:%02d', intdiv($seconds, 3600), intdiv($seconds, 60) % 60, $seconds % 60);
+        }
+
+        // ---- format float seconds - 2 decimals for the seconds
         $X = 100;
         $secondsTimeX = (int)round($seconds * $X);
         $seconds = (int)round($seconds);
