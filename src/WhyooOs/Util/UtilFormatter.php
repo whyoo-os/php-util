@@ -86,7 +86,9 @@ class UtilFormatter
      */
     public static function formatDuration(int|float $seconds): string
     {
-        if (is_integer($seconds)) {
+        if (is_integer($seconds) || $seconds > 60) {
+            $seconds = (int)round($seconds);
+
             return sprintf('%02d:%02d:%02d', ($seconds / 3600), ($seconds / 60 % 60), $seconds % 60);
         }
 
