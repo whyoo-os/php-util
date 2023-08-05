@@ -8,9 +8,13 @@ class UtilFormatter
 {
 
     /**
-     * 10/2017
+     * 10/2017 created
+     * it returns a table with two columns, one for the keys, one for the values
+     *
      * TODO: https://github.com/danielstjules/Stringy
-     * TODO: belongs into UtilMail
+     * TODO: belongs into UtilMail?
+     * TODO: give it a better name
+     *
      * @param $array
      * @return string
      */
@@ -35,7 +39,8 @@ class UtilFormatter
 
 
     /**
-     * 10/2017
+     * 10/2017 created
+     *
      * used in shipping_platform
      * TODO: belongs into UtilMail
      *
@@ -70,10 +75,11 @@ class UtilFormatter
     public static function formatBytes(int $sizeInBytes, int $precision = 2): string
     {
         $base = log($sizeInBytes, 1024);
-        $suffixes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
         return number_format(round(pow(1024, $base - floor($base)), $precision), $precision) . ' ' . $suffixes[(int)floor($base)];
     }
+
 
     /**
      * 02/2023 used by calculation-manager

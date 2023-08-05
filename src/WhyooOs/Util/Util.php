@@ -121,15 +121,18 @@ class Util
 
     /**
      * TODO: move to UtilFormatter
+     * 08/2023 deprecated -  use UtilFormatter::formatBytes
      *
+     * @deprecated
      * @param $size
      * @param string|null $sizeUnit
      * @param int $numDecimals
      * @return string
-     * @throws AssertException
      */
     public static function humanReadableSize($size, string $sizeUnit = null, int $numDecimals = 2)
     {
+        trigger_error('Method ' . __METHOD__ . ' is deprecated, use UtilFormatter::formatBytes() instead', E_USER_DEPRECATED);
+
         $sizeUnits = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
         if ($sizeUnit !== null) {

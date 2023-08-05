@@ -152,7 +152,8 @@ class UtilDebug
      */
     public static function dm(): void
     {
-        self::_echoCaller();
+        self::_echoCaller(false);
+        echo "    ";
         echo UtilFormatter::formatBytes(memory_get_usage(true)) . ' / ' .
             UtilFormatter::formatBytes(memory_get_peak_usage(true)) . ' / ' .
             ini_get('memory_limit') . Util::getNewline();
@@ -194,10 +195,13 @@ class UtilDebug
      *
      * @return void
      */
-    private static function _echoCaller()
+    private static function _echoCaller(bool $bWithNewline = true)
     {
         $ddSource = debug_backtrace()[1];
-        echo basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+        echo basename($ddSource['file']) . ':' . $ddSource['line'] ;
+        if($bWithNewline) {
+            echo Util::getNewline();
+        }
     }
 
     /**
