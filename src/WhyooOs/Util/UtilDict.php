@@ -334,5 +334,23 @@ class UtilDict
         }
     }
 
+    /**
+     * adds an entry at a specific position to a dict
+     *
+     * 08/2023 created
+     *
+     * @param array $dict
+     * @param int $pos
+     * @param $key
+     * @param $value
+     * @return void
+     */
+    public static function insertAt(array &$dict, int $pos, $key, $value): void
+    {
+        $dict = array_slice($dict, 0, $pos, true) +
+            [$key => $value] +
+            array_slice($dict, $pos, count($dict) - $pos, true);
+    }
+
 
 }
