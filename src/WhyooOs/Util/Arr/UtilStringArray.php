@@ -68,13 +68,14 @@ class UtilStringArray
      *
      * 02/2021 moved from UtilArray::trimExplode() to UtilStringArray::trimExplode()
      * 02/2021 added parameter $limit
+     * 09/2023 trimming whitespace
      *
      * @param string $delimiter
      * @param string $string
      * @param int|null $limit
      * @return array
      */
-    static public function trimExplode(string $delimiter, string $string, $limit = null, $bKeepEmpty = false)
+    static public function trimExplode(string $delimiter, string $string, $limit = null, $bKeepEmpty = false): array
     {
         if(is_null($limit)) {
             $chunksArr = explode($delimiter, $string);
@@ -84,8 +85,9 @@ class UtilStringArray
 
         $newChunksArr = [];
         foreach ($chunksArr as $value) {
-            if (strcmp('', trim($value)) || $bKeepEmpty) {
-                $newChunksArr[] = trim($value);
+            $value = trim($value, " \t\n\r\0\x0B ");
+            if (strcmp('', $value) || $bKeepEmpty) {
+                $newChunksArr[] = $value;
             }
         }
         reset($newChunksArr);
