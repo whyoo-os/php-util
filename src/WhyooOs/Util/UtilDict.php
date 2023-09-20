@@ -33,6 +33,45 @@ class UtilDict
         return $ret;
     }
 
+    /**
+     * recursive helper
+     */
+    private static function _pick(array $src, array &$dest, array $allowList)
+    {
+        foreach ($allowList as $path) {
+
+            if (str_contains($path, '.')) {
+                // ---- with sub keys
+                [$mainKey, $remainingKey] = explode('.', $path, 2);
+                if (!array_key_exists($mainKey, $src)) {
+                    continue;
+                }
+                // ---- pick recursively
+                $picked = [];
+                self::_pick($src[$mainKey], $picked, [$remainingKey]);
+                if (!empty($picked)) {
+                    if (array_key_exists($mainKey, $dest) && is_array($dest[$mainKey])) {
+                        $dest[$mainKey] = array_merge_recursive($dest[$mainKey], $picked);
+                        // UtilDebug::d("------------------------------------------------", $picked, $dest);
+                    } else {
+                        $dest[$mainKey] = $picked;
+                    }
+                }
+            } else {
+                // ---- without sub keys
+                if (!array_key_exists($path, $src)) {
+                    continue;
+                }
+                if (array_key_exists($path, $dest) && is_array($dest[$path]) && is_array($src[$path])) {
+                    // merge 2 arrays
+                    $dest[$path] = array_merge_recursive($dest[$path], $src[$path]);
+                } else {
+                    $dest[$path] = $src[$path];
+                }
+            }
+
+        }
+    }
 
     /**
      * Allow list
@@ -40,20 +79,18 @@ class UtilDict
      *   var result = _.pick(credentials, ['fname', 'lname']);
      *
      * 02/2023 created (TopData)
+     * 09/2023 now supports sub-keys (separated by dot), eg 'customFields.topdata_order_approval_phone_number'
      *
-     * @param $dict
+     * @param array $src
      * @param string[] $allowList list of allowed dict keys (whitelist)
-     * @return array
+     * @return void
      */
-    public static function pick($dict, array $allowList): array
+    public static function pick(array $src, array $allowList): array
     {
-        $ret = [];
-        foreach($allowList as $key) {
-            if(array_key_exists($key, $dict))
-            $ret[$key] = $dict[$key];
-        }
+        $dest = [];
+        self::_pick($src, $dest, $allowList);
 
-        return $ret;
+        return $dest;
     }
 
 
