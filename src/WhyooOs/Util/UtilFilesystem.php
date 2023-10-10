@@ -433,8 +433,8 @@ class UtilFilesystem
             $currentPath .= '/' . $part;
             if (!is_dir($currentPath)) {
                 if (!@mkdir($currentPath, $perm)) {
-//					return false;
-                    throw new \Exception("could not create directory $currentPath");
+                    $error = error_get_last();
+                    throw new \Exception("could not create directory $currentPath - " . $error['message']);
                 }
                 @chmod($currentPath, $perm);
             }
