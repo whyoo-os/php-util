@@ -87,7 +87,7 @@ class UtilFormatter
      * @param int $thresholdNoDecimals if seconds are passed as float, then values > thresholdNoDecimals will be rounded to int
      * @return string
      */
-    public static function formatDuration(int|float $seconds, int $thresholdNoDecimals = 60): string
+    public static function formatDuration( $seconds, int $thresholdNoDecimals = 60): string
     {
         // ---- to integer if $seconds > $thresholdNoDecimals
         if (is_float($seconds) && $seconds > $thresholdNoDecimals) {
