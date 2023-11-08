@@ -356,6 +356,7 @@ class UtilDict
      * renames keys of a dict
      *
      * 09/2022 created (MB)
+     * 11/2023 bugfix: skip if oldKey === newKey
      *
      * @param array $dict assoc array
      * @param array $renames assoc array
@@ -363,6 +364,9 @@ class UtilDict
      */
     public static function renameKeys(array &$dict, array $renames, bool $bExceptionOnNotFound = false) {
         foreach($renames as $oldKey => $newKey) {
+            if($oldKey === $newKey) {
+                continue;
+            }
             if(!array_key_exists($oldKey, $dict) && $bExceptionOnNotFound) {
                 throw new \Exception("key fail: $oldKey");
             }
