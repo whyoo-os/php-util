@@ -393,5 +393,20 @@ class UtilDict
             array_slice($dict, $pos, count($dict) - $pos, true);
     }
 
+    /**
+     * 11/2023 created
+     *
+     * @param array $origDict assoc array
+     * @param array $renames assoc array
+     * @return array picked data with renamed keys
+     */
+    public static function pickAndRenameKeys(array $origDict, array $renames): array
+    {
+        $picked = self::pick($origDict, array_keys($renames));
+        self::renameKeys($picked, $renames);
+
+        return $picked;
+    }
+
 
 }
