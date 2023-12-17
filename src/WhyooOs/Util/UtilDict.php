@@ -2,6 +2,8 @@
 
 namespace WhyooOs\Util;
 
+use WhyooOs\Util\Arr\UtilArray;
+
 /**
  * utility functions for handling associative arrays (aka dicts)
  *

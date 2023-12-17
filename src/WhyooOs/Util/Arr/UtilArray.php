@@ -498,4 +498,38 @@ class UtilArray
     }
 
 
+
+    /**
+     * recursive private function for flatten
+     */
+    private static function _flattenRecursive($json, string $separator, array $aIgnore, string $prefix = '', $row = []): array
+    {
+        foreach ($json as $key => $val) {
+            if (in_array($key, $aIgnore)) {
+                continue;
+            }
+            if (is_array($val)) {
+                if (UtilArray::isAssoc($val) || is_array($val[0])) {
+                    $newPrefix = "{$prefix}{$key}{$separator}";
+                    $row = array_merge($row, self::_flattenRecursive($val, $separator, $aIgnore, $newPrefix, $row));
+                } else {
+                    $row[$prefix . $key] = implode("\n", $val);
+                }
+            } else {
+                $row[$prefix . $key] = $val;
+            }
+        }
+
+        return $row;
+    }
+
+    /**
+     * 12/2023 created
+     */
+    public static function flatten($json, string $separator='.', array $aIgnore = []): array
+    {
+        return self::_flattenRecursive($json, $separator, $aIgnore);
+    }
+
+
 }
