@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Util;
+namespace WhyooOs\Util;
 
 use App\Enum\CodeTypeEnum;
 use Symfony\Component\Process\Exception\ProcessFailedException;
