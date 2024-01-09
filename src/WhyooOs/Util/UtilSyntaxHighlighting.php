@@ -12,16 +12,14 @@ use Symfony\Component\Process\Process;
 class UtilSyntaxHighlighting
 {
     /**
-     * 12/2023 created
+     * 12/2023 created, used by ai, cm
      *
-     * @param CodeTypeEnum $codeType
+     * @param string $language
      * @param string $sourceCode
      * @return string
-     * @throws ProcessFailedException
      */
-    public static function highlightCodeForCli(CodeTypeEnum $codeType, string $sourceCode): string
+    public static function highlightCodeForCli(string $language, string $sourceCode): string
     {
-        $language = strtolower($codeType->value);
 
 
         //Formatters:
