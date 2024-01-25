@@ -14,6 +14,24 @@ use WhyooOs\Util\UtilDocument;
 class UtilDocumentArray
 {
     /**
+     * 01/2024 created (cm)
+     *
+     * @param iterable $docs
+     * @param $columnNames
+     * @return array[]
+     */
+    public static function pick(iterable $docs, $columnNames): array
+    {
+        $ret = [];
+        foreach($docs as $doc) {
+            $ret[] = UtilDict::pick($doc, $columnNames);
+        }
+
+        return $ret;
+    }
+
+
+    /**
      * 02/2018 unused
      * 08/2020 used by cloudlister
      * 08/2020 used by tldr-to-anki
