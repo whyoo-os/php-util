@@ -14,17 +14,19 @@ use WhyooOs\Util\UtilDocument;
 class UtilDocumentArray
 {
     /**
-     * 01/2024 created (cm)
+     * used by cm
+     *
+     * 01/2024 created (Topdata)
      *
      * @param iterable $docs
-     * @param $columnNames
+     * @param array $columnNames eg ['id', 'name']
      * @return array[]
      */
     public static function pick(iterable $docs, $columnNames): array
     {
         $ret = [];
         foreach($docs as $doc) {
-            $ret[] = UtilDict::pick($doc, $columnNames);
+            $ret[] = UtilDocument::pick($doc, $columnNames);
         }
 
         return $ret;

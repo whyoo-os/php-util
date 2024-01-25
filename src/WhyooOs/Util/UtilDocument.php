@@ -5,10 +5,33 @@ namespace WhyooOs\Util;
 
 
 /**
- * 07/2017
+ * 07/2017 created
  */
 class UtilDocument
 {
+    /**
+     * used by cm
+     *
+     * 01/2024 created (Topdata)
+     *
+     * @param object $srcDocument
+     * @param array $columnNames eg ['id', 'name']
+     * @return array eg ['id' => 123, 'name' => 'foo']
+     */
+    public static function pick($srcDocument, array $columnNames): array
+    {
+        $ret = [];
+        foreach ($columnNames as $key) {
+            $getterName = 'get' . ucfirst($key);
+            if(!method_exists($srcDocument, $getterName)) {
+                throw new \Exception("getter '$getterName' does not exist");
+            }
+            $ret[$key] = $srcDocument->$getterName();
+        }
+        return $ret;
+    }
+
+
     /**
      * used by cloudlister, schlegel, mb
      *
