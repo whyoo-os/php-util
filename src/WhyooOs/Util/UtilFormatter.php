@@ -87,7 +87,7 @@ class UtilFormatter
      * @param int $thresholdNoDecimals if seconds are passed as float, then values > thresholdNoDecimals will be rounded to int
      * @return string
      */
-    public static function formatDuration( $seconds, int $thresholdNoDecimals = 60): string
+    public static function formatDuration($seconds, int $thresholdNoDecimals = 60): string
     {
         // ---- to integer if $seconds > $thresholdNoDecimals
         if (is_float($seconds) && $seconds > $thresholdNoDecimals) {
@@ -107,5 +107,12 @@ class UtilFormatter
         return sprintf('%02d:%02d:%05.2f', intdiv($seconds, 3600), intdiv($seconds, 60) % 60, ($secondsTimeX % (60 * $X)) / $X);
     }
 
+    /**
+     * 02/2024 created (cm)
+     */
+    public static function formatInteger(int $int, $thousandsSeparator = '.'): string
+    {
+        return number_format($int, 0, thousands_separator: $thousandsSeparator);
+    }
 
 }
