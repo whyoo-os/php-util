@@ -108,7 +108,7 @@ class UtilCsv
 
         // ---- write rows
         foreach ($rows as &$row) {
-            $ret = fputcsv($fh, UtilDict::extractValuesToList($row, $columnNames));
+            $ret = fputcsv($fh, UtilDict::pickToList($row, $columnNames));
             if($ret === false) {
                 return false;
             }

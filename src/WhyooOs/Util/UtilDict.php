@@ -253,17 +253,18 @@ class UtilDict
      * 05/2021 moved from UtilCsv::dictToList to UtilDict::toList()
      * 07/2022 renamed from toList() to extractValues()
      * 02/2023 renamed from extractValues() to extractValuesToList()
+     * 02/2024 renmaed from extractValuesToList() to pickToList()
      *
-     * used by cloudlister(exportOrdersToExcel)
+     * used by cloudlister(exportOrdersToExcel), cm
      *
      * @param array $dict
      * @param string[] $keys
      * @return array numeric(!) array
      */
-    public static function extractValuesToList(array $dict, array $keys): array
+    public static function pickToList(array $dict, array $keys): array
     {
         return array_map(function ($key) use ($dict) {
-            return @$dict[$key];
+            return $dict[$key] ?? null;
         }, $keys);
     }
 
