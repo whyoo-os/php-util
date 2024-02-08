@@ -10,11 +10,9 @@ use SqlFormatter;
  */
 class UtilDebug
 {
-//     const EMOTICON_DIE = '🙄';
-    const EMOTICON_DIE = '💥🙄';
-//    const EMOTICON_DIE = '💥🙄🔥';
-
-
+    const EMOTICON_DUMP     = '🙄';
+    const EMOTICON_DUMP_DIE = '💥🙄';
+//    const EMOTICON_DUMP_DIE = '💥🙄🔥';
 
 
     private static $timeProfilers = [];
@@ -36,10 +34,10 @@ class UtilDebug
      */
     public static function d()
     {
-        self::_echoCaller();
         foreach (func_get_args() as $arg) {
             dump($arg);
         }
+        self::_echoCaller(self::EMOTICON_DUMP);
     }
 
 
@@ -48,11 +46,11 @@ class UtilDebug
      */
     public static function dd()/*: never*/
     {
-        // self::_echoCaller();
         foreach (func_get_args() as $arg) {
             dump($arg);
         }
-        die(self::EMOTICON_DIE . ' ' .  self::_getCaller() . "\n");
+
+        die(self::_echoCaller(self::EMOTICON_DUMP_DIE));
     }
 
     /**
@@ -65,10 +63,10 @@ class UtilDebug
      */
     public static function dc(): void
     {
-        self::_echoCaller();
         foreach (func_get_args() as $arg) {
             dump(self::_getClassInheritance($arg));
         }
+        self::_echoCaller(self::EMOTICON_DUMP);
     }
 
     /**
@@ -81,12 +79,11 @@ class UtilDebug
      */
     public static function dcd()/*: never*/
     {
-        self::_echoCaller();
         foreach (func_get_args() as $arg) {
             dump(self::_getClassInheritance($arg));
         }
 
-        die(self::EMOTICON_DIE . ' ' .  self::_getCaller() . "\n");
+        die(self::_echoCaller(self::EMOTICON_DUMP_DIE));
     }
 
 
@@ -95,8 +92,8 @@ class UtilDebug
      */
     public static function ds(string $sql)
     {
-        self::_echoCaller();
         echo SqlFormatter::format($sql);
+        self::_echoCaller(self::EMOTICON_DUMP);
     }
 
     /**
@@ -104,9 +101,8 @@ class UtilDebug
      */
     public static function dsd(string $sql)
     {
-        self::_echoCaller();
         echo SqlFormatter::format($sql);
-        die(self::EMOTICON_DIE . ' ' .  self::_getCaller() . "\n");
+        self::_echoCaller(self::EMOTICON_DUMP_DIE);
     }
 
 
@@ -152,9 +148,9 @@ class UtilDebug
      */
     public static function dm(): void
     {
-        self::_echoCaller(false);
-        echo "    ";
-        echo UtilFormatter::formatBytes(memory_get_usage(true)) . ' / ' .
+        self::_echoCaller(bWithNewline: false);
+        echo "    " .
+            UtilFormatter::formatBytes(memory_get_usage(true)) . ' / ' .
             UtilFormatter::formatBytes(memory_get_peak_usage(true)) . ' / ' .
             ini_get('memory_limit') . Util::getNewline();
     }
@@ -195,13 +191,28 @@ class UtilDebug
      *
      * @return void
      */
-    private static function _echoCaller(bool $bWithNewline = true)
+    private static function _echoCaller(?string $prefix = null, bool $bWithNewline = true): void
     {
         $ddSource = debug_backtrace()[1];
-        echo basename($ddSource['file']) . ':' . $ddSource['line'] ;
-        if($bWithNewline) {
+        if ($prefix) {
+            echo $prefix . ' >>>> ';
+        }
+        echo basename($ddSource['file']) . ':' . $ddSource['line'];
+        if ($bWithNewline) {
             echo Util::getNewline();
         }
+    }
+
+    /**
+     * 02/2024 created (cm)
+     */
+    public static function dumpDebugBacktrace()
+    {
+        $backtraces = debug_backtrace();
+        foreach ($backtraces as $trace) {
+            echo "    " . basename($trace['file']) . ':' . $trace['line'] . Util::getNewline();
+        }
+        self::_echoCaller(self::EMOTICON_DUMP);
     }
 
     /**
