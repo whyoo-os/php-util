@@ -283,29 +283,6 @@ class Util
     }
 
 
-    /**
-     * 01/2018
-     * @return bool
-     */
-    public static function isCLi()
-    {
-        return php_sapi_name() == "cli";
-    }
-
-
-    /**
-     * @return string \n or <br>
-     */
-    public static function getNewline()
-    {
-        if (self::isCli()) {
-            // In cli-mode
-            return "\n";
-        } else {
-            return '<br>';
-        }
-    }
-
 
     /**
      * 07/2018

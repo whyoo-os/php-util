@@ -134,7 +134,7 @@ class UtilDebug
     public static function d2($mainCriteriaSet)
     {
         $ddSource = debug_backtrace()[0];
-        echo $ddSource['file'] . ':' . $ddSource['line'] . Util::getNewline();
+        echo $ddSource['file'] . ':' . $ddSource['line'] . UtilTextOutput::getNewline();
         foreach (func_get_args() as $arg) {
             dump(UtilSymfony::toArray($arg));
         }
@@ -152,7 +152,7 @@ class UtilDebug
         echo "    " .
             UtilFormatter::formatBytes(memory_get_usage(true)) . ' / ' .
             UtilFormatter::formatBytes(memory_get_peak_usage(true)) . ' / ' .
-            ini_get('memory_limit') . Util::getNewline();
+            ini_get('memory_limit') . UtilTextOutput::getNewline();
     }
 
 
@@ -195,11 +195,11 @@ class UtilDebug
     {
         $ddSource = debug_backtrace()[1];
         if ($prefix) {
-            echo $prefix . ' >>>> ';
+            echo $prefix . UtilTextOutput::escapeStringForHtml(' >>>> ');
         }
         echo basename($ddSource['file']) . ':' . $ddSource['line'];
         if ($bWithNewline) {
-            echo Util::getNewline();
+            echo UtilTextOutput::getNewline();
         }
     }
 
@@ -210,7 +210,7 @@ class UtilDebug
     {
         $backtraces = debug_backtrace();
         foreach ($backtraces as $trace) {
-            echo "    " . basename($trace['file']) . ':' . $trace['line'] . Util::getNewline();
+            echo "    " . basename($trace['file']) . ':' . $trace['line'] . UtilTextOutput::getNewline();
         }
         self::_echoCaller(self::EMOTICON_DUMP);
     }
@@ -223,7 +223,7 @@ class UtilDebug
     private static function _getCaller()
     {
         $ddSource = debug_backtrace()[1];
-        return basename($ddSource['file']) . ':' . $ddSource['line'] . Util::getNewline();
+        return basename($ddSource['file']) . ':' . $ddSource['line'] . UtilTextOutput::getNewline();
     }
 
 
