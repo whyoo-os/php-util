@@ -10,8 +10,13 @@ use SqlFormatter;
  */
 class UtilDebug
 {
-    const EMOTICON_DUMP     = '🙄';
-    const EMOTICON_DUMP_DIE = '💥🙄';
+    const EMOTICON_DUMP_PRE      = '⬇️';
+    const EMOTICON_DUMP_DIE_PRE  = '💥⬇️';
+    const EMOTICON_DUMP_POST     = '🙄';
+    const EMOTICON_DUMP_DIE_POST = '💥🙄';
+
+    //    const EMOTICON_DUMP          = '🙄';
+//    const EMOTICON_DUMP_DIE      = '💥🙄';
 //    const EMOTICON_DUMP_DIE = '💥🙄🔥';
 
 
@@ -37,7 +42,7 @@ class UtilDebug
         foreach (func_get_args() as $arg) {
             dump($arg);
         }
-        self::_echoCaller(self::EMOTICON_DUMP);
+        self::_echoCaller(self::EMOTICON_DUMP_POST);
     }
 
 
@@ -50,7 +55,8 @@ class UtilDebug
             dump($arg);
         }
 
-        die(self::_echoCaller(self::EMOTICON_DUMP_DIE));
+        self::_echoCaller(self::EMOTICON_DUMP_DIE_POST);
+        die();
     }
 
     /**
@@ -66,7 +72,7 @@ class UtilDebug
         foreach (func_get_args() as $arg) {
             dump(self::_getClassInheritance($arg));
         }
-        self::_echoCaller(self::EMOTICON_DUMP);
+        self::_echoCaller(self::EMOTICON_DUMP_POST);
     }
 
     /**
@@ -83,7 +89,8 @@ class UtilDebug
             dump(self::_getClassInheritance($arg));
         }
 
-        die(self::_echoCaller(self::EMOTICON_DUMP_DIE));
+        self::_echoCaller(self::EMOTICON_DUMP_DIE_POST);
+        die();
     }
 
 
@@ -93,7 +100,7 @@ class UtilDebug
     public static function ds(string $sql)
     {
         echo SqlFormatter::format($sql);
-        self::_echoCaller(self::EMOTICON_DUMP);
+        self::_echoCaller(self::EMOTICON_DUMP_POST);
     }
 
     /**
@@ -212,7 +219,7 @@ class UtilDebug
         foreach ($backtraces as $trace) {
             echo "    " . basename($trace['file']) . ':' . $trace['line'] . UtilTextOutput::getNewline();
         }
-        self::_echoCaller(self::EMOTICON_DUMP);
+        self::_echoCaller(self::EMOTICON_DUMP_POST);
     }
 
     /**
