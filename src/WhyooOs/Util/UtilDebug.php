@@ -3,6 +3,7 @@
 
 namespace WhyooOs\Util;
 
+use App\Entity\Tenant\ListImportsV2\V2Column\FieldColumn\V2ColumnFieldImported;
 use SqlFormatter;
 
 /**
@@ -70,7 +71,7 @@ class UtilDebug
     public static function dc(): void
     {
         foreach (func_get_args() as $arg) {
-            dump(self::_getClassInheritance($arg));
+            dump(UtilReflection::getClassInheritance($arg));
         }
         self::_echoCaller(self::EMOTICON_DUMP_POST);
     }
@@ -86,7 +87,7 @@ class UtilDebug
     public static function dcd()/*: never*/
     {
         foreach (func_get_args() as $arg) {
-            dump(self::_getClassInheritance($arg));
+            dump(UtilReflection::getClassInheritance($arg));
         }
 
         self::_echoCaller(self::EMOTICON_DUMP_DIE_POST);
@@ -162,37 +163,6 @@ class UtilDebug
             ini_get('memory_limit') . UtilTextOutput::getNewline();
     }
 
-
-    /**
-     * private helper for self::dc()
-     *
-     * 05/2023 created
-     *
-     * @param mixed $object
-     * @return array|string
-     */
-    private static function _getClassInheritance(mixed $object)
-    {
-        $classes = [];
-        if (!is_object($object)) {
-            return /*"not an object, but " . */ gettype($object);
-        } else {
-            $classes[] = get_class($object);
-        }
-        // ---- parent classes
-        $class = $object;
-        while (true) {
-            $class = get_parent_class($class);
-            if ($class) {
-                $classes[] = $class;
-            } else {
-                break;
-            }
-        }
-
-        return $classes;
-    }
-
     /**
      * 05/2023 created to avoid code duplication
      *
@@ -221,6 +191,7 @@ class UtilDebug
         }
         self::_echoCaller(self::EMOTICON_DUMP_POST);
     }
+
 
     /**
      * 05/2023 created to avoid code duplication
