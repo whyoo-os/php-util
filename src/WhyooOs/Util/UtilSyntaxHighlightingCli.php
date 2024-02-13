@@ -8,6 +8,7 @@ use Symfony\Component\Process\Process;
 /**
  * 12/2023 created
  * 02/2024 rename from UtilSyntaxHighlighting to UtilSyntaxHighlightingCli
+ * TODO: remove the old UtilSyntaxHighlighting
  */
 class UtilSyntaxHighlightingCli
 {
