@@ -2,16 +2,31 @@
 
 namespace WhyooOs\Util;
 
-use App\Enum\CodeTypeEnum;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 /**
- * TODO this gets replaced by UtilSyntaxHighlightingCli
  * 12/2023 created
+ * 02/2024 rename from UtilSyntaxHighlighting to UtilSyntaxHighlightingCli
  */
-class UtilSyntaxHighlighting
+class UtilSyntaxHighlightingCli
 {
+
+    /**
+     * 02/2024 created
+     *
+     * @param string $pathCodeFile
+     * @param string|null $language
+     */
+    public static function highlightSourceFile(string $pathCodeFile, string $language = null): string
+    {
+        if (!$language) {
+            $language = self::guessLanguageFromExtension($pathCodeFile);
+        }
+
+        return self::highlightSourceCode(file_get_contents($pathCodeFile), $language);
+    }
+
     /**
      * 12/2023 created, used by ai, cm
      *
@@ -19,7 +34,7 @@ class UtilSyntaxHighlighting
      * @param string $sourceCode
      * @return string
      */
-    public static function highlightCodeForCli(string $language, string $sourceCode): string
+    public static function highlightSourceCode(string $sourceCode, string $language): string
     {
 
 
@@ -63,7 +78,6 @@ class UtilSyntaxHighlighting
         //    Output the text unchanged without any formatting. (filenames *.txt)
 
 
-
         // Create a new Process instance for pygmentize
         $process = new Process(['pygmentize', '-l', $language, '-f', 'terminal']);
 
@@ -83,4 +97,62 @@ class UtilSyntaxHighlighting
 
         return $highlightedCode;
     }
+
+    /**
+     * 02/2024 created (GPT)
+     */
+    private static function guessLanguageFromExtension(string $pathCodeFile): string
+    {
+        $extension = pathinfo($pathCodeFile, PATHINFO_EXTENSION);
+        switch ($extension) {
+            case 'php':
+                return 'php';
+            case 'js':
+                return 'javascript';
+            case 'ts':
+                return 'typescript';
+            case 'css':
+                return 'css';
+            case 'html':
+                return 'html';
+            case 'twig':
+                return 'twig';
+            case 'xml':
+                return 'xml';
+            case 'yml':
+                return 'yaml';
+            case 'yaml':
+                return 'yaml';
+            case 'json':
+                return 'json';
+            case 'md':
+                return 'markdown';
+            case 'sql':
+                return 'sql';
+            case 'sh':
+                return 'bash';
+            case 'py':
+                return 'python';
+            case 'rb':
+                return 'ruby';
+            case 'java':
+                return 'java';
+            case 'c':
+                return 'c';
+            case 'cpp':
+                return 'cpp';
+            case 'h':
+                return 'c';
+            case 'hpp':
+                return 'cpp';
+            case 'cs':
+                return 'csharp';
+            case 'go':
+                return 'go';
+            default:
+                return 'text';
+        }
+    }
+
+
 }
