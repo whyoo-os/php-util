@@ -98,25 +98,58 @@ class UtilReflection
         return false;
     }
 
+    /**
+     * It also searches parent classes for the property
+     *
+     * 03/2024 created
+     *
+     * @param object $object
+     * @param string $propertyName
+     * @return bool
+     */
+    public static function hasProperty(object $object, string $propertyName): bool
+    {
+        $reflection = new ReflectionClass($object);
+
+        while ($reflection) {
+            if ($reflection->hasProperty($propertyName)) {
+                return true;
+            }
+
+            $reflection = $reflection->getParentClass();
+        }
+
+        return false;
+    }
 
 
     /**
-     * Checks if a property of an object is set or not
+     * - Checks if a property of an object is set
+     * - it also checks parent classes
+     * - throws an exception if the property does not exist
      *
      * @param object $object The object to check
      * @param string $propertyName The name of the property to check
      * @return bool True if the property is set, false otherwise
      */
-    public static function isPropertySet(object $object, string $propertyName): bool
+    public static function isPropertyInitialized(object $object, string $propertyName): bool
     {
+
         $reflection = new ReflectionClass($object);
 
-        if ($reflection->hasProperty($propertyName)) {
-            $property = $reflection->getProperty($propertyName);
+        while ($reflection) {
+            if ($reflection->hasProperty($propertyName)) {
+                $property = $reflection->getProperty($propertyName);
+                $property->setAccessible(true); // Make private properties accessible
 
-            return $property->isInitialized($object); // Make private properties accessible
+                return $property->isInitialized($object);
+            }
+
+            $reflection = $reflection->getParentClass();
         }
 
-        return false;
+        throw new \InvalidArgumentException("Property '$propertyName' does not exist in the object.");
     }
+
+
 }

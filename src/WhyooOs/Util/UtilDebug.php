@@ -110,7 +110,8 @@ class UtilDebug
     public static function dsd(string $sql)
     {
         echo SqlFormatter::format($sql);
-        self::_echoCaller(self::EMOTICON_DUMP_DIE);
+        self::_echoCaller(self::EMOTICON_DUMP_DIE_POST);
+        die();
     }
 
 
