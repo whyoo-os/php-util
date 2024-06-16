@@ -26,8 +26,6 @@
             "WhyooOs\\Util\\": "src/WhyooOs/Util/",
             "WhyooOs\\HelperClasses\\": "src/WhyooOs/HelperClasses/"
         }
-    }
+    },
+    "version": "v3.8.4"
 }
-
-
-
