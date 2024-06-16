@@ -12,6 +12,27 @@ use WhyooOs\Util\Arr\UtilStringArray;
 class UtilJson
 {
 
+
+    /**
+     * gron must be installed
+     * @see https://github.com/tomnomnom/gron?tab=readme-ov-file#installation
+     *
+     * 06/2024 created
+     */
+    public static function gron(array $simplified): string
+    {
+        $pathJsonFile = '/tmp/json-' . uniqid() . '.json';
+        save::saveJsonFile($pathJsonFile, $simplified);
+        // run gron on the file
+        $cmd = 'gron ' . $pathJsonFile;
+        $output = shell_exec($cmd);
+        // cleanup
+        unlink($pathJsonFile);
+
+        return $output;
+    }
+
+
     /**
      * json_decode with error handling
      *
