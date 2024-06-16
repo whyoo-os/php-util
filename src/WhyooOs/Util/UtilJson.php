@@ -19,10 +19,10 @@ class UtilJson
      *
      * 06/2024 created
      */
-    public static function gron(array $simplified): string
+    public static function gron(mixed $data): string
     {
-        $pathJsonFile = '/tmp/json-' . uniqid() . '.json';
-        save::saveJsonFile($pathJsonFile, $simplified);
+        $pathJsonFile = '/tmp/gron-' . uniqid() . '.json';
+        save::saveJsonFile($pathJsonFile, $data);
         // run gron on the file
         $cmd = 'gron ' . $pathJsonFile;
         $output = shell_exec($cmd);
